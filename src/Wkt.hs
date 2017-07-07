@@ -11,11 +11,33 @@ import           Text.Trifecta.Delta
 delta :: String -> Delta
 delta str = Directed (UTF8.fromString str) 0 0 0 0
 
+polygonText :: Parser PolygonGeometry
+polygonText = do
+  _ <- string "polygon" <|> string "POLYGON"
+  _ <- spaces
+  (e, h) <- Wkt.exteriorAndholes <|> Wkt.emptySets
+  pure (PolygonGeometry e h)
+
+exteriorAndholes :: Parser ([PointGeometry], [[PointGeometry]])
+exteriorAndholes = do
+  _ <- char '('
+  e <- Wkt.lines
+  h <- many commandLines
+  _ <- char ')'
+  pure (e, h)
+
+commandLines :: Parser [PointGeometry]
+commandLines = do
+  _ <- char ','
+  _ <- spaces
+  x <- Wkt.lines
+  pure x
+
 lineStringText :: Parser LineStringGeometry
 lineStringText = do
   _ <- string "linestring" <|> string "LINESTRING"
   _ <- spaces
-  x <- Wkt.lines <|> pure [emptyPoint]
+  x <- Wkt.lines <|> (pure . PointGeometry) <$> Wkt.emptySet
   pure (LineStringGeometry x)
 
 lines :: Parser [PointGeometry]
@@ -54,6 +76,9 @@ point = do
   y <- number
   pure [x, y]
 
+emptyPolygon :: PolygonGeometry
+emptyPolygon = PolygonGeometry [] []
+
 emptyLine :: LineStringGeometry
 emptyLine = LineStringGeometry [emptyPoint]
 
@@ -64,6 +89,11 @@ emptySet :: Parser [Scientific]
 emptySet = do
   _ <- string "empty" <|> string "EMPTY"
   pure []
+
+emptySets :: Parser ([PointGeometry], [[PointGeometry]])
+emptySets = do
+  _ <- string "empty" <|> string "EMPTY"
+  pure ([], [])
 
 number :: Parser Scientific
 number = do

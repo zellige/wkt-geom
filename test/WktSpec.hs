@@ -13,6 +13,7 @@ spec :: Spec
 spec = do
   testPoints
   testLines
+  testPolygons
 
 testPoints :: Spec
 testPoints =
@@ -29,3 +30,11 @@ testLines =
       (\str -> parseString lineStringText (Wkt.delta str) str) "linestring empty" ^?! _Success `shouldBe` Wkt.emptyLine
     it "Parse something" $
       (\str -> parseString lineStringText (Wkt.delta str) str) "linestring (1.0 2.0)" ^?! _Success `shouldBe` LineStringGeometry [PointGeometry [1.0, 2.0]]
+
+testPolygons :: Spec
+testPolygons =
+  describe "simple polygons" $ do
+    it "Parse empty" $
+      (\str -> parseString polygonText (Wkt.delta str) str) "polygon empty" ^?! _Success `shouldBe` Wkt.emptyPolygon
+    it "Parse something" $
+      (\str -> parseString polygonText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] []
