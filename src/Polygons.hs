@@ -30,7 +30,7 @@ manyPolygons = do
 
 polygon :: Parser PolygonGeometry
 polygon = do
-  (e, h) <- exteriorAndholes <|> Wkt.emptySets
+  (e, h) <- Wkt.emptySets <|> exteriorAndholes
   pure (PolygonGeometry e h)
 
 exteriorAndholes :: Parser ([PointGeometry], [[PointGeometry]])
