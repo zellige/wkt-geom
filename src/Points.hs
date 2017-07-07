@@ -17,7 +17,6 @@ pointTaggedText = do
   _ <- string "point" <|> string "POINT"
   _ <- spaces
   x <- bracketedPoint <|> (string "empty" <|> string "EMPTY" >> pure emptyPoint)
-  _ <- spaces
   pure x
 
 multipointTaggedText :: Parser MultiPointGeometry

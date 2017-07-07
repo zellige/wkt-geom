@@ -36,13 +36,13 @@ testLines :: Spec
 testLines =
   describe "simple lines" $ do
     it "Parse incomplete" $
-      (\str -> parseString lineStringText (Wkt.delta str) str) "linestring" `shouldSatisfy` (isJust . flip (^?) _Failure)
+      (\str -> parseString lineStringTaggedText (Wkt.delta str) str) "linestring" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse empty" $
-      (\str -> parseString lineStringText (Wkt.delta str) str) "linestring empty" ^?! _Success `shouldBe` Lines.emptyLine
+      (\str -> parseString lineStringTaggedText (Wkt.delta str) str) "linestring empty" ^?! _Success `shouldBe` Lines.emptyLine
     it "Parse not points" $
-      (\str -> parseString lineStringText (Wkt.delta str) str) "linestring (abc)" `shouldSatisfy` (isJust . flip (^?) _Failure)
+      (\str -> parseString lineStringTaggedText (Wkt.delta str) str) "linestring (abc)" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse something" $
-      (\str -> parseString lineStringText (Wkt.delta str) str) "linestring (1.0 2.0)" ^?! _Success `shouldBe` LineStringGeometry [PointGeometry [1.0, 2.0]]
+      (\str -> parseString lineStringTaggedText (Wkt.delta str) str) "linestring (1.0 2.0)" ^?! _Success `shouldBe` LineStringGeometry [PointGeometry [1.0, 2.0]]
 
 testPolygons :: Spec
 testPolygons =

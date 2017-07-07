@@ -22,5 +22,12 @@ exteriorAndholes = do
   _ <- char ')'
   pure (e, h)
 
+commandLines :: Parser [PointGeometry]
+commandLines = do
+  _ <- char ','
+  _ <- spaces
+  x <- Lines.lines
+  pure x
+
 emptyPolygon :: PolygonGeometry
 emptyPolygon = PolygonGeometry [] []

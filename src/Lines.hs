@@ -7,19 +7,27 @@ import           Text.Trifecta
 import           Points
 import           Wkt
 
-commandLines :: Parser [PointGeometry]
-commandLines = do
-  _ <- char ','
-  _ <- spaces
-  x <- Lines.lines
-  pure x
-
-lineStringText :: Parser LineStringGeometry
-lineStringText = do
+lineStringTaggedText :: Parser LineStringGeometry
+lineStringTaggedText = do
   _ <- string "linestring" <|> string "LINESTRING"
   _ <- spaces
-  x <- Lines.lines <|> emptySet
+  x <- emptySet <|> Lines.lines
   pure (LineStringGeometry x)
+
+multilineStringTaggedText :: Parser MultiLineStringGeometry
+multilineStringTaggedText = do
+  _ <- string "multilinestring" <|> string "MULTILINESTRING"
+  _ <- spaces
+  x <- emptySet <|> manyLines
+  pure (MultiLineStringGeometry x)
+
+manyLines :: Parser [LineStringGeometry]
+manyLines = do
+  _ <- char '('
+  x <- LineStringGeometry <$> Lines.lines
+  xs <- many (char ',' >> spaces >> LineStringGeometry <$> Lines.lines)
+  _ <-  char ')'
+  pure (x:xs)
 
 lines :: Parser [PointGeometry]
 lines = do
