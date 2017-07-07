@@ -21,8 +21,9 @@ all = do
   let
     single = Point <$> pointTaggedText  <|> LineString <$> lineStringTaggedText <|> Polygon <$> polygonTaggedText
     multi = MultiPoint <$> multipointTaggedText <|> MultiLineString <$> multilineStringTaggedText <|> MultiPolygon <$> multipolygonTaggedText
-  x <- many (single <|> multi)
-  pure x
+  x <- single <|> multi
+  xs <- many (char ',' >> spaces >> (single <|> multi))
+  pure (x:xs)
 
 emptyGeometryCollection :: [Geometry]
 emptyGeometryCollection = []
