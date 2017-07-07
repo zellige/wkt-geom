@@ -11,9 +11,11 @@ import           Wkt
 
 geometryCollectionTaggedText :: Parser [Geometry]
 geometryCollectionTaggedText = do
-  _ <- string "multipoint" <|> string "MULTIPOINT"
+  _ <- string "geometrycollection" <|> string "GEOMETRYCOLLECTION"
   _ <- spaces
+  _ <- char '('
   x <- Wkt.emptySet <|> GeometryCollections.all
+  _ <- char ')'
   pure x
 
 all :: Parser [Geometry]
