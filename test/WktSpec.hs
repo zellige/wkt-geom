@@ -48,8 +48,8 @@ testPolygons :: Spec
 testPolygons =
   describe "simple polygons" $ do
     it "Parse empty" $
-      (\str -> parseString polygonText (Wkt.delta str) str) "polygon empty" ^?! _Success `shouldBe` Polygons.emptyPolygon
+      (\str -> parseString polygonTaggedText (Wkt.delta str) str) "polygon empty" ^?! _Success `shouldBe` Polygons.emptyPolygon
     it "Parse something" $
-      (\str -> parseString polygonText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] []
+      (\str -> parseString polygonTaggedText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] []
     it "Parse something with hole" $
-      (\str -> parseString polygonText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0), (1.1 1.9))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] [[PointGeometry [1.1, 1.9]]]
+      (\str -> parseString polygonTaggedText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0), (1.1 1.9))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] [[PointGeometry [1.1, 1.9]]]
