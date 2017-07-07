@@ -39,6 +39,7 @@ test-suite wkt-geom-test
   other-modules:       WktSpec
   main-is:             Spec.hs
   build-depends:       base
+                     , ansi-wl-pprint
                      , handa-geodata
                      , hspec
                      , lens

@@ -4,7 +4,9 @@ module WktSpec where
 
 import           Control.Lens
 import           Data.Geography.GeoJSON
-import           Test.Hspec             (Spec, describe, it, shouldBe)
+import           Data.Maybe
+import           Test.Hspec             (Spec, describe, it, shouldBe,
+                                         shouldSatisfy)
 import           Text.Trifecta
 
 import           Wkt
@@ -18,16 +20,24 @@ spec = do
 testPoints :: Spec
 testPoints =
   describe "simple points" $ do
+    it "Parse incomplete" $
+      (\str -> parseString pointText (Wkt.delta str) str) "point" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse empty" $
       (\str -> parseString pointText (Wkt.delta str) str) "point empty" ^?! _Success `shouldBe` Wkt.emptyPoint
+    it "Parse not points" $
+      (\str -> parseString pointText (Wkt.delta str) str) "point (abc)" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse something" $
       (\str -> parseString pointText (Wkt.delta str) str) "point (1.0 2.0)" ^?! _Success `shouldBe` PointGeometry [1.0, 2.0]
 
 testLines :: Spec
 testLines =
   describe "simple lines" $ do
+    it "Parse incomplete" $
+      (\str -> parseString lineStringText (Wkt.delta str) str) "linestring" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse empty" $
       (\str -> parseString lineStringText (Wkt.delta str) str) "linestring empty" ^?! _Success `shouldBe` Wkt.emptyLine
+    it "Parse not points" $
+      (\str -> parseString pointText (Wkt.delta str) str) "linestring (abc)" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse something" $
       (\str -> parseString lineStringText (Wkt.delta str) str) "linestring (1.0 2.0)" ^?! _Success `shouldBe` LineStringGeometry [PointGeometry [1.0, 2.0]]
 
@@ -38,3 +48,5 @@ testPolygons =
       (\str -> parseString polygonText (Wkt.delta str) str) "polygon empty" ^?! _Success `shouldBe` Wkt.emptyPolygon
     it "Parse something" $
       (\str -> parseString polygonText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] []
+    it "Parse something with hole" $
+      (\str -> parseString polygonText (Wkt.delta str) str) "polygon ((1.0 2.0, 2.0 3.0), (1.1 1.9))" ^?! _Success `shouldBe` PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] [[PointGeometry [1.1, 1.9]]]
