@@ -40,7 +40,7 @@ testLines =
     it "Parse empty" $
       (\str -> parseString lineStringText (Wkt.delta str) str) "linestring empty" ^?! _Success `shouldBe` Lines.emptyLine
     it "Parse not points" $
-      (\str -> parseString pointText (Wkt.delta str) str) "linestring (abc)" `shouldSatisfy` (isJust . flip (^?) _Failure)
+      (\str -> parseString lineStringText (Wkt.delta str) str) "linestring (abc)" `shouldSatisfy` (isJust . flip (^?) _Failure)
     it "Parse something" $
       (\str -> parseString lineStringText (Wkt.delta str) str) "linestring (1.0 2.0)" ^?! _Success `shouldBe` LineStringGeometry [PointGeometry [1.0, 2.0]]
 

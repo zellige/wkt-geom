@@ -1,4 +1,9 @@
-module Points where
+module Points (
+  emptyPoint
+, point
+, pointTaggedText
+, multipointTaggedText
+) where
 
 import           Control.Applicative
 import           Data.Geography.GeoJSON
