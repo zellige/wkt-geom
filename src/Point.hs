@@ -1,8 +1,8 @@
-module Points (
+module Point (
   emptyPoint
+, justPoints
 , point
-, pointTaggedText
-, multipointTaggedText
+, multiPoint
 ) where
 
 import           Control.Applicative
@@ -12,15 +12,15 @@ import           Text.Trifecta
 
 import           Wkt
 
-pointTaggedText :: Parser PointGeometry
-pointTaggedText = do
+point :: Parser PointGeometry
+point = do
   _ <- string "point" <|> string "POINT"
   _ <- spaces
   x <- (string "empty" <|> string "EMPTY" >> pure emptyPoint) <|> bracketedPoint
   pure x
 
-multipointTaggedText :: Parser MultiPointGeometry
-multipointTaggedText = do
+multiPoint :: Parser MultiPointGeometry
+multiPoint = do
   _ <- string "multipoint" <|> string "MULTIPOINT"
   _ <- spaces
   xl <- emptySet <|> manyPoints
@@ -29,18 +29,18 @@ multipointTaggedText = do
 manyPoints :: Parser [PointGeometry]
 manyPoints = do
   _ <- char '('
-  xl <- justPoints <|> justBracketedPoints
+  xl <- unbracketedPoints <|> bracketedPoints
   _ <- char ')'
   pure xl
 
-justPoints :: Parser [PointGeometry]
-justPoints = do
+unbracketedPoints :: Parser [PointGeometry]
+unbracketedPoints = do
   x <- pointText
   xs <- many (char ',' >> spaces >> pointText)
   pure (x:xs)
 
-justBracketedPoints :: Parser [PointGeometry]
-justBracketedPoints = do
+bracketedPoints :: Parser [PointGeometry]
+bracketedPoints = do
   x <- bracketedPoint
   xs <- many (char ',' >> spaces >> bracketedPoint)
   pure (x:xs)
@@ -53,10 +53,10 @@ bracketedPoint = do
   pure x
 
 pointText :: Parser PointGeometry
-pointText = PointGeometry <$> point
+pointText = PointGeometry <$> justPoints
 
-point :: Parser [Scientific]
-point = do
+justPoints :: Parser [Scientific]
+justPoints = do
   x <- number
   _ <- spaces
   y <- number

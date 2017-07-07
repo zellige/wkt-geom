@@ -1,20 +1,20 @@
-module Polygons where
+module Polygon where
 
 import           Control.Applicative
 import           Data.Geography.GeoJSON
 import           Text.Trifecta
 
-import           Lines
+import           Line
 import           Wkt
 
-polygonTaggedText :: Parser PolygonGeometry
-polygonTaggedText = do
+polygon :: Parser PolygonGeometry
+polygon = do
   _ <- string "polygon" <|> string "POLYGON"
   _ <- spaces
-  polygon
+  justPolygon
 
-multipolygonTaggedText :: Parser MultiPolygonGeometry
-multipolygonTaggedText = do
+multiPolygon :: Parser MultiPolygonGeometry
+multiPolygon = do
   _ <- string "multipolygon" <|> string "MULTIPOLYGON"
   _ <- spaces
   x <- emptySet <|> manyPolygons
@@ -23,20 +23,20 @@ multipolygonTaggedText = do
 manyPolygons :: Parser [PolygonGeometry]
 manyPolygons = do
   _ <- char '('
-  x <- polygon
+  x <- justPolygon
   xs <- many (char ',' >> spaces >> polygon)
   _ <- char ')'
   pure (x:xs)
 
-polygon :: Parser PolygonGeometry
-polygon = do
+justPolygon :: Parser PolygonGeometry
+justPolygon = do
   (e, h) <- Wkt.emptySets <|> exteriorAndholes
   pure (PolygonGeometry e h)
 
 exteriorAndholes :: Parser ([PointGeometry], [[PointGeometry]])
 exteriorAndholes = do
   _ <- char '('
-  e <- Lines.lines
+  e <- Line.lines
   h <- many commandLines
   _ <- char ')'
   pure (e, h)
@@ -45,7 +45,7 @@ commandLines :: Parser [PointGeometry]
 commandLines = do
   _ <- char ','
   _ <- spaces
-  x <- Lines.lines
+  x <- Line.lines
   pure x
 
 emptyPolygon :: PolygonGeometry

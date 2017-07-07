@@ -1,21 +1,21 @@
-module Lines where
+module Line where
 
 import           Control.Applicative
 import           Data.Geography.GeoJSON
 import           Text.Trifecta
 
-import           Points
+import           Point
 import           Wkt
 
-lineStringTaggedText :: Parser LineStringGeometry
-lineStringTaggedText = do
+lineString :: Parser LineStringGeometry
+lineString = do
   _ <- string "linestring" <|> string "LINESTRING"
   _ <- spaces
-  x <- emptySet <|> Lines.lines
+  x <- emptySet <|> Line.lines
   pure (LineStringGeometry x)
 
-multilineStringTaggedText :: Parser MultiLineStringGeometry
-multilineStringTaggedText = do
+multiLineString :: Parser MultiLineStringGeometry
+multiLineString = do
   _ <- string "multilinestring" <|> string "MULTILINESTRING"
   _ <- spaces
   x <- emptySet <|> manyLines
@@ -24,15 +24,15 @@ multilineStringTaggedText = do
 manyLines :: Parser [LineStringGeometry]
 manyLines = do
   _ <- char '('
-  x <- LineStringGeometry <$> Lines.lines
-  xs <- many (char ',' >> spaces >> LineStringGeometry <$> Lines.lines)
+  x <- LineStringGeometry <$> Line.lines
+  xs <- many (char ',' >> spaces >> LineStringGeometry <$> Line.lines)
   _ <-  char ')'
   pure (x:xs)
 
 lines :: Parser [PointGeometry]
 lines = do
   _ <- char '('
-  x <- Points.point
+  x <- justPoints
   xs <- many commandPoint
   _ <- char ')'
   pure (PointGeometry x : xs)
@@ -41,7 +41,7 @@ commandPoint :: Parser PointGeometry
 commandPoint = do
   _ <- char ','
   _ <- spaces
-  x <- point
+  x <- justPoints
   pure (PointGeometry x)
 
 emptyLine :: LineStringGeometry
