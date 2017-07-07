@@ -13,15 +13,15 @@ geometryCollectionTaggedText :: Parser [Geometry]
 geometryCollectionTaggedText = do
   _ <- string "multipoint" <|> string "MULTIPOINT"
   _ <- spaces
-  x <- Wkt.emptySet <|> undefined
+  x <- Wkt.emptySet <|> GeometryCollections.all
   pure x
 
-all :: Parser Geometry
+all :: Parser [Geometry]
 all = do
   let
     single = Point <$> pointTaggedText  <|> LineString <$> lineStringTaggedText <|> Polygon <$> polygonTaggedText
     multi = MultiPoint <$> multipointTaggedText <|> MultiLineString <$> multilineStringTaggedText <|> MultiPolygon <$> multipolygonTaggedText
-  x <- single <|> multi
+  x <- many (single <|> multi)
   pure x
 
 emptyGeometryCollection :: [Geometry]
