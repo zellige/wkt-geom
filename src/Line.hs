@@ -9,14 +9,14 @@ import           Wkt
 
 lineString :: Parser LineStringGeometry
 lineString = do
-  _ <- string "linestring" <|> string "LINESTRING"
+  _ <- string "linestring"
   _ <- spaces
   x <- emptySet <|> Line.lines
   pure (LineStringGeometry x)
 
 multiLineString :: Parser MultiLineStringGeometry
 multiLineString = do
-  _ <- string "multilinestring" <|> string "MULTILINESTRING"
+  _ <- string "multilinestring"
   _ <- spaces
   x <- emptySet <|> manyLines
   pure (MultiLineStringGeometry x)

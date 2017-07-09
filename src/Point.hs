@@ -14,14 +14,14 @@ import           Wkt
 
 point :: Parser PointGeometry
 point = do
-  _ <- string "point" <|> string "POINT"
+  _ <- string "point"
   _ <- spaces
-  x <- (string "empty" <|> string "EMPTY" >> pure emptyPoint) <|> bracketedPoint
+  x <- (string "empty" >> pure emptyPoint) <|> bracketedPoint
   pure x
 
 multiPoint :: Parser MultiPointGeometry
 multiPoint = do
-  _ <- string "multipoint" <|> string "MULTIPOINT"
+  _ <- string "multipoint"
   _ <- spaces
   xl <- emptySet <|> manyPoints
   pure (MultiPointGeometry xl)

@@ -11,7 +11,7 @@ import           Wkt
 
 geometryCollection :: Parser [Geometry]
 geometryCollection = do
-  _ <- string "geometrycollection" <|> string "GEOMETRYCOLLECTION"
+  _ <- string "geometrycollection"
   _ <- spaces
   _ <- char '('
   x <- Wkt.emptySet <|> GeometryCollection.all

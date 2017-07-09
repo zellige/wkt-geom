@@ -9,13 +9,13 @@ import           Wkt
 
 polygon :: Parser PolygonGeometry
 polygon = do
-  _ <- string "polygon" <|> string "POLYGON"
+  _ <- string "polygon"
   _ <- spaces
   justPolygon
 
 multiPolygon :: Parser MultiPolygonGeometry
 multiPolygon = do
-  _ <- string "multipolygon" <|> string "MULTIPOLYGON"
+  _ <- string "multipolygon"
   _ <- spaces
   x <- emptySet <|> manyPolygons
   pure (MultiPolygonGeometry x)
