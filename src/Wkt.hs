@@ -27,7 +27,7 @@ parseString p s = Text.Trifecta.parseString p (Wkt.delta lowerS) lowerS
     lowerS = asciiToLower s
     asciiToLower = fmap f
       where
-        f c | 'A' <= c && c <= 'Z' = chr (ord c + 32)
+        f c | isAsciiUpper c = chr (ord c + 32)
             | otherwise = c
 
 
