@@ -9,6 +9,7 @@ import           Test.Hspec             (Spec, describe, it, shouldBe,
                                          shouldSatisfy)
 import           Text.Trifecta
 
+import           GeometryCollection
 import           Line
 import           Point
 import           Polygon
@@ -22,6 +23,7 @@ spec = do
   testMultiLines
   testPolygons
   testMultiPolygons
+  testGeometryCollection
 
 testPoints :: Spec
 testPoints =
@@ -106,3 +108,13 @@ testMultiPolygons =
       Wkt.parseString Polygon.multiPolygon "multipolygon (((1.0 2.0, 2.0 3.0)))" ^?! _Success `shouldBe` MultiPolygonGeometry [PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] []]
     it "Parse something with hole" $
       Wkt.parseString Polygon.multiPolygon "multipolygon ( ((1.0 2.0, 2.0 3.0), (1.1 1.9) ), ((10 10, 10 20), (60 60, 70 70 ) ))" ^?! _Success `shouldBe` MultiPolygonGeometry [PolygonGeometry [PointGeometry [1.0, 2.0], PointGeometry [2.0, 3.0]] [[PointGeometry [1.1, 1.9]]], PolygonGeometry [PointGeometry [10.0, 10.0], PointGeometry [10.0, 20.0]] [[PointGeometry [60, 60], PointGeometry [70, 70]]]]
+
+testGeometryCollection :: Spec
+testGeometryCollection =
+  describe "simple geometry collections" $ do
+    it "Parse empty" $
+      Wkt.parseString GeometryCollection.geometryCollection "geometrycollection empty" ^?! _Success `shouldBe` GeometryCollection.emptyGeometryCollection
+    it "Parse something" $
+      Wkt.parseString GeometryCollection.geometryCollection "GeometryCollection(POINT (10 10),POINT (30 30),LINESTRING (15 15, 20 20))" ^?! _Success `shouldBe` [Point (PointGeometry [10.0, 10.0]), Point (PointGeometry [30.0, 30.0]), LineString(LineStringGeometry [PointGeometry [15.0, 15.0], PointGeometry [20.0, 20.0]]) ]
+    it "Parse something with spaces" $
+      Wkt.parseString GeometryCollection.geometryCollection "GeometryCollection( POINT(10 10), POINT(30 30), LINESTRING( 15 15, 20 20 ) )" ^?! _Success `shouldBe` [Point (PointGeometry [10.0, 10.0]), Point (PointGeometry [30.0, 30.0]), LineString(LineStringGeometry [PointGeometry [15.0, 15.0], PointGeometry [20.0, 20.0]]) ]

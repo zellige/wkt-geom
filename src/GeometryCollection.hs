@@ -13,9 +13,14 @@ geometryCollection :: Parser [Geometry]
 geometryCollection = do
   _ <- string "geometrycollection"
   _ <- spaces
-  _ <- char '('
-  x <- Wkt.emptySet <|> GeometryCollection.all
-  _ <- char ')'
+  x <- Wkt.emptySet <|> bracketedAll
+  pure x
+
+bracketedAll :: Parser [Geometry]
+bracketedAll = do
+  _ <- char '(' >> spaces
+  x <- GeometryCollection.all
+  _ <- spaces >> char ')'
   pure x
 
 all :: Parser [Geometry]
