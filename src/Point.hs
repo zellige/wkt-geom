@@ -1,5 +1,6 @@
 module Point (
   emptyPoint
+, emptyMultiPoint
 , justPoints
 , point
 , multiPoint
@@ -28,9 +29,9 @@ multiPoint = do
 
 manyPoints :: Parser [PointGeometry]
 manyPoints = do
-  _ <- char '('
+  _ <- char '(' >> spaces
   xl <- unbracketedPoints <|> bracketedPoints
-  _ <- char ')'
+  _ <- spaces >> char ')' >> spaces
   pure xl
 
 unbracketedPoints :: Parser [PointGeometry]
@@ -47,9 +48,9 @@ bracketedPoints = do
 
 bracketedPoint :: Parser PointGeometry
 bracketedPoint = do
-  _ <- char '('
+  _ <- spaces >> char '(' >> spaces
   x <- pointText
-  _ <- char ')'
+  _ <- spaces >> char ')' >> spaces
   pure x
 
 pointText :: Parser PointGeometry
@@ -64,3 +65,6 @@ justPoints = do
 
 emptyPoint :: PointGeometry
 emptyPoint = PointGeometry []
+
+emptyMultiPoint :: MultiPointGeometry
+emptyMultiPoint = MultiPointGeometry []

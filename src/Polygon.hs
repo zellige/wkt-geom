@@ -22,10 +22,10 @@ multiPolygon = do
 
 manyPolygons :: Parser [PolygonGeometry]
 manyPolygons = do
-  _ <- char '('
+  _ <- spaces >> char '('
   x <- justPolygon
-  xs <- many (char ',' >> spaces >> polygon)
-  _ <- char ')'
+  xs <- many (char ',' >> spaces >> justPolygon)
+  _ <- char ')' >> spaces
   pure (x:xs)
 
 justPolygon :: Parser PolygonGeometry
@@ -35,10 +35,10 @@ justPolygon = do
 
 exteriorAndholes :: Parser ([PointGeometry], [[PointGeometry]])
 exteriorAndholes = do
-  _ <- char '('
+  _ <- spaces >> char '('
   e <- Line.lines
   h <- many commandLines
-  _ <- char ')'
+  _ <- char ')' >> spaces
   pure (e, h)
 
 commandLines :: Parser [PointGeometry]
@@ -50,3 +50,6 @@ commandLines = do
 
 emptyPolygon :: PolygonGeometry
 emptyPolygon = PolygonGeometry [] []
+
+emptyMultiPolygon :: MultiPolygonGeometry
+emptyMultiPolygon = MultiPolygonGeometry []

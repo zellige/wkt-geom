@@ -23,18 +23,18 @@ multiLineString = do
 
 manyLines :: Parser [LineStringGeometry]
 manyLines = do
-  _ <- char '('
+  _ <- spaces >> char '('
   x <- LineStringGeometry <$> Line.lines
   xs <- many (char ',' >> spaces >> LineStringGeometry <$> Line.lines)
-  _ <-  char ')'
+  _ <-  char ')' >> spaces
   pure (x:xs)
 
 lines :: Parser [PointGeometry]
 lines = do
-  _ <- char '('
+  _ <- spaces >> char '(' >> spaces
   x <- justPoints
   xs <- many commandPoint
-  _ <- char ')'
+  _ <- char ')' >> spaces
   pure (PointGeometry x : xs)
 
 commandPoint :: Parser PointGeometry
@@ -46,3 +46,6 @@ commandPoint = do
 
 emptyLine :: LineStringGeometry
 emptyLine = LineStringGeometry []
+
+emptyMultiLine :: MultiLineStringGeometry
+emptyMultiLine = MultiLineStringGeometry []
