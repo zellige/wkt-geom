@@ -41,7 +41,11 @@ executable wkt-geom-exe
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       WktSpec
+  other-modules:       GeometryCollectionSpec
+                     , LineSpec
+                     , PointSpec
+                     , PolygonSpec
+                     , WktSpec                   
   main-is:             Spec.hs
   build-depends:       base
                      , ansi-wl-pprint

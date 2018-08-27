@@ -45,3 +45,6 @@ commandPoint = do
   _ <- Trifecta.spaces
   x <- Point.justPoints
   pure x
+
+emptyMultiLine :: Geospatial.GeoMultiLine
+emptyMultiLine = Geospatial.mergeGeoLines []

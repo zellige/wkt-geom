@@ -41,13 +41,13 @@ multiPolygon' = do
 
 linearRing :: Trifecta.Parser (LinearRing.LinearRing [Double])
 linearRing = do
-  _ <- Trifecta.spaces >> Trifecta.char '('
+  _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
   first <- Point.justPoints
   second <- Line.commandPoint
   third <- Line.commandPoint
   rest <- Trifecta.many Line.commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ LinearRing.makeLinearRing first second third rest
+  pure $ LinearRing.makeLinearRing first second third (init rest)
 
 emptyPolygon :: Geospatial.GeoPolygon
 emptyPolygon = Geospatial.GeoPolygon []
