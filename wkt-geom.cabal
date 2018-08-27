@@ -15,16 +15,15 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
-                     , Line
+  exposed-modules:     Line
                      , Point
                      , Polygon
                      , GeometryCollection
                      , Wkt
 
-  build-depends:       base >= 4.7 && < 5
+  build-depends:       base >= 4.8 && < 5
                      , bytestring
-                     , handa-geodata
+                     , geojson
                      , scientific
                      , trifecta 
                      , utf8-string
@@ -42,12 +41,16 @@ executable wkt-geom-exe
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       WktSpec
+  other-modules:       GeometryCollectionSpec
+                     , LineSpec
+                     , PointSpec
+                     , PolygonSpec
+                     , WktSpec                   
   main-is:             Spec.hs
   build-depends:       base
                      , ansi-wl-pprint
                      , bytestring
-                     , handa-geodata
+                     , geojson
                      , hspec
                      , lens
                      , QuickCheck
