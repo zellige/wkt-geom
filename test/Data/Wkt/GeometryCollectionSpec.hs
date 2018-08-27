@@ -1,15 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module GeometryCollectionSpec where
+module Data.Wkt.GeometryCollectionSpec where
 
-import           Control.Lens       ((^?!))
-import qualified Data.Geospatial    as Geospatial
-import qualified Data.LineString    as LineString
-import           Test.Hspec         (Spec, describe, it, shouldBe)
-import qualified Text.Trifecta      as Trifecta
+import           Control.Lens                ((^?!))
+import qualified Data.Geospatial             as Geospatial
+import qualified Data.LineString             as LineString
+import           Test.Hspec                  (Spec, describe, it, shouldBe)
+import qualified Text.Trifecta               as Trifecta
 
-import qualified GeometryCollection
-import qualified Wkt
+import qualified Data.Wkt                    as Wkt
+import qualified Data.Wkt.GeometryCollection as GeometryCollection
 
 spec :: Spec
 spec = do

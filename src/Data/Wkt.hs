@@ -1,4 +1,4 @@
-module Wkt where
+module Data.Wkt where
 
 import           Control.Applicative  ((<|>))
 import qualified Data.ByteString      as ByteString
@@ -22,7 +22,7 @@ parseByteString p bs = Trifecta.parseByteString p (TrifectaDelta.Directed lowerB
             | otherwise = w
 
 parseString :: Trifecta.Parser a -> String -> Trifecta.Result a
-parseString p s = Trifecta.parseString p (Wkt.delta lowerS) lowerS
+parseString p s = Trifecta.parseString p (Data.Wkt.delta lowerS) lowerS
   where
     lowerS = asciiToLower s
     asciiToLower = fmap f

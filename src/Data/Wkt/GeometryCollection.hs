@@ -1,13 +1,13 @@
-module GeometryCollection where
+module Data.Wkt.GeometryCollection where
 
 import           Control.Applicative ((<|>))
 import qualified Data.Geospatial     as Geospatial
 import qualified Text.Trifecta       as Trifecta
 
-import qualified Line
-import qualified Point
-import qualified Polygon
-import qualified Wkt
+import qualified Data.Wkt            as Wkt
+import qualified Data.Wkt.Line       as Line
+import qualified Data.Wkt.Point      as Point
+import qualified Data.Wkt.Polygon    as Polygon
 
 geometryCollection :: Trifecta.Parser [Geospatial.GeospatialGeometry]
 geometryCollection = do
@@ -19,12 +19,12 @@ geometryCollection = do
 bracketedAll :: Trifecta.Parser [Geospatial.GeospatialGeometry]
 bracketedAll = do
   _ <- Trifecta.char '(' >> Trifecta.spaces
-  x <- GeometryCollection.all
+  x <- parseAll
   _ <- Trifecta.spaces >> Trifecta.char ')'
   pure x
 
-all :: Trifecta.Parser [Geospatial.GeospatialGeometry]
-all = do
+parseAll :: Trifecta.Parser [Geospatial.GeospatialGeometry]
+parseAll = do
   let
     single = Geospatial.Point <$> Point.point <|> Geospatial.Line <$> Line.lineString <|> Geospatial.Polygon <$> Polygon.polygon
     multi = Geospatial.MultiPoint <$> Point.multiPoint <|> Geospatial.MultiLine <$> Line.multiLineString <|> Geospatial.MultiPolygon <$> Polygon.multiPolygon

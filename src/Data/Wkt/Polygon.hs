@@ -1,13 +1,13 @@
-module Polygon where
+module Data.Wkt.Polygon where
 
 import           Control.Applicative ((<|>))
 import qualified Data.Geospatial     as Geospatial
 import qualified Data.LinearRing     as LinearRing
 import qualified Text.Trifecta       as Trifecta
 
-import qualified Line
-import qualified Point
-import qualified Wkt
+import qualified Data.Wkt            as Wkt
+import qualified Data.Wkt.Line       as Line
+import qualified Data.Wkt.Point      as Point
 
 polygon :: Trifecta.Parser Geospatial.GeoPolygon
 polygon = do

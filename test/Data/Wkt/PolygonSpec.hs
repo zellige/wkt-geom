@@ -1,15 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module PolygonSpec where
+module Data.Wkt.PolygonSpec where
 
-import           Control.Lens    ((^?!))
-import qualified Data.Geospatial as Geospatial
-import qualified Data.LinearRing as LinearRing
-import           Test.Hspec      (Spec, describe, it, shouldBe)
-import qualified Text.Trifecta   as Trifecta
+import           Control.Lens     ((^?!))
+import qualified Data.Geospatial  as Geospatial
+import qualified Data.LinearRing  as LinearRing
+import           Test.Hspec       (Spec, describe, it, shouldBe)
+import qualified Text.Trifecta    as Trifecta
 
-import qualified Polygon
-import qualified Wkt
+import qualified Data.Wkt         as Wkt
+import qualified Data.Wkt.Polygon as Polygon
 
 spec :: Spec
 spec = do

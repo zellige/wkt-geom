@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LineSpec where
+module Data.Wkt.LineSpec where
 
 import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial
@@ -9,8 +9,8 @@ import qualified Data.Maybe      as Maybe
 import           Test.Hspec      (Spec, describe, it, shouldBe, shouldSatisfy)
 import qualified Text.Trifecta   as Trifecta
 
-import qualified Line
-import qualified Wkt
+import qualified Data.Wkt        as Wkt
+import qualified Data.Wkt.Line   as Line
 
 spec :: Spec
 spec = do

@@ -15,11 +15,11 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Line
-                     , Point
-                     , Polygon
-                     , GeometryCollection
-                     , Wkt
+  exposed-modules:     Data.Wkt.Line
+                     , Data.Wkt.Point
+                     , Data.Wkt.Polygon
+                     , Data.Wkt.GeometryCollection
+                     , Data.Wkt
 
   build-depends:       base >= 4.8 && < 5
                      , bytestring
@@ -41,11 +41,10 @@ executable wkt-geom-exe
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       GeometryCollectionSpec
-                     , LineSpec
-                     , PointSpec
-                     , PolygonSpec
-                     , WktSpec                   
+  other-modules:       Data.Wkt.GeometryCollectionSpec
+                     , Data.Wkt.LineSpec
+                     , Data.Wkt.PointSpec
+                     , Data.Wkt.PolygonSpec            
   main-is:             Spec.hs
   build-depends:       base
                      , ansi-wl-pprint

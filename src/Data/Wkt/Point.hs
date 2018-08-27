@@ -1,17 +1,11 @@
-module Point (
-  emptyPoint
-, emptyMultiPoint
-, justPoints
-, point
-, multiPoint
-) where
+module Data.Wkt.Point where
 
 import           Control.Applicative ((<|>))
 import qualified Data.Geospatial     as Geospatial
 import qualified Data.Scientific     as Scientific
 import qualified Text.Trifecta       as Trifecta
 
-import qualified Wkt
+import qualified Data.Wkt            as Wkt
 
 point :: Trifecta.Parser Geospatial.GeoPoint
 point = do

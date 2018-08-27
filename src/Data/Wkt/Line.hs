@@ -1,18 +1,18 @@
-module Line where
+module Data.Wkt.Line where
 
 import           Control.Applicative ((<|>))
 import qualified Data.Geospatial     as Geospatial
 import qualified Data.LineString     as LineString
 import qualified Text.Trifecta       as Trifecta
 
-import qualified Point
-import qualified Wkt
+import qualified Data.Wkt            as Wkt
+import qualified Data.Wkt.Point      as Point
 
 lineString :: Trifecta.Parser Geospatial.GeoLine
 lineString = do
   _ <- Trifecta.string "linestring"
   _ <- Trifecta.spaces
-  x <- Line.line
+  x <- line
   pure $ Geospatial.GeoLine x
 
 multiLineString :: Trifecta.Parser Geospatial.GeoMultiLine
@@ -25,8 +25,8 @@ multiLineString = do
 manyLines :: Trifecta.Parser [Geospatial.GeoLine]
 manyLines = do
   _ <- Trifecta.spaces >> Trifecta.char '('
-  x <- Geospatial.GeoLine <$> Line.line
-  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> Geospatial.GeoLine <$> Line.line)
+  x <- Geospatial.GeoLine <$> line
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> Geospatial.GeoLine <$> line)
   _ <-  Trifecta.char ')' >> Trifecta.spaces
   pure $ x:xs
 
