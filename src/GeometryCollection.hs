@@ -1,36 +1,36 @@
 module GeometryCollection where
 
-import           Control.Applicative
-import           Data.Geography.GeoJSON
-import           Text.Trifecta
+import           Control.Applicative    ((<|>))
+import qualified Data.Geography.GeoJSON as GeoJSON
+import qualified Text.Trifecta          as Trifecta
 
-import           Line
-import           Point
-import           Polygon
-import           Wkt
+import qualified Line
+import qualified Point
+import qualified Polygon
+import qualified Wkt
 
-geometryCollection :: Parser [Geometry]
+geometryCollection :: Trifecta.Parser [GeoJSON.Geometry]
 geometryCollection = do
-  _ <- string "geometrycollection"
-  _ <- spaces
+  _ <- Trifecta.string "geometrycollection"
+  _ <- Trifecta.spaces
   x <- Wkt.emptySet <|> bracketedAll
   pure x
 
-bracketedAll :: Parser [Geometry]
+bracketedAll :: Trifecta.Parser [GeoJSON.Geometry]
 bracketedAll = do
-  _ <- char '(' >> spaces
+  _ <- Trifecta.char '(' >> Trifecta.spaces
   x <- GeometryCollection.all
-  _ <- spaces >> char ')'
+  _ <- Trifecta.spaces >> Trifecta.char ')'
   pure x
 
-all :: Parser [Geometry]
+all :: Trifecta.Parser [GeoJSON.Geometry]
 all = do
   let
-    single = Point <$> Point.point  <|> LineString <$> Line.lineString <|> Polygon <$> polygon
-    multi = MultiPoint <$> multiPoint <|> MultiLineString <$> multiLineString <|> MultiPolygon <$> multiPolygon
+    single = GeoJSON.Point <$> Point.point  <|> GeoJSON.LineString <$> Line.lineString <|> GeoJSON.Polygon <$> Polygon.polygon
+    multi = GeoJSON.MultiPoint <$> Point.multiPoint <|> GeoJSON.MultiLineString <$> Line.multiLineString <|> GeoJSON.MultiPolygon <$> Polygon.multiPolygon
   x <- single <|> multi
-  xs <- many (char ',' >> spaces >> (single <|> multi))
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> (single <|> multi))
   pure (x:xs)
 
-emptyGeometryCollection :: [Geometry]
+emptyGeometryCollection :: [GeoJSON.Geometry]
 emptyGeometryCollection = []

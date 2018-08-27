@@ -1,55 +1,55 @@
 module Polygon where
 
-import           Control.Applicative
-import           Data.Geography.GeoJSON
-import           Text.Trifecta
+import           Control.Applicative    ((<|>))
+import qualified Data.Geography.GeoJSON as GeoJSON
+import qualified Text.Trifecta          as Trifecta
 
-import           Line
-import           Wkt
+import qualified Line
+import qualified Wkt
 
-polygon :: Parser PolygonGeometry
+polygon :: Trifecta.Parser GeoJSON.PolygonGeometry
 polygon = do
-  _ <- string "polygon"
-  _ <- spaces
+  _ <- Trifecta.string "polygon"
+  _ <- Trifecta.spaces
   justPolygon
 
-multiPolygon :: Parser MultiPolygonGeometry
+multiPolygon :: Trifecta.Parser GeoJSON.MultiPolygonGeometry
 multiPolygon = do
-  _ <- string "multipolygon"
-  _ <- spaces
-  x <- emptySet <|> manyPolygons
-  pure (MultiPolygonGeometry x)
+  _ <- Trifecta.string "multipolygon"
+  _ <- Trifecta.spaces
+  x <- Wkt.emptySet <|> manyPolygons
+  pure (GeoJSON.MultiPolygonGeometry x)
 
-manyPolygons :: Parser [PolygonGeometry]
+manyPolygons :: Trifecta.Parser [GeoJSON.PolygonGeometry]
 manyPolygons = do
-  _ <- spaces >> char '('
+  _ <- Trifecta.spaces >> Trifecta.char '('
   x <- justPolygon
-  xs <- many (char ',' >> spaces >> justPolygon)
-  _ <- char ')' >> spaces
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> justPolygon)
+  _ <- Trifecta.char ')' >> Trifecta.spaces
   pure (x:xs)
 
-justPolygon :: Parser PolygonGeometry
+justPolygon :: Trifecta.Parser GeoJSON.PolygonGeometry
 justPolygon = do
   (e, h) <- Wkt.emptySets <|> exteriorAndholes
-  pure (PolygonGeometry e h)
+  pure (GeoJSON.PolygonGeometry e h)
 
-exteriorAndholes :: Parser ([PointGeometry], [[PointGeometry]])
+exteriorAndholes :: Trifecta.Parser ([GeoJSON.PointGeometry], [[GeoJSON.PointGeometry]])
 exteriorAndholes = do
-  _ <- spaces >> char '('
+  _ <- Trifecta.spaces >> Trifecta.char '('
   e <- Line.lines
-  h <- many commandLines
-  _ <- char ')' >> spaces
+  h <- Trifecta.many commandLines
+  _ <- Trifecta.char ')' >> Trifecta.spaces
   pure (e, h)
 
-commandLines :: Parser [PointGeometry]
+commandLines :: Trifecta.Parser [GeoJSON.PointGeometry]
 commandLines = do
-  _ <- char ','
-  _ <- spaces
+  _ <- Trifecta.char ','
+  _ <- Trifecta.spaces
   x <- Line.lines
   pure x
 
-emptyPolygon :: PolygonGeometry
-emptyPolygon = PolygonGeometry [] []
+emptyPolygon :: GeoJSON.PolygonGeometry
+emptyPolygon = GeoJSON.PolygonGeometry [] []
 
-emptyMultiPolygon :: MultiPolygonGeometry
-emptyMultiPolygon = MultiPolygonGeometry []
+emptyMultiPolygon :: GeoJSON.MultiPolygonGeometry
+emptyMultiPolygon = GeoJSON.MultiPolygonGeometry []

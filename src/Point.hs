@@ -6,65 +6,65 @@ module Point (
 , multiPoint
 ) where
 
-import           Control.Applicative
-import           Data.Geography.GeoJSON
-import           Data.Scientific
-import           Text.Trifecta
+import           Control.Applicative    ((<|>))
+import qualified Data.Geography.GeoJSON as GeoJSON
+import qualified Data.Scientific        as Scientific
+import qualified Text.Trifecta          as Trifecta
 
-import           Wkt
+import qualified Wkt
 
-point :: Parser PointGeometry
+point :: Trifecta.Parser GeoJSON.PointGeometry
 point = do
-  _ <- string "point"
-  _ <- spaces
-  x <- (string "empty" >> pure emptyPoint) <|> bracketedPoint
+  _ <- Trifecta.string "point"
+  _ <- Trifecta.spaces
+  x <- (Trifecta.string "empty" >> pure emptyPoint) <|> bracketedPoint
   pure x
 
-multiPoint :: Parser MultiPointGeometry
+multiPoint :: Trifecta.Parser GeoJSON.MultiPointGeometry
 multiPoint = do
-  _ <- string "multipoint"
-  _ <- spaces
-  xl <- emptySet <|> manyPoints
-  pure (MultiPointGeometry xl)
+  _ <- Trifecta.string "multipoint"
+  _ <- Trifecta.spaces
+  xl <- Wkt.emptySet <|> manyPoints
+  pure (GeoJSON.MultiPointGeometry xl)
 
-manyPoints :: Parser [PointGeometry]
+manyPoints :: Trifecta.Parser [GeoJSON.PointGeometry]
 manyPoints = do
-  _ <- char '(' >> spaces
+  _ <- Trifecta.char '(' >> Trifecta.spaces
   xl <- unbracketedPoints <|> bracketedPoints
-  _ <- spaces >> char ')' >> spaces
+  _ <- Trifecta.spaces >> Trifecta.char ')' >> Trifecta.spaces
   pure xl
 
-unbracketedPoints :: Parser [PointGeometry]
+unbracketedPoints :: Trifecta.Parser [GeoJSON.PointGeometry]
 unbracketedPoints = do
   x <- pointText
-  xs <- many (char ',' >> spaces >> pointText)
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> pointText)
   pure (x:xs)
 
-bracketedPoints :: Parser [PointGeometry]
+bracketedPoints :: Trifecta.Parser [GeoJSON.PointGeometry]
 bracketedPoints = do
   x <- bracketedPoint
-  xs <- many (char ',' >> spaces >> bracketedPoint)
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> bracketedPoint)
   pure (x:xs)
 
-bracketedPoint :: Parser PointGeometry
+bracketedPoint :: Trifecta.Parser GeoJSON.PointGeometry
 bracketedPoint = do
-  _ <- spaces >> char '(' >> spaces
+  _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
   x <- pointText
-  _ <- spaces >> char ')' >> spaces
+  _ <- Trifecta.spaces >> Trifecta.char ')' >> Trifecta.spaces
   pure x
 
-pointText :: Parser PointGeometry
-pointText = PointGeometry <$> justPoints
+pointText :: Trifecta.Parser GeoJSON.PointGeometry
+pointText = GeoJSON.PointGeometry <$> justPoints
 
-justPoints :: Parser [Scientific]
+justPoints :: Trifecta.Parser [Scientific.Scientific]
 justPoints = do
-  x <- number
-  _ <- spaces
-  y <- number
+  x <- Wkt.number
+  _ <- Trifecta.spaces
+  y <- Wkt.number
   pure [x, y]
 
-emptyPoint :: PointGeometry
-emptyPoint = PointGeometry []
+emptyPoint :: GeoJSON.PointGeometry
+emptyPoint = GeoJSON.PointGeometry []
 
-emptyMultiPoint :: MultiPointGeometry
-emptyMultiPoint = MultiPointGeometry []
+emptyMultiPoint :: GeoJSON.MultiPointGeometry
+emptyMultiPoint = GeoJSON.MultiPointGeometry []
