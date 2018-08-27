@@ -1,55 +1,56 @@
 module Polygon where
 
-import           Control.Applicative    ((<|>))
-import qualified Data.Geography.GeoJSON as GeoJSON
-import qualified Text.Trifecta          as Trifecta
+import           Control.Applicative ((<|>))
+import qualified Data.Geospatial     as Geospatial
+import qualified Data.LinearRing     as LinearRing
+import qualified Text.Trifecta       as Trifecta
 
 import qualified Line
+import qualified Point
 import qualified Wkt
 
-polygon :: Trifecta.Parser GeoJSON.PolygonGeometry
+polygon :: Trifecta.Parser Geospatial.GeoPolygon
 polygon = do
   _ <- Trifecta.string "polygon"
   _ <- Trifecta.spaces
-  justPolygon
+  x <- Wkt.emptySet <|> polygon'
+  pure $ Geospatial.GeoPolygon x
 
-multiPolygon :: Trifecta.Parser GeoJSON.MultiPolygonGeometry
+multiPolygon :: Trifecta.Parser Geospatial.GeoMultiPolygon
 multiPolygon = do
   _ <- Trifecta.string "multipolygon"
   _ <- Trifecta.spaces
-  x <- Wkt.emptySet <|> manyPolygons
-  pure (GeoJSON.MultiPolygonGeometry x)
+  xs <- Wkt.emptySet <|> multiPolygon'
+  pure $ Geospatial.mergeGeoPolygons $ map Geospatial.GeoPolygon xs
 
-manyPolygons :: Trifecta.Parser [GeoJSON.PolygonGeometry]
-manyPolygons = do
+polygon' :: Trifecta.Parser [LinearRing.LinearRing [Double]]
+polygon' = do
   _ <- Trifecta.spaces >> Trifecta.char '('
-  x <- justPolygon
-  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> justPolygon)
+  x <- linearRing
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> linearRing)
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure (x:xs)
+  pure $ x:xs
 
-justPolygon :: Trifecta.Parser GeoJSON.PolygonGeometry
-justPolygon = do
-  (e, h) <- Wkt.emptySets <|> exteriorAndholes
-  pure (GeoJSON.PolygonGeometry e h)
-
-exteriorAndholes :: Trifecta.Parser ([GeoJSON.PointGeometry], [[GeoJSON.PointGeometry]])
-exteriorAndholes = do
+multiPolygon' :: Trifecta.Parser [[LinearRing.LinearRing [Double]]]
+multiPolygon' = do
   _ <- Trifecta.spaces >> Trifecta.char '('
-  e <- Line.lines
-  h <- Trifecta.many commandLines
+  x <- polygon'
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> polygon')
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure (e, h)
+  pure $ x:xs
 
-commandLines :: Trifecta.Parser [GeoJSON.PointGeometry]
-commandLines = do
-  _ <- Trifecta.char ','
-  _ <- Trifecta.spaces
-  x <- Line.lines
-  pure x
+linearRing :: Trifecta.Parser (LinearRing.LinearRing [Double])
+linearRing = do
+  _ <- Trifecta.spaces >> Trifecta.char '('
+  first <- Point.justPoints
+  second <- Line.commandPoint
+  third <- Line.commandPoint
+  rest <- Trifecta.many Line.commandPoint
+  _ <- Trifecta.char ')' >> Trifecta.spaces
+  pure $ LinearRing.makeLinearRing first second third rest
 
-emptyPolygon :: GeoJSON.PolygonGeometry
-emptyPolygon = GeoJSON.PolygonGeometry [] []
+emptyPolygon :: Geospatial.GeoPolygon
+emptyPolygon = Geospatial.GeoPolygon []
 
-emptyMultiPolygon :: GeoJSON.MultiPolygonGeometry
-emptyMultiPolygon = GeoJSON.MultiPolygonGeometry []
+emptyMultiPolygon :: Geospatial.GeoMultiPolygon
+emptyMultiPolygon = Geospatial.mergeGeoPolygons []

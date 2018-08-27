@@ -1,51 +1,45 @@
 module Line where
 
-import           Control.Applicative ((<|>))
-import qualified Data.Geospatial     as Geospatial
-import qualified Text.Trifecta       as Trifecta
+import qualified Data.Geospatial as Geospatial
+import qualified Data.LineString as LineString
+import qualified Text.Trifecta   as Trifecta
 
 import qualified Point
-import qualified Wkt
 
-lineString :: Trifecta.Parser GeoJSON.LineStringGeometry
+lineString :: Trifecta.Parser Geospatial.GeoLine
 lineString = do
   _ <- Trifecta.string "linestring"
   _ <- Trifecta.spaces
-  x <- Wkt.emptySet <|> Line.lines
-  pure (GeoJSON.LineStringGeometry x)
+  x <- Line.line
+  pure $ Geospatial.GeoLine x
 
-multiLineString :: Trifecta.Parser GeoJSON.MultiLineStringGeometry
+multiLineString :: Trifecta.Parser Geospatial.GeoMultiLine
 multiLineString = do
   _ <- Trifecta.string "multilinestring"
   _ <- Trifecta.spaces
-  x <- Wkt.emptySet <|> manyLines
-  pure (GeoJSON.MultiLineStringGeometry x)
+  x <- manyLines
+  pure $ Geospatial.mergeGeoLines x
 
-manyLines :: Trifecta.Parser [GeoJSON.LineStringGeometry]
+manyLines :: Trifecta.Parser [Geospatial.GeoLine]
 manyLines = do
   _ <- Trifecta.spaces >> Trifecta.char '('
-  x <- GeoJSON.LineStringGeometry <$> Line.lines
-  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> GeoJSON.LineStringGeometry <$> Line.lines)
+  x <- Geospatial.GeoLine <$> Line.line
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> Geospatial.GeoLine <$> Line.line)
   _ <-  Trifecta.char ')' >> Trifecta.spaces
-  pure (x:xs)
+  pure $ x:xs
 
-lines :: Trifecta.Parser [GeoJSON.PointGeometry]
-lines = do
+line :: Trifecta.Parser (LineString.LineString [Double])
+line = do
   _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
-  x <- Point.justPoints
-  xs <- Trifecta.many commandPoint
+  first <- Point.justPoints
+  second <- commandPoint
+  rest <- Trifecta.many commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure (GeoJSON.PointGeometry x : xs)
+  pure $ LineString.makeLineString first second rest
 
-commandPoint :: Trifecta.Parser GeoJSON.PointGeometry
+commandPoint :: Trifecta.Parser [Double]
 commandPoint = do
   _ <- Trifecta.char ','
   _ <- Trifecta.spaces
   x <- Point.justPoints
-  pure (GeoJSON.PointGeometry x)
-
-emptyLine :: GeoJSON.LineStringGeometry
-emptyLine = GeoJSON.LineStringGeometry []
-
-emptyMultiLine :: GeoJSON.MultiLineStringGeometry
-emptyMultiLine = GeoJSON.MultiLineStringGeometry []
+  pure x
