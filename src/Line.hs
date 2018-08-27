@@ -1,10 +1,12 @@
 module Line where
 
-import qualified Data.Geospatial as Geospatial
-import qualified Data.LineString as LineString
-import qualified Text.Trifecta   as Trifecta
+import           Control.Applicative ((<|>))
+import qualified Data.Geospatial     as Geospatial
+import qualified Data.LineString     as LineString
+import qualified Text.Trifecta       as Trifecta
 
 import qualified Point
+import qualified Wkt
 
 lineString :: Trifecta.Parser Geospatial.GeoLine
 lineString = do
@@ -17,7 +19,7 @@ multiLineString :: Trifecta.Parser Geospatial.GeoMultiLine
 multiLineString = do
   _ <- Trifecta.string "multilinestring"
   _ <- Trifecta.spaces
-  x <- manyLines
+  x <- Wkt.emptySet <|> manyLines
   pure $ Geospatial.mergeGeoLines x
 
 manyLines :: Trifecta.Parser [Geospatial.GeoLine]
