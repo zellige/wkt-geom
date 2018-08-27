@@ -1,8 +1,8 @@
 module Line where
 
-import           Control.Applicative    ((<|>))
-import qualified Data.Geography.GeoJSON as GeoJSON
-import qualified Text.Trifecta          as Trifecta
+import           Control.Applicative ((<|>))
+import qualified Data.Geospatial     as Geospatial
+import qualified Text.Trifecta       as Trifecta
 
 import qualified Point
 import qualified Wkt
