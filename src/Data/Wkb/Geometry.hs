@@ -1,7 +1,7 @@
 module Data.Wkb.Geometry where
 
 import qualified Control.Monad   as Monad
-import qualified Data.Binary.Get as Get
+import qualified Data.Binary.Get as BinaryGet
 import qualified GHC.Int         as Int
 
 import qualified Data.Wkb.Endian as Endian
@@ -20,7 +20,7 @@ data WkbCoordinateType = TwoD | Z | M | ZM  deriving (Show, Eq)
 
 data WkbGeometryTypeWithCoords = WkbGeom WkbGeometryType WkbCoordinateType deriving (Show, Eq)
 
-getGeometryTypeWithCoords :: Endian.EndianType -> Get.Get WkbGeometryTypeWithCoords
+getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryTypeWithCoords
 getGeometryTypeWithCoords endianType = do
   fullGeometryType <- Endian.getFourBytes endianType
   geomType <- return $ intToGeometryType $ fullGeometryType `rem` 1000

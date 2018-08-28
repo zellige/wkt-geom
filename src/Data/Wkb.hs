@@ -1,6 +1,6 @@
 module Data.Wkb where
 
-import qualified Data.Binary.Get      as Get
+import qualified Data.Binary.Get      as BinaryGet
 import qualified Data.ByteString.Lazy as LazyByteString
 import qualified Data.Geospatial      as Geospatial
 
@@ -13,23 +13,20 @@ parseByteString byteString =
   let
     geoSpatialGeometryResult = do
       (unconsumedInput, _, endianType)
-        <- Get.runGetOrFail Endian.getEndianType byteString
-      (unconsumedInput', _, geometryType)
-        <- Get.runGetOrFail (Geometry.getGeometryTypeWithCoords endianType) unconsumedInput
+        <- BinaryGet.runGetOrFail Endian.getEndianType byteString
       (_, _, geoSpatialGeometry)
-        <- Get.runGetOrFail (getGeoSpatialGeometry endianType geometryType) unconsumedInput'
+        <- BinaryGet.runGetOrFail (getGeoSpatialGeometry endianType) unconsumedInput
       pure geoSpatialGeometry
   in
     case geoSpatialGeometryResult of
       Left (_, _, err) -> Left $ "Could not parse wkb: " ++ err
       Right x          -> Right x
 
-getGeoSpatialGeometry :: Endian.EndianType -> Geometry.WkbGeometryTypeWithCoords -> Get.Get Geospatial.GeospatialGeometry
-getGeoSpatialGeometry endianType geometryTypeWithCoords =
-  let
-    (Geometry.WkbGeom geomType coordType) = geometryTypeWithCoords
-  in
-    getter geomType endianType coordType
+getGeoSpatialGeometry :: Endian.EndianType -> BinaryGet.Get Geospatial.GeospatialGeometry
+getGeoSpatialGeometry endianType = do
+  geometryTypeWithCoords <- Geometry.getGeometryTypeWithCoords endianType
+  let (Geometry.WkbGeom geomType coordType) = geometryTypeWithCoords
+  getter geomType endianType coordType
   where
     getter geomType =
       case geomType of
@@ -37,7 +34,7 @@ getGeoSpatialGeometry endianType geometryTypeWithCoords =
         Geometry.WkbPoint              -> Point.getPoint
         Geometry.WkbLineString         -> undefined
         Geometry.WkbPolygon            -> undefined
-        Geometry.WkbMultiPoint         -> undefined
+        Geometry.WkbMultiPoint         -> Point.getMultiPoint
         Geometry.WkbMultiLineString    -> undefined
         Geometry.WkbMultiPolygon       -> undefined
         Geometry.WkbGeometryCollection -> undefined

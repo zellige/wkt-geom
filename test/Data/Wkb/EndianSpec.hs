@@ -2,7 +2,7 @@
 
 module Data.Wkb.EndianSpec where
 
-import qualified Data.Binary.Get         as Get
+import qualified Data.Binary.Get         as BinaryGet
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified GHC.Word                as Word
@@ -18,11 +18,11 @@ testGetEndian :: Spec
 testGetEndian =
   describe "get endian" $ do
     it "Returns BigEndian for 0" $
-      Get.runGet Endian.getEndianType (getByteString 0) `shouldBe` Endian.BigEndian
+      BinaryGet.runGet Endian.getEndianType (getByteString 0) `shouldBe` Endian.BigEndian
     it "Returns LittleEndian for 1" $
-      Get.runGet Endian.getEndianType (getByteString 1) `shouldBe` Endian.LittleEndian
+      BinaryGet.runGet Endian.getEndianType (getByteString 1) `shouldBe` Endian.LittleEndian
     it "Returns fail for other" $
-      Get.runGetOrFail Endian.getEndianType (getByteString 5) `shouldBe` Left ("", 1, "Invalid EndianType")
+      BinaryGet.runGetOrFail Endian.getEndianType (getByteString 5) `shouldBe` Left ("", 1, "Invalid EndianType")
 
 getByteString :: Word.Word8 -> LazyByteString.ByteString
 getByteString int =
