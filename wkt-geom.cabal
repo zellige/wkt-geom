@@ -15,13 +15,15 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Data.Wkt.Line
+  exposed-modules:     Data.Wkb.Endian
+                     , Data.Wkt.Line
                      , Data.Wkt.Point
                      , Data.Wkt.Polygon
                      , Data.Wkt.GeometryCollection
                      , Data.Wkt
 
   build-depends:       base >= 4.8 && < 5
+                     , binary
                      , bytestring
                      , geojson
                      , scientific
@@ -41,7 +43,8 @@ executable wkt-geom-exe
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       Data.Wkt.GeometryCollectionSpec
+  other-modules:       Data.Wkb.EndianSpec
+                     , Data.Wkt.GeometryCollectionSpec
                      , Data.Wkt.LineSpec
                      , Data.Wkt.PointSpec
                      , Data.Wkt.PolygonSpec            
