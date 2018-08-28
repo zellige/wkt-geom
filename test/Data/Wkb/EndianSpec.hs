@@ -12,11 +12,11 @@ import qualified Data.Wkb.Endian         as Endian
 
 spec :: Spec
 spec =
-  testEndianGet
+  testGetEndian
 
-testEndianGet :: Spec
-testEndianGet =
-  describe "endian get" $ do
+testGetEndian :: Spec
+testGetEndian =
+  describe "get endian" $ do
     it "Returns BigEndian for 0" $
       Get.runGet Endian.getEndianType (getByteString 0) `shouldBe` Endian.BigEndian
     it "Returns LittleEndian for 1" $
