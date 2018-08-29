@@ -17,13 +17,13 @@ getPolygon endianType coordType = do
   pure $ Geospatial.Polygon geoPolygon
 
 getMultiPolygon :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getMultiPolygon endianType coordType =
-  Endian.getFourBytes endianType >>= (getPolygons endianType coordType)
-
-getPolygons :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
-getPolygons endianType coordType numberOfPoints = do
-  geoPolygons <- Monad.forM [1..numberOfPoints] (\_ -> getGeoPolygon endianType coordType)
+getMultiPolygon endianType coordType = do
+  geoPolygons <- Endian.getFourBytes endianType >>= getGeoPolygons endianType coordType
   pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
+
+getGeoPolygons :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get [Geospatial.GeoPolygon]
+getGeoPolygons endianType coordType numberOfPoints =
+  Monad.forM [1..numberOfPoints] (\_ -> getGeoPolygon endianType coordType)
 
 getGeoPolygon :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoPolygon
 getGeoPolygon endianType coordType = do

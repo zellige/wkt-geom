@@ -16,13 +16,13 @@ getLine endianType coordType = do
   pure $ Geospatial.Line geoLine
 
 getMultiLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getMultiLine endianType coordType =
-  Endian.getFourBytes endianType >>= (getLines endianType coordType)
-
-getLines :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
-getLines endianType coordType numberOfPoints = do
-  geoLines <- Monad.forM [1..numberOfPoints] (\_ -> getGeoLine endianType coordType)
+getMultiLine endianType coordType = do
+  geoLines <- Endian.getFourBytes endianType >>= (getGeoLines endianType coordType)
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
+
+getGeoLines :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get [Geospatial.GeoLine]
+getGeoLines endianType coordType numberOfPoints =
+  Monad.forM [1..numberOfPoints] (\_ -> getGeoLine endianType coordType)
 
 getGeoLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoLine
 getGeoLine endianType coordType = do
