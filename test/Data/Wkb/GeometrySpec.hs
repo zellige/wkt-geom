@@ -2,7 +2,7 @@
 
 module Data.Wkb.GeometrySpec where
 
-import qualified Data.Binary.Get         as Get
+import qualified Data.Binary.Get         as BinaryGet
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified GHC.Int                 as Int
@@ -25,7 +25,7 @@ testGetGeometryTypeWithCoords (int, expected) =
   it ("Parse " ++ show expected) $
     mapM_ test [Endian.BigEndian, Endian.LittleEndian]
     where test endianType =
-            Get.runGet (Geometry.getGeometryTypeWithCoords endianType) (getByteString endianType int) `shouldBe` expected
+            BinaryGet.runGet (Geometry.getGeometryTypeWithCoords endianType) (getByteString endianType int) `shouldBe` expected
 
 getByteString :: Endian.EndianType -> Int.Int32 -> LazyByteString.ByteString
 getByteString endianType int =

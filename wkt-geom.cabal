@@ -15,8 +15,13 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Data.Wkb.Endian
+  exposed-modules:     Data.Wkb
+                     , Data.Wkb.Endian
                      , Data.Wkb.Geometry
+                     , Data.Wkb.GeometryCollection
+                     , Data.Wkb.Line
+                     , Data.Wkb.Point
+                     , Data.Wkb.Polygon
                      , Data.Wkt.Line
                      , Data.Wkt.Point
                      , Data.Wkt.Polygon
@@ -38,6 +43,10 @@ test-suite wkt-geom-test
   hs-source-dirs:      test
   other-modules:       Data.Wkb.EndianSpec
                      , Data.Wkb.GeometrySpec
+                     , Data.Wkb.GeometryCollectionSpec
+                     , Data.Wkb.LineSpec
+                     , Data.Wkb.PointSpec
+                     , Data.Wkb.PolygonSpec
                      , Data.Wkt.GeometryCollectionSpec
                      , Data.Wkt.LineSpec
                      , Data.Wkt.PointSpec
