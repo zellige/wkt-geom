@@ -11,8 +11,7 @@ point :: Trifecta.Parser Geospatial.GeoPoint
 point = do
   _ <- Trifecta.string "point"
   _ <- Trifecta.spaces
-  x <- (Trifecta.string "empty" >> pure emptyPoint) <|> bracketedPoint
-  pure x
+  (Trifecta.string "empty" >> pure emptyPoint) <|> bracketedPoint
 
 multiPoint :: Trifecta.Parser Geospatial.GeoMultiPoint
 multiPoint = do

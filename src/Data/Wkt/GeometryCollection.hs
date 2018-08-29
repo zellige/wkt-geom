@@ -13,8 +13,7 @@ geometryCollection :: Trifecta.Parser [Geospatial.GeospatialGeometry]
 geometryCollection = do
   _ <- Trifecta.string "geometrycollection"
   _ <- Trifecta.spaces
-  x <- Wkt.emptySet <|> bracketedAll
-  pure x
+  Wkt.emptySet <|> bracketedAll
 
 bracketedAll :: Trifecta.Parser [Geospatial.GeospatialGeometry]
 bracketedAll = do
