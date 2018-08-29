@@ -11,9 +11,9 @@ getEndianType = do
   byte <- Get.getWord8
   case byte of
     0 ->
-      return BigEndian
+      pure BigEndian
     1 ->
-      return LittleEndian
+      pure LittleEndian
     _ ->
       Monad.fail "Invalid EndianType"
 

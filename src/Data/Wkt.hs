@@ -44,5 +44,4 @@ emptySets = do
 number :: Trifecta.Parser Scientific.Scientific
 number = do
     sign <- (Trifecta.char '+' >> pure id) <|> (Trifecta.char '-' >> pure negate) <|> pure id
-    n <- Trifecta.integerOrScientific
-    pure (sign (either fromInteger id n))
+    sign  . either fromInteger id <$> Trifecta.integerOrScientific

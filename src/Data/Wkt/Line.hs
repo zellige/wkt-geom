@@ -12,8 +12,7 @@ lineString :: Trifecta.Parser Geospatial.GeoLine
 lineString = do
   _ <- Trifecta.string "linestring"
   _ <- Trifecta.spaces
-  x <- line
-  pure $ Geospatial.GeoLine x
+  Geospatial.GeoLine <$> line
 
 multiLineString :: Trifecta.Parser Geospatial.GeoMultiLine
 multiLineString = do
@@ -43,8 +42,7 @@ commandPoint :: Trifecta.Parser [Double]
 commandPoint = do
   _ <- Trifecta.char ','
   _ <- Trifecta.spaces
-  x <- Point.justPoints
-  pure x
+  Point.justPoints
 
 emptyMultiLine :: Geospatial.GeoMultiLine
 emptyMultiLine = Geospatial.mergeGeoLines []
