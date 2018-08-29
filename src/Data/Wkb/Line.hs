@@ -8,6 +8,7 @@ import qualified Data.LineString   as LineString
 
 import qualified Data.Wkb.Endian   as Endian
 import qualified Data.Wkb.Geometry as Geometry
+import qualified Data.Wkb.Point    as Point
 
 getLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getLine endianType coordType = do
@@ -27,19 +28,9 @@ getGeoLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get G
 getGeoLine endianType coordType = do
   numberOfPoints <- Endian.getFourBytes endianType
   if numberOfPoints >= 2 then do
-    p1 <- getPoint endianType coordType
-    p2 <- getPoint endianType coordType
-    pts <- getPoints endianType coordType (numberOfPoints - 2)
+    p1 <- Point.getCoordPoint endianType coordType
+    p2 <- Point.getCoordPoint endianType coordType
+    pts <- Point.getCoordPoints endianType coordType (numberOfPoints - 2)
     pure $ Geospatial.GeoLine $ LineString.makeLineString p1 p2 pts
   else
     Monad.fail "Must have at least two points for a line"
-
-getPoints :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get [[Double]]
-getPoints endianType coordType numberOfPoints =
-  Monad.forM [1..numberOfPoints] (\_ -> getPoint endianType coordType)
-
-getPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get [Double]
-getPoint endianType _ = do
-  x <- Endian.getDouble endianType
-  y <- Endian.getDouble endianType
-  pure [x,y]
