@@ -32,7 +32,25 @@ getCoordPoints endianType coordType numberOfPoints =
   Monad.forM [1..numberOfPoints] (\_ -> getCoordPoint endianType coordType)
 
 getCoordPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get [Double]
-getCoordPoint endianType _ = do
-  x <- Endian.getDouble endianType
-  y <- Endian.getDouble endianType
-  pure [x,y]
+getCoordPoint endianType coordType =
+  case coordType of
+    Geometry.TwoD -> do
+      x <- Endian.getDouble endianType
+      y <- Endian.getDouble endianType
+      pure [x,y]
+    Geometry.Z -> do
+      x <- Endian.getDouble endianType
+      y <- Endian.getDouble endianType
+      z <- Endian.getDouble endianType
+      pure [x,y,z]
+    Geometry.M -> do
+      x <- Endian.getDouble endianType
+      y <- Endian.getDouble endianType
+      m <- Endian.getDouble endianType
+      pure [x,y,m]
+    Geometry.ZM -> do
+      x <- Endian.getDouble endianType
+      y <- Endian.getDouble endianType
+      z <- Endian.getDouble endianType
+      m <- Endian.getDouble endianType
+      pure [x,y,z,m]

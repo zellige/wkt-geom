@@ -20,7 +20,7 @@ getGeoSpatialGeometry endianType = do
   where
     getter geomType =
       case geomType of
-        Geometry.WkbGeometry           -> undefined
+        Geometry.WkbGeometry           -> getNoGeometry
         Geometry.WkbPoint              -> Point.getPoint
         Geometry.WkbLineString         -> Line.getLine
         Geometry.WkbPolygon            -> Polygon.getPolygon
@@ -29,11 +29,15 @@ getGeoSpatialGeometry endianType = do
         Geometry.WkbMultiPolygon       -> Polygon.getMultiPolygon
         Geometry.WkbGeometryCollection -> getGeometryCollection
 
-getGeoSpatialGeometries :: Endian.EndianType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
-getGeoSpatialGeometries endianType numberOfGeometries = do
-  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (\_ -> getGeoSpatialGeometry endianType)
-  pure $ Geospatial.Collection geoSpatialGeometries
+getNoGeometry :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
+getNoGeometry _ _ =
+  pure Geospatial.NoGeometry
 
 getGeometryCollection :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getGeometryCollection endianType _ =
   Endian.getFourBytes endianType >>= (getGeoSpatialGeometries endianType)
+
+getGeoSpatialGeometries :: Endian.EndianType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
+getGeoSpatialGeometries endianType numberOfGeometries = do
+  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (\_ -> getGeoSpatialGeometry endianType)
+  pure $ Geospatial.Collection geoSpatialGeometries
