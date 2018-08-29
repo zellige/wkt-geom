@@ -23,10 +23,10 @@ data WkbGeometryTypeWithCoords = WkbGeom WkbGeometryType WkbCoordinateType deriv
 getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryTypeWithCoords
 getGeometryTypeWithCoords endianType = do
   fullGeometryType <- Endian.getFourBytes endianType
-  geomType <- return $ intToGeometryType $ fullGeometryType `rem` 1000
-  coordType <- return $ intToCoordinateType $ fullGeometryType `div` 1000
+  geomType <- pure $ intToGeometryType $ fullGeometryType `rem` 1000
+  coordType <- pure $ intToCoordinateType $ fullGeometryType `div` 1000
   case (geomType, coordType) of
-    (Just g, Just c) -> return $ WkbGeom g c
+    (Just g, Just c) -> pure $ WkbGeom g c
     _                -> Monad.fail "Invalid WkbGeometryTypeWithCoords"
 
 intToGeometryType :: Int.Int32 -> Maybe WkbGeometryType

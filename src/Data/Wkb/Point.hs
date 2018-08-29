@@ -1,6 +1,7 @@
 module Data.Wkb.Point where
 
-import           Control.Monad     (forM, (>>=))
+import           Control.Monad     ((>>=))
+import qualified Control.Monad     as Monad
 import qualified Data.Binary.Get   as BinaryGet
 import qualified Data.Geospatial   as Geospatial
 import qualified Data.Int          as Int
@@ -19,7 +20,7 @@ getMultiPoint endianType coordType =
 
 getPoints :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
 getPoints endianType coordType numberOfPoints = do
-  geoPoints <- forM [1..numberOfPoints] (\_ -> getGeoPoint endianType coordType)
+  geoPoints <- Monad.forM [1..numberOfPoints] (\_ -> getGeoPoint endianType coordType)
   pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
 getGeoPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoPoint

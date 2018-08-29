@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.WkbSpec where
+module Data.Wkb.PointSpec where
 
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
@@ -17,8 +17,8 @@ spec = do
 
 testWkbPointParsing :: Spec
 testWkbPointParsing =
-  describe "Test wkb geom" $
-    it "Parse point wkb" $
+  describe "Test wkb point" $
+    it "Parse valid wkb point" $
       Wkb.parseByteString exampleWkbPoint `shouldBe` (Right $ Geospatial.Point $ Geospatial.GeoPoint [1.0, 2.0])
 
 exampleWkbPoint :: LazyByteString.ByteString
@@ -31,8 +31,8 @@ exampleWkbPoint =
 
 testWkbMultiPointParsing :: Spec
 testWkbMultiPointParsing =
-  describe "Test wkb geom" $
-    it "Parse point wkb" $
+  describe "Test wkb multi point" $
+    it "Parse valid wkb multi point" $
       Wkb.parseByteString exampleWkbMultiPoint `shouldBe` (Right $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints [Geospatial.GeoPoint [1.0, 2.0], Geospatial.GeoPoint [3.0, 4.0]])
 
 exampleWkbMultiPoint :: LazyByteString.ByteString

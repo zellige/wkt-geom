@@ -6,6 +6,7 @@ import qualified Data.Geospatial      as Geospatial
 
 import qualified Data.Wkb.Endian      as Endian
 import qualified Data.Wkb.Geometry    as Geometry
+import qualified Data.Wkb.Line        as Line
 import qualified Data.Wkb.Point       as Point
 
 parseByteString :: LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry
@@ -32,9 +33,9 @@ getGeoSpatialGeometry endianType = do
       case geomType of
         Geometry.WkbGeometry           -> undefined
         Geometry.WkbPoint              -> Point.getPoint
-        Geometry.WkbLineString         -> undefined
+        Geometry.WkbLineString         -> Line.getLine
         Geometry.WkbPolygon            -> undefined
         Geometry.WkbMultiPoint         -> Point.getMultiPoint
-        Geometry.WkbMultiLineString    -> undefined
+        Geometry.WkbMultiLineString    -> Line.getMultiLine
         Geometry.WkbMultiPolygon       -> undefined
         Geometry.WkbGeometryCollection -> undefined

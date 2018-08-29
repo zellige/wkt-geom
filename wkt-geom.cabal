@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Data.Wkb
                      , Data.Wkb.Endian
+                     , Data.Wkb.Line
                      , Data.Wkb.Geometry
                      , Data.Wkt.Line
                      , Data.Wkt.Point
@@ -45,9 +46,10 @@ executable wkt-geom-exe
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       Data.Wkb
-                     , Data.Wkb.EndianSpec
+  other-modules:       Data.Wkb.EndianSpec
                      , Data.Wkb.GeometrySpec
+                     , Data.Wkb.LineSpec
+                     , Data.Wkb.PointSpec
                      , Data.Wkt.GeometryCollectionSpec
                      , Data.Wkt.LineSpec
                      , Data.Wkt.PointSpec
