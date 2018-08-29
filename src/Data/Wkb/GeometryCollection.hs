@@ -35,7 +35,7 @@ getNoGeometry _ _ =
 
 getGeometryCollection :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getGeometryCollection endianType _ =
-  Endian.getFourBytes endianType >>= (getGeoSpatialGeometries endianType)
+  Endian.getFourBytes endianType >>= getGeoSpatialGeometries endianType
 
 getGeoSpatialGeometries :: Endian.EndianType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
 getGeoSpatialGeometries endianType numberOfGeometries = do

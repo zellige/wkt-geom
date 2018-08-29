@@ -17,7 +17,7 @@ getLine endianType coordType = do
 
 getMultiLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiLine endianType coordType = do
-  geoLines <- Endian.getFourBytes endianType >>= (getGeoLines endianType coordType)
+  geoLines <- Endian.getFourBytes endianType >>= getGeoLines endianType coordType
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
 
 getGeoLines :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get [Geospatial.GeoLine]

@@ -15,7 +15,7 @@ getPoint endianType coordType = do
 
 getMultiPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiPoint endianType coordType = do
-  geoPoints <- Endian.getFourBytes endianType >>= (getGeoPoints endianType coordType)
+  geoPoints <- Endian.getFourBytes endianType >>= getGeoPoints endianType coordType
   pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
 getGeoPoints :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get [Geospatial.GeoPoint]
