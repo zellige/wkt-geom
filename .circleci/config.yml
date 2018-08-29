@@ -13,6 +13,10 @@ jobs:
           keys:
             - stack{{checksum "wkt-geom.cabal"}}{{checksum "stack.yaml"}}
       - run:
+          name: Install deps
+          command: |
+            sudo apt-get install -y libgmp-dev                        
+      - run:
           name: install
           command: |
             rm -rf ~/wkt-geom/.stack-work/downloaded
