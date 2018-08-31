@@ -3,7 +3,6 @@ module Data.Wkb.Line where
 import qualified Control.Monad     as Monad
 import qualified Data.Binary.Get   as BinaryGet
 import qualified Data.Geospatial   as Geospatial
-import qualified Data.Int          as Int
 import qualified Data.LineString   as LineString
 
 import qualified Data.Wkb.Endian   as Endian
@@ -17,12 +16,13 @@ getLine endianType coordType = do
 
 getMultiLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiLine endianType coordType = do
-  geoLines <- Endian.getFourBytes endianType >>= getGeoLines endianType coordType
+  geoLines <- getGeoLines endianType coordType
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
 
-getGeoLines :: Endian.EndianType -> Geometry.WkbCoordinateType -> Int.Int32 -> BinaryGet.Get [Geospatial.GeoLine]
-getGeoLines endianType coordType numberOfPoints =
-  Monad.forM [1..numberOfPoints] (\_ -> getGeoLine endianType coordType)
+getGeoLines :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get [Geospatial.GeoLine]
+getGeoLines endianType coordType = do
+  numberOfLines <- Endian.getFourBytes endianType
+  Monad.forM [1..numberOfLines] (\_ -> getGeoLine endianType coordType)
 
 getGeoLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoLine
 getGeoLine endianType coordType = do

@@ -28,13 +28,15 @@ exampleWkbPolygon =
     ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 3
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.int32BE 3
+    <> ByteStringBuilder.int32BE 4
     <> ByteStringBuilder.doubleBE 1.0
     <> ByteStringBuilder.doubleBE 2.0
     <> ByteStringBuilder.doubleBE 3.0
     <> ByteStringBuilder.doubleBE 4.0
     <> ByteStringBuilder.doubleBE 5.0
     <> ByteStringBuilder.doubleBE 6.0
+    <> ByteStringBuilder.doubleBE 1.0
+    <> ByteStringBuilder.doubleBE 2.0
 
 testWkbMultiPolygonParsing :: Spec
 testWkbMultiPolygonParsing =
@@ -51,18 +53,22 @@ exampleWkbMultiPolygon =
     <> ByteStringBuilder.int32BE 6
     <> ByteStringBuilder.int32BE 2
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.int32BE 3
+    <> ByteStringBuilder.int32BE 4
     <> ByteStringBuilder.doubleBE 1.0
     <> ByteStringBuilder.doubleBE 2.0
     <> ByteStringBuilder.doubleBE 3.0
     <> ByteStringBuilder.doubleBE 4.0
     <> ByteStringBuilder.doubleBE 5.0
     <> ByteStringBuilder.doubleBE 6.0
+    <> ByteStringBuilder.doubleBE 1.0
+    <> ByteStringBuilder.doubleBE 2.0
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.int32BE 3
+    <> ByteStringBuilder.int32BE 4
     <> ByteStringBuilder.doubleBE 1.5
     <> ByteStringBuilder.doubleBE 2.5
     <> ByteStringBuilder.doubleBE 3.5
     <> ByteStringBuilder.doubleBE 4.5
     <> ByteStringBuilder.doubleBE 5.5
     <> ByteStringBuilder.doubleBE 6.5
+    <> ByteStringBuilder.doubleBE 1.5
+    <> ByteStringBuilder.doubleBE 2.5

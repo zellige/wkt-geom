@@ -27,7 +27,8 @@ getGeometryTypeWithCoords endianType = do
       coordType = intToCoordinateType $ fullGeometryType `div` 1000
   case (geomType, coordType) of
     (Just g, Just c) -> pure $ WkbGeom g c
-    _                -> Monad.fail "Invalid WkbGeometryTypeWithCoords"
+    _                ->
+      Monad.fail $ "Invalid WkbGeometryTypeWithCoords: " ++ show fullGeometryType
 
 intToGeometryType :: Int.Int32 -> Maybe WkbGeometryType
 intToGeometryType int =

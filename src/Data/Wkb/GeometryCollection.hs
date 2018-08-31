@@ -1,10 +1,8 @@
 module Data.Wkb.GeometryCollection where
 
-import           Control.Monad     ((>>=))
 import qualified Control.Monad     as Monad
 import qualified Data.Binary.Get   as BinaryGet
 import qualified Data.Geospatial   as Geospatial
-import qualified Data.Int          as Int
 
 import qualified Data.Wkb.Endian   as Endian
 import qualified Data.Wkb.Geometry as Geometry
@@ -34,10 +32,7 @@ getNoGeometry _ _ =
   pure Geospatial.NoGeometry
 
 getGeometryCollection :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getGeometryCollection endianType _ =
-  Endian.getFourBytes endianType >>= getGeoSpatialGeometries endianType
-
-getGeoSpatialGeometries :: Endian.EndianType -> Int.Int32 -> BinaryGet.Get Geospatial.GeospatialGeometry
-getGeoSpatialGeometries endianType numberOfGeometries = do
+getGeometryCollection endianType _ = do
+  numberOfGeometries <- Endian.getFourBytes endianType
   geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (\_ -> getGeoSpatialGeometry endianType)
   pure $ Geospatial.Collection geoSpatialGeometries
