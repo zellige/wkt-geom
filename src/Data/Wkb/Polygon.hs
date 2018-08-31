@@ -42,6 +42,13 @@ getLinearRing endianType coordType = do
     p2 <- Point.getCoordPoint endianType coordType
     p3 <- Point.getCoordPoint endianType coordType
     pts <- Point.getCoordPoints endianType coordType (numberOfPoints - 3)
-    pure $ LinearRing.makeLinearRing p1 p2 p3 (init pts)
+    if last pts == p1 then
+      pure $ LinearRing.makeLinearRing p1 p2 p3 (init pts)
+    else
+      Monad.fail $
+        "First and last points of linear ring are different: first="
+         ++ show p1 ++ " last=" ++ show (last pts)
   else
-    Monad.fail "Must have at least four points for a linear ring"
+    Monad.fail $
+      "Must have at least four points for a linear ring: "
+       ++ show numberOfPoints
