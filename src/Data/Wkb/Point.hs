@@ -17,7 +17,7 @@ getPoint endianType coordType = do
 getMultiPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiPoint endianType _ = do
   numberOfPoints <- Endian.getFourBytes endianType
-  geoPoints <- Monad.forM [1..numberOfPoints] (const $ Feature.getFeature getGeoPoint)
+  geoPoints <- Monad.forM [1..numberOfPoints] (const $ Feature.getEnclosedFeature getGeoPoint Geometry.WkbPoint)
   pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
 getGeoPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoPoint
