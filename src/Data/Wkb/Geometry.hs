@@ -2,7 +2,7 @@ module Data.Wkb.Geometry where
 
 import qualified Control.Monad   as Monad
 import qualified Data.Binary.Get as BinaryGet
-import qualified GHC.Int         as Int
+import qualified Data.Word       as Word
 
 import qualified Data.Wkb.Endian as Endian
 
@@ -30,7 +30,7 @@ getGeometryTypeWithCoords endianType = do
     _                ->
       Monad.fail $ "Invalid WkbGeometryTypeWithCoords: " ++ show fullGeometryType
 
-intToGeometryType :: Int.Int32 -> Maybe WkbGeometryType
+intToGeometryType :: Word.Word32 -> Maybe WkbGeometryType
 intToGeometryType int =
   case int of
     0 -> Just WkbGeometry
@@ -43,7 +43,7 @@ intToGeometryType int =
     7 -> Just WkbGeometryCollection
     _ -> Nothing
 
-intToCoordinateType :: Int.Int32 -> Maybe WkbCoordinateType
+intToCoordinateType :: Word.Word32 -> Maybe WkbCoordinateType
 intToCoordinateType int =
   case int of
     0 -> Just TwoD

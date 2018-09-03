@@ -2,7 +2,7 @@ module Data.Wkb.Endian where
 
 import qualified Control.Monad   as Monad
 import qualified Data.Binary.Get as BinaryGet
-import qualified Data.Int        as Int
+import qualified Data.Word       as Word
 
 data EndianType = LittleEndian | BigEndian deriving (Show, Eq)
 
@@ -17,13 +17,13 @@ getEndianType = do
     _ ->
       Monad.fail "Invalid EndianType"
 
-getFourBytes :: EndianType -> BinaryGet.Get Int.Int32
+getFourBytes :: EndianType -> BinaryGet.Get Word.Word32
 getFourBytes endianType =
   case endianType of
     LittleEndian ->
-      BinaryGet.getInt32le
+      BinaryGet.getWord32le
     BigEndian ->
-      BinaryGet.getInt32be
+      BinaryGet.getWord32be
 
 getDouble :: EndianType -> BinaryGet.Get Double
 getDouble endianType =

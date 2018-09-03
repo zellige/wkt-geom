@@ -5,7 +5,7 @@ module Data.Wkb.GeometrySpec where
 import qualified Data.Binary.Get         as BinaryGet
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
-import qualified GHC.Int                 as Int
+import qualified Data.Word               as Word
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
 import qualified Data.Wkb.Endian         as Endian
@@ -20,23 +20,23 @@ testValidGetGeometryTypeWithCoords =
   describe "get geometry type with coords type for valid data" $
     mapM_ testGetGeometryTypeWithCoords expectations
 
-testGetGeometryTypeWithCoords :: (Int.Int32, Geometry.WkbGeometryTypeWithCoords) -> Spec
+testGetGeometryTypeWithCoords :: (Word.Word32, Geometry.WkbGeometryTypeWithCoords) -> Spec
 testGetGeometryTypeWithCoords (int, expected) =
   it ("Parse " ++ show expected) $
     mapM_ test [Endian.BigEndian, Endian.LittleEndian]
     where test endianType =
             BinaryGet.runGet (Geometry.getGeometryTypeWithCoords endianType) (getByteString endianType int) `shouldBe` expected
 
-getByteString :: Endian.EndianType -> Int.Int32 -> LazyByteString.ByteString
+getByteString :: Endian.EndianType -> Word.Word32 -> LazyByteString.ByteString
 getByteString endianType int =
   ByteStringBuilder.toLazyByteString $
     case endianType of
       Endian.LittleEndian ->
-        ByteStringBuilder.int32LE int
+        ByteStringBuilder.word32LE int
       Endian.BigEndian ->
-        ByteStringBuilder.int32BE int
+        ByteStringBuilder.word32BE int
 
-expectations :: [(Int.Int32, Geometry.WkbGeometryTypeWithCoords)]
+expectations :: [(Word.Word32, Geometry.WkbGeometryTypeWithCoords)]
 expectations =
   [ (0000, Geometry.WkbGeom Geometry.WkbGeometry Geometry.TwoD)
   , (0001, Geometry.WkbGeom Geometry.WkbPoint Geometry.TwoD)
