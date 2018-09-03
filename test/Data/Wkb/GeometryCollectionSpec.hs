@@ -31,12 +31,15 @@ exampleWkbGeometryCollection =
     ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 7
     <> ByteStringBuilder.int32BE 3
+    <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 1
     <> ByteStringBuilder.doubleBE 10
     <> ByteStringBuilder.doubleBE 10
+    <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 1
     <> ByteStringBuilder.doubleBE 30
     <> ByteStringBuilder.doubleBE 30
+    <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 2
     <> ByteStringBuilder.int32BE 3
     <> ByteStringBuilder.doubleBE 15

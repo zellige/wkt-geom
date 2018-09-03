@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Data.Wkb
                      , Data.Wkb.Endian
+                     , Data.Wkb.Feature
                      , Data.Wkb.Geometry
                      , Data.Wkb.GeometryCollection
                      , Data.Wkb.Line

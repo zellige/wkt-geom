@@ -6,6 +6,7 @@ import qualified Data.Geospatial   as Geospatial
 import qualified Data.LinearRing   as LinearRing
 
 import qualified Data.Wkb.Endian   as Endian
+import qualified Data.Wkb.Feature  as Feature
 import qualified Data.Wkb.Geometry as Geometry
 import qualified Data.Wkb.Point    as Point
 
@@ -15,14 +16,10 @@ getPolygon endianType coordType = do
   pure $ Geospatial.Polygon geoPolygon
 
 getMultiPolygon :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getMultiPolygon endianType coordType = do
-  geoPolygons <- getGeoPolygons endianType coordType
-  pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
-
-getGeoPolygons :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get [Geospatial.GeoPolygon]
-getGeoPolygons endianType coordType = do
+getMultiPolygon endianType _ = do
   numberOfPolygons <- Endian.getFourBytes endianType
-  Monad.forM [1..numberOfPolygons] (\_ -> getGeoPolygon endianType coordType)
+  geoPolygons <- Monad.forM [1..numberOfPolygons] (const $ Feature.getFeature getGeoPolygon)
+  pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
 
 getGeoPolygon :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoPolygon
 getGeoPolygon endianType coordType = do

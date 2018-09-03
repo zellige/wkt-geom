@@ -70,6 +70,8 @@ exampleWkbMultiPolygon =
     ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 6
     <> ByteStringBuilder.int32BE 2
+    <> ByteStringBuilder.word8 0
+    <> ByteStringBuilder.int32BE 3
     <> ByteStringBuilder.int32BE 1
     <> ByteStringBuilder.int32BE 4
     <> ByteStringBuilder.doubleBE 1.0
@@ -80,6 +82,8 @@ exampleWkbMultiPolygon =
     <> ByteStringBuilder.doubleBE 6.0
     <> ByteStringBuilder.doubleBE 1.0
     <> ByteStringBuilder.doubleBE 2.0
+    <> ByteStringBuilder.word8 0
+    <> ByteStringBuilder.int32BE 3
     <> ByteStringBuilder.int32BE 1
     <> ByteStringBuilder.int32BE 4
     <> ByteStringBuilder.doubleBE 1.5

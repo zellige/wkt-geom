@@ -10,8 +10,9 @@ import qualified Data.Wkb.Line     as Line
 import qualified Data.Wkb.Point    as Point
 import qualified Data.Wkb.Polygon  as Polygon
 
-getGeoSpatialGeometry :: Endian.EndianType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getGeoSpatialGeometry endianType = do
+getGeoSpatialGeometry :: BinaryGet.Get Geospatial.GeospatialGeometry
+getGeoSpatialGeometry = do
+  endianType <- Endian.getEndianType
   geometryTypeWithCoords <- Geometry.getGeometryTypeWithCoords endianType
   let (Geometry.WkbGeom geomType coordType) = geometryTypeWithCoords
   getter geomType endianType coordType
@@ -34,5 +35,5 @@ getNoGeometry _ _ =
 getGeometryCollection :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getGeometryCollection endianType _ = do
   numberOfGeometries <- Endian.getFourBytes endianType
-  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (\_ -> getGeoSpatialGeometry endianType)
+  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (const getGeoSpatialGeometry)
   pure $ Geospatial.Collection geoSpatialGeometries

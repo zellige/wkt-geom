@@ -6,6 +6,7 @@ import qualified Data.Geospatial   as Geospatial
 import qualified Data.Int          as Int
 
 import qualified Data.Wkb.Endian   as Endian
+import qualified Data.Wkb.Feature  as Feature
 import qualified Data.Wkb.Geometry as Geometry
 
 getPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
@@ -14,14 +15,10 @@ getPoint endianType coordType = do
   pure $ Geospatial.Point geoPoint
 
 getMultiPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getMultiPoint endianType coordType = do
-  geoPoints <- getGeoPoints endianType coordType
-  pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
-
-getGeoPoints :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get [Geospatial.GeoPoint]
-getGeoPoints endianType coordType = do
+getMultiPoint endianType _ = do
   numberOfPoints <- Endian.getFourBytes endianType
-  Monad.forM [1..numberOfPoints] (\_ -> getGeoPoint endianType coordType)
+  geoPoints <- Monad.forM [1..numberOfPoints] (const $ Feature.getFeature getGeoPoint)
+  pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
 getGeoPoint :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoPoint
 getGeoPoint endianType coordType = do

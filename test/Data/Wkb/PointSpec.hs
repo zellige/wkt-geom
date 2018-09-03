@@ -41,7 +41,11 @@ exampleWkbMultiPoint =
     ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 4
     <> ByteStringBuilder.int32BE 2
+    <> ByteStringBuilder.word8 0
+    <> ByteStringBuilder.int32BE 1
     <> ByteStringBuilder.doubleBE 1.0
     <> ByteStringBuilder.doubleBE 2.0
+    <> ByteStringBuilder.word8 0
+    <> ByteStringBuilder.int32BE 1
     <> ByteStringBuilder.doubleBE 3.0
     <> ByteStringBuilder.doubleBE 4.0
