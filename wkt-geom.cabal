@@ -19,9 +19,9 @@ library
                      , Data.Ewkb.Geometry
                      , Data.Wkb
                      , Data.Wkb.Endian
-                     , Data.Wkb.Feature
                      , Data.Wkb.Geometry
                      , Data.Wkb.GeometryCollection
+                     , Data.Wkb.Geospatial
                      , Data.Wkb.Line
                      , Data.Wkb.Point
                      , Data.Wkb.Polygon

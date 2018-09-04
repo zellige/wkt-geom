@@ -6,34 +6,25 @@ import qualified Data.Geospatial   as Geospatial
 
 import qualified Data.Wkb.Endian   as Endian
 import qualified Data.Wkb.Geometry as Geometry
-import qualified Data.Wkb.Line     as Line
-import qualified Data.Wkb.Point    as Point
-import qualified Data.Wkb.Polygon  as Polygon
 
-getGeoSpatialGeometry :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords) -> BinaryGet.Get Geospatial.GeospatialGeometry
-getGeoSpatialGeometry getWkbGeom = do
+getGeometryCollection :: BinaryGet.Get Geospatial.GeospatialGeometry
+                          -> Endian.EndianType
+                          -> Geometry.CoordinateType
+                          -> BinaryGet.Get Geospatial.GeospatialGeometry
+getGeometryCollection getGeospatialGeometry endianType _ = do
+  numberOfGeometries <- Endian.getFourBytes endianType
+  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (const getGeospatialGeometry)
+  pure $ Geospatial.Collection geoSpatialGeometries
+
+getEnclosedFeature :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType)
+                      -> Geometry.GeometryType
+                      -> (Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get feature)
+                      -> BinaryGet.Get feature
+getEnclosedFeature getWkbGeom expectedGeometryType getFeature = do
   endianType <- Endian.getEndianType
   geometryTypeWithCoords <- getWkbGeom endianType
-  let (Geometry.WkbGeom geomType coordType) = geometryTypeWithCoords
-  getter geomType endianType coordType
-  where
-    getter geomType =
-      case geomType of
-        Geometry.WkbGeometry           -> getNoGeometry
-        Geometry.WkbPoint              -> Point.getPoint
-        Geometry.WkbLineString         -> Line.getLine
-        Geometry.WkbPolygon            -> Polygon.getPolygon
-        Geometry.WkbMultiPoint         -> Point.getMultiPoint getWkbGeom
-        Geometry.WkbMultiLineString    -> Line.getMultiLine getWkbGeom
-        Geometry.WkbMultiPolygon       -> Polygon.getMultiPolygon getWkbGeom
-        Geometry.WkbGeometryCollection -> getGeometryCollection getWkbGeom
-
-getNoGeometry :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getNoGeometry _ _ =
-  pure Geospatial.NoGeometry
-
-getGeometryCollection :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords) -> Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getGeometryCollection getWkbGeom endianType _ = do
-  numberOfGeometries <- Endian.getFourBytes endianType
-  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (const $ getGeoSpatialGeometry getWkbGeom)
-  pure $ Geospatial.Collection geoSpatialGeometries
+  let (Geometry.WkbGeom geoType coordType) = geometryTypeWithCoords
+  if geoType == expectedGeometryType then
+    getFeature endianType coordType
+  else
+    Monad.fail "Wrong geometry type of enclosed feature"

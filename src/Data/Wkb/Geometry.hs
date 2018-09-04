@@ -6,21 +6,21 @@ import qualified Data.Word       as Word
 
 import qualified Data.Wkb.Endian as Endian
 
-data WkbGeometryType
-  = WkbGeometry
-  | WkbPoint
-  | WkbLineString
-  | WkbPolygon
-  | WkbMultiPoint
-  | WkbMultiLineString
-  | WkbMultiPolygon
-  | WkbGeometryCollection deriving (Show, Eq)
+data GeometryType
+  = Geometry
+  | Point
+  | LineString
+  | Polygon
+  | MultiPoint
+  | MultiLineString
+  | MultiPolygon
+  | GeometryCollection deriving (Show, Eq)
 
-data WkbCoordinateType = TwoD | Z | M | ZM  deriving (Show, Eq)
+data CoordinateType = TwoD | Z | M | ZM  deriving (Show, Eq)
 
-data WkbGeometryTypeWithCoords = WkbGeom WkbGeometryType WkbCoordinateType deriving (Show, Eq)
+data WkbGeometryType = WkbGeom GeometryType CoordinateType deriving (Show, Eq)
 
-getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryTypeWithCoords
+getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
 getGeometryTypeWithCoords endianType = do
   fullGeometryType <- Endian.getFourBytes endianType
   let geomType = intToGeometryType $ fullGeometryType `rem` 1000
@@ -28,22 +28,22 @@ getGeometryTypeWithCoords endianType = do
   case (geomType, coordType) of
     (Just g, Just c) -> pure $ WkbGeom g c
     _                ->
-      Monad.fail $ "Invalid WkbGeometryTypeWithCoords: " ++ show fullGeometryType
+      Monad.fail $ "Invalid WkbGeometryType: " ++ show fullGeometryType
 
-intToGeometryType :: Word.Word32 -> Maybe WkbGeometryType
+intToGeometryType :: Word.Word32 -> Maybe GeometryType
 intToGeometryType int =
   case int of
-    0 -> Just WkbGeometry
-    1 -> Just WkbPoint
-    2 -> Just WkbLineString
-    3 -> Just WkbPolygon
-    4 -> Just WkbMultiPoint
-    5 -> Just WkbMultiLineString
-    6 -> Just WkbMultiPolygon
-    7 -> Just WkbGeometryCollection
+    0 -> Just Geometry
+    1 -> Just Point
+    2 -> Just LineString
+    3 -> Just Polygon
+    4 -> Just MultiPoint
+    5 -> Just MultiLineString
+    6 -> Just MultiPolygon
+    7 -> Just GeometryCollection
     _ -> Nothing
 
-intToCoordinateType :: Word.Word32 -> Maybe WkbCoordinateType
+intToCoordinateType :: Word.Word32 -> Maybe CoordinateType
 intToCoordinateType int =
   case int of
     0 -> Just TwoD

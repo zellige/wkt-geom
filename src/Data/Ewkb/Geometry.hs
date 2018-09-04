@@ -8,9 +8,9 @@ import qualified Data.Word         as Word
 import qualified Data.Wkb.Endian   as Endian
 import qualified Data.Wkb.Geometry as Geometry
 
-data EwkbSrid = Srid Word.Word32 | NoSrid deriving (Show, Eq)
+data SridType = Srid Word.Word32 | NoSrid deriving (Show, Eq)
 
-data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryTypeWithCoords EwkbSrid deriving (Show, Eq)
+data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryType SridType deriving (Show, Eq)
 
 getEwkbGeometryType :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
 getEwkbGeometryType endianType = do
@@ -19,13 +19,13 @@ getEwkbGeometryType endianType = do
   wkbGeometryType <- rawtoWkbGeometryType rawGeometryType
   pure $ EwkbGeom wkbGeometryType ewkbSrid
 
-getWkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords
+getWkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType
 getWkbGeometryType endianType = do
   rawGeometryType <- Endian.getFourBytes endianType
   _ <- getEwkbSrid endianType rawGeometryType
   rawtoWkbGeometryType rawGeometryType
 
-rawtoWkbGeometryType :: Word.Word32 -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords
+rawtoWkbGeometryType :: Word.Word32 -> BinaryGet.Get Geometry.WkbGeometryType
 rawtoWkbGeometryType rawGeometryType = do
   let geomType = intToGeometryType rawGeometryType
       coordType = intToCoordinateType rawGeometryType
@@ -33,7 +33,7 @@ rawtoWkbGeometryType rawGeometryType = do
     Just g -> pure $ Geometry.WkbGeom g coordType
     _      -> Monad.fail $ "Invalid EwkbGeometry: " ++ show rawGeometryType
 
-getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get EwkbSrid
+getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get SridType
 getEwkbSrid endianType int =
   if int .&. 0x20000000 /= 0 then do
     srid <- Endian.getFourBytes endianType
@@ -41,20 +41,20 @@ getEwkbSrid endianType int =
   else
     pure NoSrid
 
-intToGeometryType :: Word.Word32 -> Maybe Geometry.WkbGeometryType
+intToGeometryType :: Word.Word32 -> Maybe Geometry.GeometryType
 intToGeometryType int =
   case int .&. 0x0fffffff of
-    0 -> Just Geometry.WkbGeometry
-    1 -> Just Geometry.WkbPoint
-    2 -> Just Geometry.WkbLineString
-    3 -> Just Geometry.WkbPolygon
-    4 -> Just Geometry.WkbMultiPoint
-    5 -> Just Geometry.WkbMultiLineString
-    6 -> Just Geometry.WkbMultiPolygon
-    7 -> Just Geometry.WkbGeometryCollection
+    0 -> Just Geometry.Geometry
+    1 -> Just Geometry.Point
+    2 -> Just Geometry.LineString
+    3 -> Just Geometry.Polygon
+    4 -> Just Geometry.MultiPoint
+    5 -> Just Geometry.MultiLineString
+    6 -> Just Geometry.MultiPolygon
+    7 -> Just Geometry.GeometryCollection
     _ -> Nothing
 
-intToCoordinateType :: Word.Word32 -> Geometry.WkbCoordinateType
+intToCoordinateType :: Word.Word32 -> Geometry.CoordinateType
 intToCoordinateType int =
   case (hasZ int, hasM int) of
     (False, False) -> Geometry.TwoD
