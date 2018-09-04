@@ -10,18 +10,27 @@ import qualified Data.Wkb.Geometry as Geometry
 
 data EwkbSrid = Srid Word.Word32 | NoSrid deriving (Show, Eq)
 
-data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryType Geometry.WkbCoordinateType EwkbSrid deriving (Show, Eq)
+data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryTypeWithCoords EwkbSrid deriving (Show, Eq)
 
 getEwkbGeometryType :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
 getEwkbGeometryType endianType = do
-  fullGeometryType <- Endian.getFourBytes endianType
-  ewkbSrid <- getEwkbSrid endianType fullGeometryType
-  let geomType = intToGeometryType fullGeometryType
-      coordType = intToCoordinateType fullGeometryType
+  rawGeometryType <- Endian.getFourBytes endianType
+  ewkbSrid <- getEwkbSrid endianType rawGeometryType
+  wkbGeometryType <- rawtoWkbGeometryType rawGeometryType
+  pure $ EwkbGeom wkbGeometryType ewkbSrid
+
+getWkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords
+getWkbGeometryType endianType = do
+  rawGeometryType <- Endian.getFourBytes endianType
+  rawtoWkbGeometryType rawGeometryType
+
+rawtoWkbGeometryType :: Word.Word32 -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords
+rawtoWkbGeometryType rawGeometryType = do
+  let geomType = intToGeometryType rawGeometryType
+      coordType = intToCoordinateType rawGeometryType
   case geomType of
-    Just g -> pure $ EwkbGeom g coordType ewkbSrid
-    _                ->
-      Monad.fail $ "Invalid EwkbGeometry: " ++ show fullGeometryType
+    Just g -> pure $ Geometry.WkbGeom g coordType
+    _      -> Monad.fail $ "Invalid EwkbGeometry: " ++ show rawGeometryType
 
 getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get EwkbSrid
 getEwkbSrid endianType int =
