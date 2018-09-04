@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Data.Wkb
+  exposed-modules:     Data.Ewkb.Geometry
+                     , Data.Wkb
                      , Data.Wkb.Endian
                      , Data.Wkb.Feature
                      , Data.Wkb.Geometry
@@ -42,7 +43,8 @@ library
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       Data.Wkb.EndianSpec
+  other-modules:       Data.Ewkb.GeometrySpec
+                     , Data.Wkb.EndianSpec
                      , Data.Wkb.GeometrySpec
                      , Data.Wkb.GeometryCollectionSpec
                      , Data.Wkb.LineSpec
