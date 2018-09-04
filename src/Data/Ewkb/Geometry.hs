@@ -37,7 +37,10 @@ getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get SridType
 getEwkbSrid endianType int =
   if int .&. 0x20000000 /= 0 then do
     srid <- Endian.getFourBytes endianType
-    pure $ Srid srid
+    if srid == 4326 then
+      pure $ Srid srid
+    else
+      Monad.fail $ "Invalid SRID only 4326 supported: " ++ show srid
   else
     pure NoSrid
 
