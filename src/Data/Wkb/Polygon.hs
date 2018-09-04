@@ -15,10 +15,10 @@ getPolygon endianType coordType = do
   geoPolygon <- getGeoPolygon endianType coordType
   pure $ Geospatial.Polygon geoPolygon
 
-getMultiPolygon :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getMultiPolygon endianType _ = do
+getMultiPolygon :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords) -> Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
+getMultiPolygon getWkbGeom endianType _ = do
   numberOfPolygons <- Endian.getFourBytes endianType
-  geoPolygons <- Monad.forM [1..numberOfPolygons] (const $ Feature.getEnclosedFeature getGeoPolygon Geometry.WkbPolygon)
+  geoPolygons <- Monad.forM [1..numberOfPolygons] (const $ Feature.getEnclosedFeature getGeoPolygon getWkbGeom Geometry.WkbPolygon)
   pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
 
 getGeoPolygon :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoPolygon

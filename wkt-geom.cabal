@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Data.Ewkb.Geometry
+  exposed-modules:     Data.Ewkb
+                     , Data.Ewkb.Geometry
                      , Data.Wkb
                      , Data.Wkb.Endian
                      , Data.Wkb.Feature

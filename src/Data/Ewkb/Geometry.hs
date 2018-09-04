@@ -22,6 +22,7 @@ getEwkbGeometryType endianType = do
 getWkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords
 getWkbGeometryType endianType = do
   rawGeometryType <- Endian.getFourBytes endianType
+  _ <- getEwkbSrid endianType rawGeometryType
   rawtoWkbGeometryType rawGeometryType
 
 rawtoWkbGeometryType :: Word.Word32 -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords

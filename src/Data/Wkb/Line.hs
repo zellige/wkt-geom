@@ -15,10 +15,10 @@ getLine endianType coordType = do
   geoLine <- getGeoLine endianType coordType
   pure $ Geospatial.Line geoLine
 
-getMultiLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-getMultiLine endianType _ = do
+getMultiLine :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryTypeWithCoords) -> Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
+getMultiLine getWkbGeom endianType _ = do
   numberOfLines <- Endian.getFourBytes endianType
-  geoLines <- Monad.forM [1..numberOfLines] (const $ Feature.getEnclosedFeature getGeoLine Geometry.WkbLineString)
+  geoLines <- Monad.forM [1..numberOfLines] (const $ Feature.getEnclosedFeature getGeoLine getWkbGeom Geometry.WkbLineString)
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
 
 getGeoLine :: Endian.EndianType -> Geometry.WkbCoordinateType -> BinaryGet.Get Geospatial.GeoLine
