@@ -5,6 +5,7 @@ module Data.Wkt.PointSpec where
 import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial
 import qualified Data.Maybe      as Maybe
+import qualified Data.Vector     as Vector
 import           Test.Hspec      (Spec, describe, it, shouldBe, shouldSatisfy)
 import qualified Text.Trifecta   as Trifecta
 
@@ -49,9 +50,7 @@ testMultiPoints =
       Wkt.parseString Point.multiPoint "multipoint( ( 1.0 2.0) ,( 2.0 2.0) )" ^?! Trifecta._Success `shouldBe` exampleMultiPoint
 
 examplePoint :: Geospatial.GeoPoint
-examplePoint =
-  Geospatial.GeoPoint [1.0, 2.0]
+examplePoint = Geospatial.GeoPoint (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0))
 
 exampleMultiPoint :: Geospatial.GeoMultiPoint
-exampleMultiPoint =
-  Geospatial.mergeGeoPoints [Geospatial.GeoPoint [1.0, 2.0], Geospatial.GeoPoint [2.0, 2.0]]
+exampleMultiPoint = Geospatial.GeoMultiPoint (Vector.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0), Geospatial.GeoPointXY (Geospatial.PointXY 2.0 2.0)])

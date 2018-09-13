@@ -6,6 +6,7 @@ import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial
 import qualified Data.LineString as LineString
 import qualified Data.Maybe      as Maybe
+import qualified Data.Vector     as Vector
 import           Test.Hspec      (Spec, describe, it, shouldBe, shouldSatisfy)
 import qualified Text.Trifecta   as Trifecta
 
@@ -46,9 +47,10 @@ testMultiLines =
       Wkt.parseString Line.multiLineString "multilinestring ( ( 1.0 2.0,1.0 2.5, 1.0  3.0) )" ^?! Trifecta._Success `shouldBe` exampleMultiLine
 
 exampleLine :: Geospatial.GeoLine
-exampleLine =
-  Geospatial.GeoLine $ LineString.makeLineString [1.0, 2.0] [1.0,2.5] [[1.0,3.0]]
+exampleLine = Geospatial.GeoLine exampleLineString
 
 exampleMultiLine :: Geospatial.GeoMultiLine
-exampleMultiLine =
-  Geospatial.mergeGeoLines [exampleLine]
+exampleMultiLine =  Geospatial.GeoMultiLine (Vector.singleton exampleLineString)
+
+exampleLineString :: LineString.LineString Geospatial.GeoPositionWithoutCRS
+exampleLineString = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.5)) (Vector.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 3.0)))

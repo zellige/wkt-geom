@@ -5,6 +5,7 @@ import qualified Data.ByteString      as ByteString
 import qualified Data.ByteString.UTF8 as UTF8
 import qualified Data.Char            as Char
 import qualified Data.Scientific      as Scientific
+import qualified Data.Vector          as Vector
 import qualified Text.Trifecta        as Trifecta
 import qualified Text.Trifecta.Delta  as TrifectaDelta
 
@@ -31,10 +32,10 @@ parseString p s = Trifecta.parseString p (Data.Wkt.delta lowerS) lowerS
             | otherwise = c
 
 
-emptySet :: Trifecta.Parser [a]
+emptySet :: Trifecta.Parser (Vector.Vector a)
 emptySet = do
   _ <- Trifecta.string "empty"
-  pure []
+  pure Vector.empty
 
 emptySets :: Trifecta.Parser ([a], [[a]])
 emptySets = do

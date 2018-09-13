@@ -3,6 +3,7 @@ module Data.Wkb.GeometryCollection where
 import qualified Control.Monad     as Monad
 import qualified Data.Binary.Get   as BinaryGet
 import qualified Data.Geospatial   as Geospatial
+import qualified Data.Vector       as Vector
 
 import qualified Data.Wkb.Endian   as Endian
 import qualified Data.Wkb.Geometry as Geometry
@@ -13,7 +14,7 @@ getGeometryCollection :: BinaryGet.Get Geospatial.GeospatialGeometry
                           -> BinaryGet.Get Geospatial.GeospatialGeometry
 getGeometryCollection getGeospatialGeometry endianType _ = do
   numberOfGeometries <- Endian.getFourBytes endianType
-  geoSpatialGeometries <- Monad.forM [1..numberOfGeometries] (const getGeospatialGeometry)
+  geoSpatialGeometries <- Vector.generateM (fromIntegral numberOfGeometries) (const getGeospatialGeometry)
   pure $ Geospatial.Collection geoSpatialGeometries
 
 getEnclosedFeature :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType)

@@ -7,9 +7,12 @@ import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
 import qualified Data.LineString         as LineString
 import           Data.Monoid             ((<>))
+import qualified Data.Vector             as Vector
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
 import qualified Data.Wkb                as Wkb
+
+import qualified Data.SpecHelper         as SpecHelper
 
 spec :: Spec
 spec =
@@ -19,11 +22,13 @@ testWkbGeometryCollectionParsing :: Spec
 testWkbGeometryCollectionParsing =
   describe "Test wkb geometry collection" $
     it "Parse valid wkb geometry collection" $
-      Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right $ Geospatial.Collection $
-        [ Geospatial.Point $ Geospatial.GeoPoint [10, 10]
-        , Geospatial.Point $ Geospatial.GeoPoint [30, 30]
-        , Geospatial.Line $ Geospatial.GeoLine $ LineString.makeLineString [15, 15] [20, 20] [[25, 25]]
-        ])
+      Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right . Geospatial.Collection $
+        Vector.fromList
+          [ Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point1
+          , Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point2
+          , Geospatial.Line $ Geospatial.GeoLine SpecHelper.lineString3
+          ]
+        )
 
 exampleWkbGeometryCollection :: LazyByteString.ByteString
 exampleWkbGeometryCollection =

@@ -4,6 +4,7 @@ import qualified Control.Monad               as Monad
 import qualified Data.Binary.Get             as BinaryGet
 import qualified Data.Geospatial             as Geospatial
 import qualified Data.LineString             as LineString
+import qualified Data.Vector                 as Vector
 
 import qualified Data.Wkb.Endian             as Endian
 import qualified Data.Wkb.Geometry           as Geometry
@@ -18,7 +19,7 @@ getLine endianType coordType = do
 getMultiLine :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiLine getWkbGeom endianType _ = do
   numberOfLines <- Endian.getFourBytes endianType
-  geoLines <- Monad.forM [1..numberOfLines] (const $ GeometryCollection.getEnclosedFeature getWkbGeom Geometry.LineString getGeoLine)
+  geoLines <- Vector.generateM (fromIntegral numberOfLines) (const $ GeometryCollection.getEnclosedFeature getWkbGeom Geometry.LineString getGeoLine)
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
 
 getGeoLine :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoLine
