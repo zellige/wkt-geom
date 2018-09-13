@@ -5,7 +5,6 @@ module Data.Wkb.PolygonSpec where
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
-import qualified Data.LinearRing         as LinearRing
 import           Data.Monoid             ((<>))
 import qualified Data.Vector             as Vector
 import           Test.Hspec              (Spec, describe, it, shouldBe)

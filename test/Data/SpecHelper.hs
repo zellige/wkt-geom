@@ -20,6 +20,9 @@ lineString2 = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.Point
 lineString3 :: LineString.LineString Geospatial.GeoPositionWithoutCRS
 lineString3 = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 15 15)) (Geospatial.GeoPointXY (Geospatial.PointXY 20 20)) (Vector.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 20 20)))
 
+lineString4 :: LineString.LineString Geospatial.GeoPositionWithoutCRS
+lineString4 = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 15 15)) (Geospatial.GeoPointXY (Geospatial.PointXY 20 20)) (Vector.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 25 25)))
+
 linearRing1 :: LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS
 linearRing1 = LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 3.0 4.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 5.0 6.0)) Vector.empty
 

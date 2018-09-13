@@ -5,6 +5,7 @@ module Data.Wkt.PolygonSpec where
 import           Control.Lens     ((^?!))
 import qualified Data.Geospatial  as Geospatial
 import qualified Data.LinearRing  as LinearRing
+import qualified Data.Vector      as Vector
 import           Test.Hspec       (Spec, describe, it, shouldBe)
 import qualified Text.Trifecta    as Trifecta
 
@@ -42,16 +43,22 @@ testMultiPolygons =
 
 examplePolygon :: Geospatial.GeoPolygon
 examplePolygon =
-  Geospatial.GeoPolygon [LinearRing.makeLinearRing [4.0,0.0] [0.0,4.0] [-4.0,0.0] [[0.0, -4.0]]]
+  Geospatial.GeoPolygon (Vector.singleton linearRingSingle)
 
 examplePolygonWithHole :: Geospatial.GeoPolygon
-examplePolygonWithHole =
-  Geospatial.GeoPolygon[LinearRing.makeLinearRing [4.0,0.0] [0.0,4.0] [-4.0,0.0] [[0.0, -4.0]], LinearRing.makeLinearRing [2.0,0.0] [0.0,2.0] [-2.0,0.0] [[0.0, -2.0]]]
+examplePolygonWithHole = Geospatial.GeoPolygon linearRingDouble
+
+linearRingSingle :: LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS
+linearRingSingle = LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 4.0 0.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 0.0 4.0)) (Geospatial.GeoPointXY (Geospatial.PointXY (-4.0) 0.0)) (Vector.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 0.0 (-4.0))])
+
+linearRingDouble :: Vector.Vector (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
+linearRingDouble = Vector.fromList
+  [ linearRingSingle
+  , LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 2.0 0.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 0.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY (-2.0) 0.0)) (Vector.fromList [ Geospatial.GeoPointXY (Geospatial.PointXY 0.0 (-2.0))])
+  ]
 
 exampleMultiPolygon :: Geospatial.GeoMultiPolygon
-exampleMultiPolygon =
-  Geospatial.mergeGeoPolygons [examplePolygon]
+exampleMultiPolygon = Geospatial.GeoMultiPolygon (Vector.singleton (Vector.singleton linearRingSingle))
 
 exampleMultiPolygonWithHole :: Geospatial.GeoMultiPolygon
-exampleMultiPolygonWithHole =
-  Geospatial.mergeGeoPolygons [examplePolygonWithHole]
+exampleMultiPolygonWithHole = Geospatial.GeoMultiPolygon (Vector.singleton linearRingDouble)

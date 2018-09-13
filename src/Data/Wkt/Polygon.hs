@@ -3,6 +3,7 @@ module Data.Wkt.Polygon where
 import           Control.Applicative ((<|>))
 import qualified Data.Geospatial     as Geospatial
 import qualified Data.LinearRing     as LinearRing
+import qualified Data.Vector         as Vector
 import qualified Text.Trifecta       as Trifecta
 
 import qualified Data.Wkt            as Wkt
@@ -21,25 +22,25 @@ multiPolygon = do
   _ <- Trifecta.string "multipolygon"
   _ <- Trifecta.spaces
   xs <- Wkt.emptySet <|> multiPolygon'
-  pure $ Geospatial.mergeGeoPolygons $ map Geospatial.GeoPolygon xs
+  pure $ Geospatial.GeoMultiPolygon xs
 
-polygon' :: Trifecta.Parser [LinearRing.LinearRing [Double]]
+polygon' :: Trifecta.Parser (Vector.Vector (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS))
 polygon' = do
   _ <- Trifecta.spaces >> Trifecta.char '('
   x <- linearRing
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> linearRing)
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ x:xs
+  pure $ Vector.cons x (Vector.fromList xs)
 
-multiPolygon' :: Trifecta.Parser [[LinearRing.LinearRing [Double]]]
+multiPolygon' :: Trifecta.Parser (Vector.Vector (Vector.Vector (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)))
 multiPolygon' = do
   _ <- Trifecta.spaces >> Trifecta.char '('
   x <- polygon'
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> polygon')
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ x:xs
+  pure $ Vector.cons x (Vector.fromList xs)
 
-linearRing :: Trifecta.Parser (LinearRing.LinearRing [Double])
+linearRing :: Trifecta.Parser (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
 linearRing = do
   _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
   first <- Point.justPoints
@@ -47,10 +48,10 @@ linearRing = do
   third <- Line.commandPoint
   rest <- Trifecta.many Line.commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ LinearRing.makeLinearRing first second third (init rest)
+  pure $ LinearRing.makeLinearRing first second third (Vector.init $ Vector.fromList rest)
 
 emptyPolygon :: Geospatial.GeoPolygon
-emptyPolygon = Geospatial.GeoPolygon []
+emptyPolygon = Geospatial.GeoPolygon Vector.empty
 
 emptyMultiPolygon :: Geospatial.GeoMultiPolygon
-emptyMultiPolygon = Geospatial.mergeGeoPolygons []
+emptyMultiPolygon = Geospatial.mergeGeoPolygons Vector.empty
