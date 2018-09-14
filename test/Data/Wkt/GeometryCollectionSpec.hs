@@ -4,7 +4,6 @@ module Data.Wkt.GeometryCollectionSpec where
 
 import           Control.Lens                ((^?!))
 import qualified Data.Geospatial             as Geospatial
-import qualified Data.LineString             as LineString
 import qualified Data.Vector                 as Vector
 import           Test.Hspec                  (Spec, describe, it, shouldBe)
 import qualified Text.Trifecta               as Trifecta
@@ -25,7 +24,7 @@ testGeometryCollection =
     it "Parse something" $
       Wkt.parseString GeometryCollection.geometryCollection "GeometryCollection(POINT (1 2),POINT (3 4),LINESTRING (15 15, 20 20, 25 25))" ^?! Trifecta._Success `shouldBe` exampleGeometryCollection
     it "Parse something with spaces" $
-      Wkt.parseString GeometryCollection.geometryCollection "GeometryCollection ( POINT ( 10 10) , POINT (30 30) , LINESTRING (15 15  , 20 20, 25 25 ) ) " ^?! Trifecta._Success `shouldBe` exampleGeometryCollection
+      Wkt.parseString GeometryCollection.geometryCollection "GeometryCollection ( POINT ( 1 2) , POINT (3 4) , LINESTRING (15 15  , 20 20, 25 25 ) ) " ^?! Trifecta._Success `shouldBe` exampleGeometryCollection
 
 exampleGeometryCollection :: Vector.Vector Geospatial.GeospatialGeometry
 exampleGeometryCollection =

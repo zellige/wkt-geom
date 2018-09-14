@@ -2,7 +2,6 @@ module Data.Wkt.GeometryCollection where
 
 import           Control.Applicative ((<|>))
 import qualified Data.Geospatial     as Geospatial
-import qualified Data.LinearRing     as LinearRing
 import qualified Data.Vector         as Vector
 import qualified Text.Trifecta       as Trifecta
 

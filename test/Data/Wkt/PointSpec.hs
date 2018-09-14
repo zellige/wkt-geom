@@ -6,7 +6,8 @@ import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial
 import qualified Data.Maybe      as Maybe
 import qualified Data.Vector     as Vector
-import           Test.Hspec      (Spec, describe, it, shouldBe, shouldSatisfy)
+import           Test.Hspec      (Spec, describe, expectationFailure, it,
+                                  shouldBe, shouldSatisfy)
 import qualified Text.Trifecta   as Trifecta
 
 import qualified Data.Wkt        as Wkt
@@ -26,8 +27,12 @@ testPoints =
       Wkt.parseString Point.point "point empty" ^?! Trifecta._Success `shouldBe` Point.emptyPoint
     it "Parse not points" $
       Wkt.parseString Point.point "point (abc)" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
-    it "Parse something" $
-      Wkt.parseString Point.point "point (1.0 2.0)" ^?! Trifecta._Success `shouldBe` examplePoint
+    it "Parse something" $ do
+      --Wkt.parseString Point.point "point (1.0 2.0)" ^?! Trifecta._Success `shouldBe` examplePoint
+      let x = Wkt.parseString Point.point "point (1.0 2.0)"
+      case x of
+        Trifecta.Success a -> a `shouldBe` examplePoint
+        Trifecta.Failure f -> expectationFailure (show f)
     it "Parse spaces" $
       Wkt.parseString Point.point "point( 1.0 2.0 )" ^?! Trifecta._Success `shouldBe` examplePoint
 

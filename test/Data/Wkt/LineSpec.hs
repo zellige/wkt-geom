@@ -23,8 +23,8 @@ testLines =
   describe "simple lines" $ do
     it "Parse incomplete" $
       Wkt.parseString Line.lineString "linestring" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
-    -- it "Parse empty" $
-    --   Wkt.parseString Line.lineString "linestring empty" ^?! Trifecta._Success `shouldBe` Line.emptyLine
+    it "Parse empty" $
+      Wkt.parseString Line.lineString "linestring empty" ^?! Trifecta._Success `shouldBe` Line.emptyLine
     it "Parse not points" $
       Wkt.parseString Line.lineString "linestring (abc)" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
     it "Parse something" $

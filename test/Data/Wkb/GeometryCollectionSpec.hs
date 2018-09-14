@@ -7,9 +7,9 @@ import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
 import           Data.Monoid             ((<>))
 import qualified Data.Vector             as Vector
-import           Test.Hspec              (Spec, describe, it, shouldBe)
-
 import qualified Data.Wkb                as Wkb
+import           Test.Hspec              (Spec, describe, expectationFailure,
+                                          it, shouldBe)
 
 import qualified Data.SpecHelper         as SpecHelper
 
@@ -37,12 +37,12 @@ exampleWkbGeometryCollection =
     <> ByteStringBuilder.int32BE 3
     <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 10
-    <> ByteStringBuilder.doubleBE 10
+    <> ByteStringBuilder.doubleBE 1
+    <> ByteStringBuilder.doubleBE 2
     <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 30
-    <> ByteStringBuilder.doubleBE 30
+    <> ByteStringBuilder.doubleBE 3
+    <> ByteStringBuilder.doubleBE 4
     <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 2
     <> ByteStringBuilder.int32BE 3
@@ -50,5 +50,5 @@ exampleWkbGeometryCollection =
     <> ByteStringBuilder.doubleBE 15
     <> ByteStringBuilder.doubleBE 20
     <> ByteStringBuilder.doubleBE 20
-    <> ByteStringBuilder.doubleBE 25
-    <> ByteStringBuilder.doubleBE 25
+    <> ByteStringBuilder.doubleBE 20
+    <> ByteStringBuilder.doubleBE 20
