@@ -3,6 +3,7 @@ module Data.Wkb.Point where
 import qualified Data.Binary.Get             as BinaryGet
 import qualified Data.Geospatial             as Geospatial
 import qualified Data.Vector                 as Vector
+import qualified Data.Vector.Storable        as VectorStorable
 import qualified Data.Word                   as Word
 
 import qualified Data.Wkb.Endian             as Endian
@@ -25,9 +26,9 @@ getGeoPoint endianType coordType = do
   point <- getCoordPoint endianType coordType
   pure $ Geospatial.GeoPoint point
 
-getCoordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (Vector.Vector Geospatial.GeoPositionWithoutCRS)
+getCoordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (VectorStorable.Vector Geospatial.GeoPositionWithoutCRS)
 getCoordPoints endianType coordType numberOfPoints =
-  Vector.generateM (fromIntegral numberOfPoints) (const $ getCoordPoint endianType coordType)
+  VectorStorable.generateM (fromIntegral numberOfPoints) (const $ getCoordPoint endianType coordType)
 
 getCoordPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoPositionWithoutCRS
 getCoordPoint endianType coordType =

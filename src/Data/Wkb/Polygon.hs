@@ -5,6 +5,7 @@ import qualified Data.Binary.Get             as BinaryGet
 import qualified Data.Geospatial             as Geospatial
 import qualified Data.LinearRing             as LinearRing
 import qualified Data.Vector                 as Vector
+import qualified Data.Vector.Storable        as VectorStorable
 
 import qualified Data.Wkb.Endian             as Endian
 import qualified Data.Wkb.Geometry           as Geometry
@@ -40,12 +41,12 @@ getLinearRing endianType coordType = do
     p2 <- Point.getCoordPoint endianType coordType
     p3 <- Point.getCoordPoint endianType coordType
     pts <- Point.getCoordPoints endianType coordType (numberOfPoints - 3)
-    if Vector.last pts == p1 then
-      pure $ LinearRing.makeLinearRing p1 p2 p3 (Vector.init pts)
+    if VectorStorable.last pts == p1 then
+      pure $ LinearRing.makeLinearRing p1 p2 p3 (VectorStorable.init pts)
     else
       Monad.fail $
         "First and last points of linear ring are different: first="
-         ++ show p1 ++ " last=" ++ show (Vector.last pts)
+         ++ show p1 ++ " last=" ++ show (VectorStorable.last pts)
   else
     Monad.fail $
       "Must have at least four points for a linear ring: "

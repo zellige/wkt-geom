@@ -2,16 +2,18 @@
 
 module Data.Wkt.LineSpec where
 
-import           Control.Lens    ((^?), (^?!))
-import qualified Data.Geospatial as Geospatial
-import qualified Data.LineString as LineString
-import qualified Data.Maybe      as Maybe
-import qualified Data.Vector     as Vector
-import           Test.Hspec      (Spec, describe, it, shouldBe, shouldSatisfy)
-import qualified Text.Trifecta   as Trifecta
+import           Control.Lens         ((^?), (^?!))
+import qualified Data.Geospatial      as Geospatial
+import qualified Data.LineString      as LineString
+import qualified Data.Maybe           as Maybe
+import qualified Data.Vector          as Vector
+import qualified Data.Vector.Storable as VectorStorable
+import           Test.Hspec           (Spec, describe, it, shouldBe,
+                                       shouldSatisfy)
+import qualified Text.Trifecta        as Trifecta
 
-import qualified Data.Wkt        as Wkt
-import qualified Data.Wkt.Line   as Line
+import qualified Data.Wkt             as Wkt
+import qualified Data.Wkt.Line        as Line
 
 spec :: Spec
 spec = do
@@ -53,4 +55,4 @@ exampleMultiLine :: Geospatial.GeoMultiLine
 exampleMultiLine =  Geospatial.GeoMultiLine (Vector.singleton exampleLineString)
 
 exampleLineString :: LineString.LineString Geospatial.GeoPositionWithoutCRS
-exampleLineString = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.5)) (Vector.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 3.0)))
+exampleLineString = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.5)) (VectorStorable.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 3.0)))

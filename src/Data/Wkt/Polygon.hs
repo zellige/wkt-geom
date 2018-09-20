@@ -1,14 +1,15 @@
 module Data.Wkt.Polygon where
 
-import           Control.Applicative ((<|>))
-import qualified Data.Geospatial     as Geospatial
-import qualified Data.LinearRing     as LinearRing
-import qualified Data.Vector         as Vector
-import qualified Text.Trifecta       as Trifecta
+import           Control.Applicative  ((<|>))
+import qualified Data.Geospatial      as Geospatial
+import qualified Data.LinearRing      as LinearRing
+import qualified Data.Vector          as Vector
+import qualified Data.Vector.Storable as VectorStorable
+import qualified Text.Trifecta        as Trifecta
 
-import qualified Data.Wkt            as Wkt
-import qualified Data.Wkt.Line       as Line
-import qualified Data.Wkt.Point      as Point
+import qualified Data.Wkt             as Wkt
+import qualified Data.Wkt.Line        as Line
+import qualified Data.Wkt.Point       as Point
 
 polygon :: Trifecta.Parser Geospatial.GeoPolygon
 polygon = do
@@ -48,7 +49,7 @@ linearRing = do
   third <- Line.commandPoint
   rest <- Trifecta.many Line.commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ LinearRing.makeLinearRing first second third (Vector.init $ Vector.fromList rest)
+  pure $ LinearRing.makeLinearRing first second third (VectorStorable.init $ VectorStorable.fromList rest)
 
 emptyPolygon :: Geospatial.GeoPolygon
 emptyPolygon = Geospatial.GeoPolygon Vector.empty
