@@ -1,15 +1,17 @@
+
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Wkb.GeometryCollectionSpec where
+module Data.WkbGeometryCollectionSpec where
 
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
-import qualified Data.LineString         as LineString
 import           Data.Monoid             ((<>))
+import qualified Data.Vector             as Vector
+import qualified Data.Wkb                as Wkb
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
-import qualified Data.Wkb                as Wkb
+import qualified Data.SpecHelper         as SpecHelper
 
 spec :: Spec
 spec =
@@ -19,11 +21,13 @@ testWkbGeometryCollectionParsing :: Spec
 testWkbGeometryCollectionParsing =
   describe "Test wkb geometry collection" $
     it "Parse valid wkb geometry collection" $
-      Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right $ Geospatial.Collection $
-        [ Geospatial.Point $ Geospatial.GeoPoint [10, 10]
-        , Geospatial.Point $ Geospatial.GeoPoint [30, 30]
-        , Geospatial.Line $ Geospatial.GeoLine $ LineString.makeLineString [15, 15] [20, 20] [[25, 25]]
-        ])
+      Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right . Geospatial.Collection $
+        Vector.fromList
+          [ Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point1
+          , Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point2
+          , Geospatial.Line $ Geospatial.GeoLine SpecHelper.lineString3
+          ]
+        )
 
 exampleWkbGeometryCollection :: LazyByteString.ByteString
 exampleWkbGeometryCollection =
@@ -33,12 +37,12 @@ exampleWkbGeometryCollection =
     <> ByteStringBuilder.int32BE 3
     <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 10
-    <> ByteStringBuilder.doubleBE 10
+    <> ByteStringBuilder.doubleBE 1
+    <> ByteStringBuilder.doubleBE 2
     <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 30
-    <> ByteStringBuilder.doubleBE 30
+    <> ByteStringBuilder.doubleBE 3
+    <> ByteStringBuilder.doubleBE 4
     <> ByteStringBuilder.word8 0
     <> ByteStringBuilder.int32BE 2
     <> ByteStringBuilder.int32BE 3
@@ -46,5 +50,5 @@ exampleWkbGeometryCollection =
     <> ByteStringBuilder.doubleBE 15
     <> ByteStringBuilder.doubleBE 20
     <> ByteStringBuilder.doubleBE 20
-    <> ByteStringBuilder.doubleBE 25
-    <> ByteStringBuilder.doubleBE 25
+    <> ByteStringBuilder.doubleBE 20
+    <> ByteStringBuilder.doubleBE 20

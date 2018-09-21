@@ -1,15 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Wkb.LineSpec where
+module Data.WkbLineSpec where
 
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
-import qualified Data.LineString         as LineString
 import           Data.Monoid             ((<>))
+import qualified Data.Vector             as Vector
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
 import qualified Data.Wkb                as Wkb
+
+import qualified Data.SpecHelper         as SpecHelper
 
 spec :: Spec
 spec = do
@@ -20,7 +22,7 @@ testWkbLineParsing :: Spec
 testWkbLineParsing =
   describe "Test wkb line" $
     it "Parse valid wkb line" $
-      Wkb.parseByteString exampleWkbLine `shouldBe` (Right $ Geospatial.Line $ Geospatial.GeoLine $ LineString.makeLineString [1.0,2.0] [3.0,4.0] [])
+      Wkb.parseByteString exampleWkbLine `shouldBe` (Right $ Geospatial.Line $ Geospatial.GeoLine SpecHelper.lineString1)
 
 exampleWkbLine :: LazyByteString.ByteString
 exampleWkbLine =
@@ -37,7 +39,7 @@ testWkbMultiLineParsing :: Spec
 testWkbMultiLineParsing =
   describe "Test wkb multi line" $
     it "Parse valid wkb multi line" $
-      Wkb.parseByteString exampleWkbMultiLine `shouldBe` (Right $ Geospatial.MultiLine $ Geospatial.mergeGeoLines [Geospatial.GeoLine $ LineString.makeLineString [1.0,2.0] [3.0,4.0] [], Geospatial.GeoLine $ LineString.makeLineString [1.5,2.5] [3.5,4.5] []])
+      Wkb.parseByteString exampleWkbMultiLine `shouldBe` (Right $ Geospatial.MultiLine $ Geospatial.GeoMultiLine (Vector.fromList [SpecHelper.lineString1, SpecHelper.lineString2]))
 
 exampleWkbMultiLine :: LazyByteString.ByteString
 exampleWkbMultiLine =
