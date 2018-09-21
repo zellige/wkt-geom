@@ -51,17 +51,17 @@ library
 test-suite wkt-geom-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
-  other-modules:       Data.Ewkb.GeometrySpec
-                     , Data.Wkb.EndianSpec
-                     , Data.Wkb.GeometrySpec
-                     , Data.Wkb.GeometryCollectionSpec
-                     , Data.Wkb.LineSpec
-                     , Data.Wkb.PointSpec
-                     , Data.Wkb.PolygonSpec
-                     , Data.Wkt.GeometryCollectionSpec
-                     , Data.Wkt.LineSpec
-                     , Data.Wkt.PointSpec
-                     , Data.Wkt.PolygonSpec          
+  other-modules:       Data.Internal.Ewkb.GeometrySpec
+                     , Data.Internal.Wkb.EndianSpec
+                     , Data.Internal.Wkb.GeometrySpec
+                     , Data.WkbGeometryCollectionSpec
+                     , Data.WkbLineSpec
+                     , Data.WkbPointSpec
+                     , Data.WkbPolygonSpec
+                     , Data.WktGeometryCollectionSpec
+                     , Data.WktLineSpec
+                     , Data.WktPointSpec
+                     , Data.WktPolygonSpec          
                      , Data.SpecHelper  
   main-is:             Spec.hs
   build-depends:       base
