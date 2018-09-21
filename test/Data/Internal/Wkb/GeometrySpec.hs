@@ -1,15 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Wkb.GeometrySpec where
+module Data.Internal.Wkb.GeometrySpec where
 
-import qualified Data.Binary.Get         as BinaryGet
-import qualified Data.ByteString.Builder as ByteStringBuilder
-import qualified Data.ByteString.Lazy    as LazyByteString
-import qualified Data.Word               as Word
-import           Test.Hspec              (Spec, describe, it, shouldBe)
+import qualified Data.Binary.Get            as BinaryGet
+import qualified Data.ByteString.Builder    as ByteStringBuilder
+import qualified Data.ByteString.Lazy       as LazyByteString
+import qualified Data.Word                  as Word
+import           Test.Hspec                 (Spec, describe, it, shouldBe)
 
-import qualified Data.Wkb.Endian         as Endian
-import qualified Data.Wkb.Geometry       as Geometry
+import qualified Data.Internal.Wkb.Endian   as Endian
+import qualified Data.Internal.Wkb.Geometry as Geometry
 
 spec :: Spec
 spec =
@@ -25,7 +25,7 @@ testGetGeometryTypeWithCoords (int, expected) =
   it ("Parse " ++ show expected) $
     mapM_ test [Endian.BigEndian, Endian.LittleEndian]
     where test endianType =
-            BinaryGet.runGet (Geometry.getGeometryTypeWithCoords endianType) (getByteString endianType int) `shouldBe` expected
+            BinaryGet.runGet (Geometry.geometryTypeWithCoords endianType) (getByteString endianType int) `shouldBe` expected
 
 getByteString :: Endian.EndianType -> Word.Word32 -> LazyByteString.ByteString
 getByteString endianType int =

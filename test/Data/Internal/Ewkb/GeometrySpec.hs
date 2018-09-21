@@ -1,17 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Ewkb.GeometrySpec where
+module Data.Internal.Ewkb.GeometrySpec where
 
-import qualified Data.Binary.Get         as BinaryGet
-import qualified Data.ByteString.Builder as ByteStringBuilder
-import qualified Data.ByteString.Lazy    as LazyByteString
-import           Data.Monoid             ((<>))
-import qualified Data.Word               as Word
-import           Test.Hspec              (Spec, describe, it, shouldBe)
+import qualified Data.Binary.Get             as BinaryGet
+import qualified Data.ByteString.Builder     as ByteStringBuilder
+import qualified Data.ByteString.Lazy        as LazyByteString
+import           Data.Monoid                 ((<>))
+import qualified Data.Word                   as Word
+import           Test.Hspec                  (Spec, describe, it, shouldBe)
 
-import qualified Data.Ewkb.Geometry      as Ewkb
-import qualified Data.Wkb.Endian         as Endian
-import qualified Data.Wkb.Geometry       as Wkb
+import qualified Data.Internal.Ewkb.Geometry as Ewkb
+import qualified Data.Internal.Wkb.Endian    as Endian
+import qualified Data.Internal.Wkb.Geometry  as Wkb
 
 spec :: Spec
 spec =
@@ -27,7 +27,7 @@ testGetEwkbGeometryType (rawGeomType, maybeSrid, expected) =
   it ("Parse " ++ show expected) $
     mapM_ test [Endian.BigEndian, Endian.LittleEndian]
     where test endianType =
-            BinaryGet.runGet (Ewkb.getEwkbGeometryType endianType) (getByteString endianType  rawGeomType maybeSrid) `shouldBe` expected
+            BinaryGet.runGet (Ewkb.ewkbGeometryType endianType) (getByteString endianType  rawGeomType maybeSrid) `shouldBe` expected
 
 getByteString :: Endian.EndianType -> Word.Word32 -> Maybe Word.Word32 -> LazyByteString.ByteString
 getByteString endianType rawGeomType maybeSrid =
