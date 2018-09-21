@@ -1,14 +1,32 @@
-module Data.Wkt where
+module Data.Wkt
+  ( parseByteString
+  , parseString
+  , WktGeometryCollection.geometryCollection
+  , WktGeometryCollection.emptyGeometryCollection
+  , WktLine.emptyLine
+  , WktLine.emptyMultiLine
+  , WktLine.lineString
+  , WktLine.multiLineString
+  , WktPoint.emptyPoint
+  , WktPoint.emptyMultiPoint
+  , WktPoint.point
+  , WktPoint.multiPoint
+  , WktPolygon.emptyPolygon
+  , WktPolygon.emptyMultiPolygon
+  , WktPolygon.polygon
+  , WktPolygon.multiPolygon
+  ) where
 
-import           Control.Applicative  ((<|>))
-import qualified Data.ByteString      as ByteString
-import qualified Data.ByteString.UTF8 as UTF8
-import qualified Data.Char            as Char
-import qualified Data.Scientific      as Scientific
-import qualified Data.Vector          as Vector
-import qualified Text.Trifecta        as Trifecta
-import qualified Text.Trifecta.Delta  as TrifectaDelta
+import qualified Data.ByteString                      as ByteString
+import qualified Data.ByteString.UTF8                 as UTF8
+import qualified Data.Char                            as Char
+import qualified Text.Trifecta                        as Trifecta
+import qualified Text.Trifecta.Delta                  as TrifectaDelta
 
+import qualified Data.Internal.Wkt.GeometryCollection as WktGeometryCollection
+import qualified Data.Internal.Wkt.Line               as WktLine
+import qualified Data.Internal.Wkt.Point              as WktPoint
+import qualified Data.Internal.Wkt.Polygon            as WktPolygon
 
 delta :: String -> TrifectaDelta.Delta
 delta str = TrifectaDelta.Directed (UTF8.fromString str) 0 0 0 0
@@ -30,19 +48,3 @@ parseString p s = Trifecta.parseString p (Data.Wkt.delta lowerS) lowerS
       where
         f c | Char.isAsciiUpper c = Char.chr (Char.ord c + 32)
             | otherwise = c
-
-
-emptySet :: Trifecta.Parser (Vector.Vector a)
-emptySet = do
-  _ <- Trifecta.string "empty"
-  pure Vector.empty
-
-emptySets :: Trifecta.Parser ([a], [[a]])
-emptySets = do
-  _ <- Trifecta.string "empty"
-  pure ([], [])
-
-number :: Trifecta.Parser Scientific.Scientific
-number = do
-    sign <- (Trifecta.char '+' >> pure id) <|> (Trifecta.char '-' >> pure negate) <|> pure id
-    sign  . either fromInteger id <$> Trifecta.integerOrScientific

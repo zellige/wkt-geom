@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Wkt.LineSpec where
+module Data.WktLineSpec where
 
 import           Control.Lens         ((^?), (^?!))
 import qualified Data.Geospatial      as Geospatial
@@ -13,7 +13,6 @@ import           Test.Hspec           (Spec, describe, it, shouldBe,
 import qualified Text.Trifecta        as Trifecta
 
 import qualified Data.Wkt             as Wkt
-import qualified Data.Wkt.Line        as Line
 
 spec :: Spec
 spec = do
@@ -24,29 +23,29 @@ testLines :: Spec
 testLines =
   describe "simple lines" $ do
     it "Parse incomplete" $
-      Wkt.parseString Line.lineString "linestring" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
+      Wkt.parseString Wkt.lineString "linestring" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
     it "Parse empty" $
-      Wkt.parseString Line.lineString "linestring empty" ^?! Trifecta._Success `shouldBe` Line.emptyLine
+      Wkt.parseString Wkt.lineString "linestring empty" ^?! Trifecta._Success `shouldBe` Wkt.emptyLine
     it "Parse not points" $
-      Wkt.parseString Line.lineString "linestring (abc)" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
+      Wkt.parseString Wkt.lineString "linestring (abc)" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
     it "Parse something" $
-      Wkt.parseString Line.lineString "linestring (1.0 2.0, 1.0 2.5, 1.0 3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
+      Wkt.parseString Wkt.lineString "linestring (1.0 2.0, 1.0 2.5, 1.0 3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
     it "Parse spaces" $
-      Wkt.parseString Line.lineString "linestring ( 1.0 2.0,1.0 2.5, 1.0  3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
+      Wkt.parseString Wkt.lineString "linestring ( 1.0 2.0,1.0 2.5, 1.0  3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
 
 testMultiLines :: Spec
 testMultiLines =
   describe "simple multilines" $ do
     it "Parse incomplete" $
-      Wkt.parseString Line.multiLineString "multilinestring" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
+      Wkt.parseString Wkt.multiLineString "multilinestring" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
     it "Parse empty" $
-      Wkt.parseString Line.multiLineString "multilinestring empty" ^?! Trifecta._Success `shouldBe` Line.emptyMultiLine
+      Wkt.parseString Wkt.multiLineString "multilinestring empty" ^?! Trifecta._Success `shouldBe` Wkt.emptyMultiLine
     it "Parse not points" $
-      Wkt.parseString Line.multiLineString "multilinestring (abc)" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
+      Wkt.parseString Wkt.multiLineString "multilinestring (abc)" `shouldSatisfy` (Maybe.isJust . flip (^?) Trifecta._Failure)
     it "Parse something" $
-      Wkt.parseString Line.multiLineString "multilinestring ((1.0 2.0, 1.0 2.5, 1.0 3.0))" ^?! Trifecta._Success `shouldBe` exampleMultiLine
+      Wkt.parseString Wkt.multiLineString "multilinestring ((1.0 2.0, 1.0 2.5, 1.0 3.0))" ^?! Trifecta._Success `shouldBe` exampleMultiLine
     it "Parse spaces" $
-      Wkt.parseString Line.multiLineString "multilinestring ( ( 1.0 2.0,1.0 2.5, 1.0  3.0) )" ^?! Trifecta._Success `shouldBe` exampleMultiLine
+      Wkt.parseString Wkt.multiLineString "multilinestring ( ( 1.0 2.0,1.0 2.5, 1.0  3.0) )" ^?! Trifecta._Success `shouldBe` exampleMultiLine
 
 exampleLine :: Geospatial.GeoLine
 exampleLine = Geospatial.GeoLine exampleLineString

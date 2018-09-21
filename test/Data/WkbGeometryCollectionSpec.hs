@@ -1,6 +1,7 @@
+
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Wkb.GeometryCollectionSpec where
+module Data.WkbGeometryCollectionSpec where
 
 import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString

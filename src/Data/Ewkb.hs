@@ -1,16 +1,18 @@
-module Data.Ewkb where
+module Data.Ewkb
+  ( parseByteString
+  ) where
 
-import qualified Data.Binary.Get      as BinaryGet
-import qualified Data.ByteString.Lazy as LazyByteString
-import qualified Data.Geospatial      as Geospatial
+import qualified Data.Binary.Get              as BinaryGet
+import qualified Data.ByteString.Lazy         as LazyByteString
+import qualified Data.Geospatial              as Geospatial
 
-import qualified Data.Ewkb.Geometry   as EwkbGeometry
-import qualified Data.Wkb.Geospatial  as WkbGeospatial
+import qualified Data.Internal.Ewkb.Geometry  as EwkbGeometry
+import qualified Data.Internal.Wkb.Geospatial as WkbGeospatial
 
 parseByteString :: LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry
 parseByteString byteString =
   case BinaryGet.runGetOrFail
-        (WkbGeospatial.getGeospatialGeometry EwkbGeometry.getWkbGeometryType)
+        (WkbGeospatial.geospatialGeometry EwkbGeometry.wkbGeometryType)
         byteString of
     Left (_, _, err)                 -> Left $ "Could not parse ewkb: " ++ err
     Right (_, _, geoSpatialGeometry) -> Right geoSpatialGeometry

@@ -1,10 +1,15 @@
-module Data.Wkb.Geometry where
+module Data.Internal.Wkb.Geometry
+  ( GeometryType (..)
+  , CoordinateType (..)
+  , WkbGeometryType (..)
+  , geometryTypeWithCoords
+  ) where
 
-import qualified Control.Monad   as Monad
-import qualified Data.Binary.Get as BinaryGet
-import qualified Data.Word       as Word
+import qualified Control.Monad            as Monad
+import qualified Data.Binary.Get          as BinaryGet
+import qualified Data.Word                as Word
 
-import qualified Data.Wkb.Endian as Endian
+import qualified Data.Internal.Wkb.Endian as Endian
 
 data GeometryType
   = Geometry
@@ -20,9 +25,9 @@ data CoordinateType = TwoD | Z | M | ZM  deriving (Show, Eq)
 
 data WkbGeometryType = WkbGeom GeometryType CoordinateType deriving (Show, Eq)
 
-getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
-getGeometryTypeWithCoords endianType = do
-  fullGeometryType <- Endian.getFourBytes endianType
+geometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
+geometryTypeWithCoords endianType = do
+  fullGeometryType <- Endian.fourBytes endianType
   let geomType = intToGeometryType $ fullGeometryType `rem` 1000
       coordType = intToCoordinateType $ fullGeometryType `div` 1000
   case (geomType, coordType) of

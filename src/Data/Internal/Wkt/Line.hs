@@ -1,14 +1,21 @@
-module Data.Wkt.Line where
+module Data.Internal.Wkt.Line
+  ( line
+  , lineString
+  , multiLineString
+  , emptyLine
+  , emptyMultiLine
+  , commandPoint
+  ) where
 
-import           Control.Applicative  ((<|>))
-import qualified Data.Geospatial      as Geospatial
-import qualified Data.LineString      as LineString
-import qualified Data.Vector          as Vector
-import qualified Data.Vector.Storable as VectorStorable
-import qualified Text.Trifecta        as Trifecta
+import           Control.Applicative      ((<|>))
+import qualified Data.Geospatial          as Geospatial
+import qualified Data.LineString          as LineString
+import qualified Data.Vector              as Vector
+import qualified Data.Vector.Storable     as VectorStorable
+import qualified Text.Trifecta            as Trifecta
 
-import qualified Data.Wkt             as Wkt
-import qualified Data.Wkt.Point       as Point
+import qualified Data.Internal.Wkt.Common as Wkt
+import qualified Data.Internal.Wkt.Point  as Point
 
 lineString :: Trifecta.Parser Geospatial.GeoLine
 lineString = do

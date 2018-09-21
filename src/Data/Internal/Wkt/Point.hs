@@ -1,12 +1,18 @@
-module Data.Wkt.Point where
+module Data.Internal.Wkt.Point
+  ( point
+  , multiPoint
+  , justPoints
+  , emptyPoint
+  , emptyMultiPoint
+  ) where
 
-import           Control.Applicative ((<|>))
-import qualified Data.Geospatial     as Geospatial
-import qualified Data.Scientific     as Scientific
-import qualified Data.Vector         as Vector
-import qualified Text.Trifecta       as Trifecta
+import           Control.Applicative      ((<|>))
+import qualified Data.Geospatial          as Geospatial
+import qualified Data.Scientific          as Scientific
+import qualified Data.Vector              as Vector
+import qualified Text.Trifecta            as Trifecta
 
-import qualified Data.Wkt            as Wkt
+import qualified Data.Internal.Wkt.Common as Wkt
 
 point :: Trifecta.Parser Geospatial.GeoPoint
 point = do

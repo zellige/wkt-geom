@@ -1,15 +1,20 @@
-module Data.Wkt.Polygon where
+module Data.Internal.Wkt.Polygon
+  ( polygon
+  , multiPolygon
+  , emptyPolygon
+  , emptyMultiPolygon
+  ) where
 
-import           Control.Applicative  ((<|>))
-import qualified Data.Geospatial      as Geospatial
-import qualified Data.LinearRing      as LinearRing
-import qualified Data.Vector          as Vector
-import qualified Data.Vector.Storable as VectorStorable
-import qualified Text.Trifecta        as Trifecta
+import           Control.Applicative      ((<|>))
+import qualified Data.Geospatial          as Geospatial
+import qualified Data.LinearRing          as LinearRing
+import qualified Data.Vector              as Vector
+import qualified Data.Vector.Storable     as VectorStorable
+import qualified Text.Trifecta            as Trifecta
 
-import qualified Data.Wkt             as Wkt
-import qualified Data.Wkt.Line        as Line
-import qualified Data.Wkt.Point       as Point
+import qualified Data.Internal.Wkt.Common as Wkt
+import qualified Data.Internal.Wkt.Line   as Line
+import qualified Data.Internal.Wkt.Point  as Point
 
 polygon :: Trifecta.Parser Geospatial.GeoPolygon
 polygon = do

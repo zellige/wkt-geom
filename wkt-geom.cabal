@@ -1,14 +1,17 @@
 name:                wkt-geom
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/githubuser/wkt-geom#readme
-license:             BSD3
+version:             0.0.1
+synopsis:            A parser of WKT, WKB and eWKB.
+description:         Well Known Text (WKT), Well Known Binary and the Postgresql extension Extended Well Know Binary (eWKB) are vector geometry representations.
+                     .
+                     The text or binary representations are parsed and turned into their GeoJSON representations.  The binary representations use vectors throughout
+                     whereas the text representation still uses a list and then is converted to a vector representation.
+homepage:            https://github.com/indicatrix/wkt-geom#readme
+license:             Apache-2.0
 license-file:        LICENSE
 author:              Andrew Newmnan, Dominic Endrei
 maintainer:          andrewfnewman@gmail.com
 copyright:           2017-2018 Wkt-Geom Project
-category:            Web
+category:            Data
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
@@ -16,29 +19,30 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Data.Ewkb
-                     , Data.Ewkb.Geometry
                      , Data.Wkb
-                     , Data.Wkb.Endian
-                     , Data.Wkb.Geometry
-                     , Data.Wkb.GeometryCollection
-                     , Data.Wkb.Geospatial
-                     , Data.Wkb.Line
-                     , Data.Wkb.Point
-                     , Data.Wkb.Polygon
-                     , Data.Wkt.Line
-                     , Data.Wkt.Point
-                     , Data.Wkt.Polygon
-                     , Data.Wkt.GeometryCollection
                      , Data.Wkt
+                     , Data.Internal.Ewkb.Geometry                     
+                     , Data.Internal.Wkb.Endian
+                     , Data.Internal.Wkb.Geometry
+                     , Data.Internal.Wkb.GeometryCollection
+                     , Data.Internal.Wkb.Geospatial
+                     , Data.Internal.Wkb.Line
+                     , Data.Internal.Wkb.Point
+                     , Data.Internal.Wkb.Polygon
+                     , Data.Internal.Wkt.Line
+                     , Data.Internal.Wkt.Point
+                     , Data.Internal.Wkt.Polygon
+                     , Data.Internal.Wkt.GeometryCollection
+                     
 
-  build-depends:       base >= 4.8 && < 5
-                     , binary
-                     , bytestring
-                     , geojson >= 2.0.0
-                     , scientific
-                     , trifecta 
-                     , utf8-string
-                     , vector
+  build-depends:       base < 5 &&      >= 4.8 
+                     , binary           >= 0.8
+                     , bytestring       >= 0.10
+                     , geojson          >= 2.0.0
+                     , scientific       >= 0.3.6
+                     , trifecta         >= 1.7
+                     , utf8-string      >= 1
+                     , vector           >= 0.10
 
   ghc-options:         -Wall -Werror -O2
   default-language:    Haskell2010
@@ -60,16 +64,16 @@ test-suite wkt-geom-test
                      , Data.SpecHelper  
   main-is:             Spec.hs
   build-depends:       base
-                     , binary
-                     , ansi-wl-pprint
-                     , bytestring
-                     , geojson >= 2.0.0
+                     , binary          >= 0.8
+                     , ansi-wl-pprint  >= 0.6
+                     , bytestring      >= 0.10
+                     , geojson         >= 2.0.0
                      , hspec
                      , lens
                      , QuickCheck
-                     , scientific
-                     , trifecta
-                     , vector                      
+                     , scientific      >= 0.3.6
+                     , trifecta        >= 1.7
+                     , vector          >= 0.10            
                      , wkt-geom
   ghc-options:         -Wall -Werror
   default-language:    Haskell2010

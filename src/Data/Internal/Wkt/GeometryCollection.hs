@@ -1,14 +1,17 @@
-module Data.Wkt.GeometryCollection where
+module Data.Internal.Wkt.GeometryCollection
+  ( geometryCollection
+  , emptyGeometryCollection
+  ) where
 
-import           Control.Applicative ((<|>))
-import qualified Data.Geospatial     as Geospatial
-import qualified Data.Vector         as Vector
-import qualified Text.Trifecta       as Trifecta
+import           Control.Applicative       ((<|>))
+import qualified Data.Geospatial           as Geospatial
+import qualified Data.Vector               as Vector
+import qualified Text.Trifecta             as Trifecta
 
-import qualified Data.Wkt            as Wkt
-import qualified Data.Wkt.Line       as Line
-import qualified Data.Wkt.Point      as Point
-import qualified Data.Wkt.Polygon    as Polygon
+import qualified Data.Internal.Wkt.Common  as Wkt
+import qualified Data.Internal.Wkt.Line    as Line
+import qualified Data.Internal.Wkt.Point   as Point
+import qualified Data.Internal.Wkt.Polygon as Polygon
 
 geometryCollection :: Trifecta.Parser (Vector.Vector Geospatial.GeospatialGeometry)
 geometryCollection = do
