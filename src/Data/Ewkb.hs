@@ -1,3 +1,8 @@
+-- Refer to the eWKB Postgis Documentation <https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT>
+--
+-- Allows parsing of ByteString into a Geospatial Object.
+--
+-------------------------------------------------------------------
 module Data.Ewkb
   ( parseByteString
   ) where

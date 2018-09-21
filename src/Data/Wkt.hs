@@ -1,3 +1,8 @@
+-- Refer to the WKT Spec <http://www.opengeospatial.org/standards/wkt-crs>
+--
+-- Allows parsing of String or ByteString into a Wkt object.
+--
+-------------------------------------------------------------------
 module Data.Wkt
   ( parseByteString
   , parseString
