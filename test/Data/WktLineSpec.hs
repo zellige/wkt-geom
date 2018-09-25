@@ -6,7 +6,7 @@ import           Control.Lens         ((^?), (^?!))
 import qualified Data.Geospatial      as Geospatial
 import qualified Data.LineString      as LineString
 import qualified Data.Maybe           as Maybe
-import qualified Data.Vector          as Vector
+import qualified Data.Sequence        as Sequence
 import qualified Data.Vector.Storable as VectorStorable
 import           Test.Hspec           (Spec, describe, it, shouldBe,
                                        shouldSatisfy)

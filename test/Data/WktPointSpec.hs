@@ -5,7 +5,7 @@ module Data.WktPointSpec where
 import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial
 import qualified Data.Maybe      as Maybe
-import qualified Data.Vector     as Vector
+import qualified Data.Sequence   as Sequence
 import           Test.Hspec      (Spec, describe, expectationFailure, it,
                                   shouldBe, shouldSatisfy)
 import qualified Text.Trifecta   as Trifecta

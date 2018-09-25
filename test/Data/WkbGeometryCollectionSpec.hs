@@ -7,7 +7,7 @@ import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
 import           Data.Monoid             ((<>))
-import qualified Data.Vector             as Vector
+import qualified Data.Sequence           as Sequence
 import qualified Data.Wkb                as Wkb
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 

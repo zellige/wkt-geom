@@ -10,8 +10,7 @@ module Data.Internal.Wkt.Line
 import           Control.Applicative      ((<|>))
 import qualified Data.Geospatial          as Geospatial
 import qualified Data.LineString          as LineString
-import qualified Data.Vector              as Vector
-import qualified Data.Vector.Storable     as VectorStorable
+import qualified Data.Sequence            as Sequence
 import qualified Text.Trifecta            as Trifecta
 
 import qualified Data.Internal.Wkt.Common as Wkt
@@ -30,13 +29,13 @@ multiLineString = do
   x <- Wkt.emptySet <|> manyLines
   pure $ Geospatial.GeoMultiLine x
 
-manyLines :: Trifecta.Parser (Vector.Vector (LineString.LineString Geospatial.GeoPositionWithoutCRS))
+manyLines :: Trifecta.Parser (Sequence.Seq (LineString.LineString Geospatial.GeoPositionWithoutCRS))
 manyLines = do
   _ <- Trifecta.spaces >> Trifecta.char '('
   x <- line
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> line)
   _ <-  Trifecta.char ')' >> Trifecta.spaces
-  pure $ Vector.cons x (Vector.fromList xs)
+  pure $ x Sequence.:<| Sequence.fromList xs
 
 line :: Trifecta.Parser (LineString.LineString Geospatial.GeoPositionWithoutCRS)
 line = do
@@ -45,7 +44,7 @@ line = do
   second <- commandPoint
   rest <- Trifecta.many commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ LineString.makeLineString first second (VectorStorable.fromList rest)
+  pure $ LineString.makeLineString first second (Sequence.fromList rest)
 
 commandPoint :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS
 commandPoint = do
@@ -54,7 +53,7 @@ commandPoint = do
   Point.justPoints
 
 emptyLine :: Geospatial.GeoLine
-emptyLine = Geospatial.GeoLine $ LineString.makeLineString Geospatial.GeoEmpty Geospatial.GeoEmpty VectorStorable.empty
+emptyLine = Geospatial.GeoLine $ LineString.makeLineString Geospatial.GeoEmpty Geospatial.GeoEmpty Sequence.empty
 
 emptyMultiLine :: Geospatial.GeoMultiLine
-emptyMultiLine = Geospatial.mergeGeoLines Vector.empty
+emptyMultiLine = Geospatial.mergeGeoLines Sequence.empty

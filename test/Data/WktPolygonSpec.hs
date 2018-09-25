@@ -5,7 +5,7 @@ module Data.WktPolygonSpec where
 import           Control.Lens         ((^?!))
 import qualified Data.Geospatial      as Geospatial
 import qualified Data.LinearRing      as LinearRing
-import qualified Data.Vector          as Vector
+import qualified Data.Sequence        as Sequence
 import qualified Data.Vector.Storable as VectorStorable
 import           Test.Hspec           (Spec, describe, it, shouldBe)
 import qualified Text.Trifecta        as Trifecta

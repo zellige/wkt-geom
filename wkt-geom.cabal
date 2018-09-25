@@ -39,6 +39,7 @@ library
   build-depends:       base < 5 &&      >= 4.8 
                      , binary           >= 0.8
                      , bytestring       >= 0.10
+                     , containers
                      , geojson          >= 2.0.0
                      , scientific       >= 0.3.6
                      , trifecta         >= 1.7

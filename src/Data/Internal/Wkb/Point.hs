@@ -7,7 +7,7 @@ module Data.Internal.Wkb.Point
 
 import qualified Data.Binary.Get                      as BinaryGet
 import qualified Data.Geospatial                      as Geospatial
-import qualified Data.Vector                          as Vector
+import qualified Data.Sequence                        as Sequence
 import qualified Data.Vector.Storable                 as VectorStorable
 import qualified Data.Word                            as Word
 
@@ -23,7 +23,7 @@ point endianType coordType = do
 multiPoint :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 multiPoint getWkbGeom endianType _ = do
   numberOfPoints <- Endian.fourBytes endianType
-  geoPoints <- Vector.generateM (fromIntegral numberOfPoints) (const $ GeometryCollection.enclosedFeature getWkbGeom Geometry.Point geoPoint)
+  geoPoints <- Sequence.replicateM (fromIntegral numberOfPoints) (GeometryCollection.enclosedFeature getWkbGeom Geometry.Point geoPoint)
   pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
 geoPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoPoint
@@ -31,9 +31,9 @@ geoPoint endianType coordType = do
   p <- coordPoint endianType coordType
   pure $ Geospatial.GeoPoint p
 
-coordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (VectorStorable.Vector Geospatial.GeoPositionWithoutCRS)
+coordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 coordPoints endianType coordType numberOfPoints =
-  VectorStorable.generateM (fromIntegral numberOfPoints) (const $ coordPoint endianType coordType)
+  Sequence.replicateM (fromIntegral numberOfPoints) (coordPoint endianType coordType)
 
 coordPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoPositionWithoutCRS
 coordPoint endianType coordType =
