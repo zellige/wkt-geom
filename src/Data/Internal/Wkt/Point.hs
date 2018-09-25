@@ -11,7 +11,6 @@ import qualified Data.Geospatial          as Geospatial
 import qualified Data.Internal.Wkt.Common as Wkt
 import qualified Data.Scientific          as Scientific
 import qualified Data.Sequence            as Sequence
-import qualified Data.Sequence            as Sequence
 import qualified Text.Trifecta            as Trifecta
 
 point :: Trifecta.Parser Geospatial.GeoPoint
