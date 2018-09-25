@@ -6,13 +6,13 @@ module Data.Internal.Wkt.Common
 
 import           Control.Applicative ((<|>))
 import qualified Data.Scientific     as Scientific
-import qualified Data.Vector         as Vector
+import qualified Data.Sequence       as Sequence
 import qualified Text.Trifecta       as Trifecta
 
-emptySet :: Trifecta.Parser (Vector.Vector a)
+emptySet :: Trifecta.Parser (Sequence.Seq a)
 emptySet = do
   _ <- Trifecta.string "empty"
-  pure Vector.empty
+  pure Sequence.empty
 
 emptySets :: Trifecta.Parser ([a], [[a]])
 emptySets = do

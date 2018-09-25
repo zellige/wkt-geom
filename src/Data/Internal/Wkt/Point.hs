@@ -8,11 +8,10 @@ module Data.Internal.Wkt.Point
 
 import           Control.Applicative      ((<|>))
 import qualified Data.Geospatial          as Geospatial
-import qualified Data.Scientific          as Scientific
-import qualified Data.Vector              as Vector
-import qualified Text.Trifecta            as Trifecta
-
 import qualified Data.Internal.Wkt.Common as Wkt
+import qualified Data.Scientific          as Scientific
+import qualified Data.Sequence            as Sequence
+import qualified Text.Trifecta            as Trifecta
 
 point :: Trifecta.Parser Geospatial.GeoPoint
 point = do
@@ -27,24 +26,24 @@ multiPoint = do
   xl <- Wkt.emptySet <|> manyPoints
   pure $ Geospatial.GeoMultiPoint xl
 
-manyPoints :: Trifecta.Parser (Vector.Vector Geospatial.GeoPositionWithoutCRS)
+manyPoints :: Trifecta.Parser (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 manyPoints = do
   _ <- Trifecta.char '(' >> Trifecta.spaces
   xl <- unbracketedPoints <|> bracketedPoints
   _ <- Trifecta.spaces >> Trifecta.char ')' >> Trifecta.spaces
   pure xl
 
-unbracketedPoints :: Trifecta.Parser (Vector.Vector Geospatial.GeoPositionWithoutCRS)
+unbracketedPoints :: Trifecta.Parser (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 unbracketedPoints = do
   x <- justPoints
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> justPoints)
-  pure $ Vector.cons x (Vector.fromList xs)
+  pure $ x Sequence.<| Sequence.fromList xs
 
-bracketedPoints :: Trifecta.Parser (Vector.Vector Geospatial.GeoPositionWithoutCRS)
+bracketedPoints :: Trifecta.Parser (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 bracketedPoints = do
   x <- bracketedPoint
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> bracketedPoint)
-  pure $ Vector.cons x (Vector.fromList xs)
+  pure $ x Sequence.<| Sequence.fromList xs
 
 bracketedPoint :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS
 bracketedPoint = do
@@ -64,4 +63,4 @@ emptyPoint :: Geospatial.GeoPoint
 emptyPoint = Geospatial.GeoPoint Geospatial.GeoEmpty
 
 emptyMultiPoint :: Geospatial.GeoMultiPoint
-emptyMultiPoint = Geospatial.GeoMultiPoint Vector.empty
+emptyMultiPoint = Geospatial.GeoMultiPoint Sequence.empty

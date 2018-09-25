@@ -6,7 +6,7 @@ import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
 import           Data.Monoid             ((<>))
-import qualified Data.Vector             as Vector
+import qualified Data.Sequence           as Sequence
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
 import qualified Data.Wkb                as Wkb
@@ -39,7 +39,7 @@ testWkbMultiLineParsing :: Spec
 testWkbMultiLineParsing =
   describe "Test wkb multi line" $
     it "Parse valid wkb multi line" $
-      Wkb.parseByteString exampleWkbMultiLine `shouldBe` (Right $ Geospatial.MultiLine $ Geospatial.GeoMultiLine (Vector.fromList [SpecHelper.lineString1, SpecHelper.lineString2]))
+      Wkb.parseByteString exampleWkbMultiLine `shouldBe` (Right $ Geospatial.MultiLine $ Geospatial.GeoMultiLine (Sequence.fromList [SpecHelper.lineString1, SpecHelper.lineString2]))
 
 exampleWkbMultiLine :: LazyByteString.ByteString
 exampleWkbMultiLine =

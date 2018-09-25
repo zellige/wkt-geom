@@ -6,7 +6,7 @@ import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
 import           Data.Monoid             ((<>))
-import qualified Data.Vector             as Vector
+import qualified Data.Sequence           as Sequence
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
 import qualified Data.Wkb                as Wkb
@@ -36,7 +36,7 @@ testWkbMultiPointParsing :: Spec
 testWkbMultiPointParsing =
   describe "Test wkb multi point" $
     it "Parse valid wkb multi point" $
-      Wkb.parseByteString exampleWkbMultiPoint `shouldBe` (Right $ Geospatial.MultiPoint (Geospatial.GeoMultiPoint (Vector.fromList [SpecHelper.point1, SpecHelper.point2])))
+      Wkb.parseByteString exampleWkbMultiPoint `shouldBe` (Right $ Geospatial.MultiPoint (Geospatial.GeoMultiPoint (Sequence.fromList [SpecHelper.point1, SpecHelper.point2])))
 
 exampleWkbMultiPoint :: LazyByteString.ByteString
 exampleWkbMultiPoint =

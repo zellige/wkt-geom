@@ -8,8 +8,7 @@ module Data.Internal.Wkt.Polygon
 import           Control.Applicative      ((<|>))
 import qualified Data.Geospatial          as Geospatial
 import qualified Data.LinearRing          as LinearRing
-import qualified Data.Vector              as Vector
-import qualified Data.Vector.Storable     as VectorStorable
+import qualified Data.Sequence            as Sequence
 import qualified Text.Trifecta            as Trifecta
 
 import qualified Data.Internal.Wkt.Common as Wkt
@@ -30,21 +29,21 @@ multiPolygon = do
   xs <- Wkt.emptySet <|> multiPolygon'
   pure $ Geospatial.GeoMultiPolygon xs
 
-polygon' :: Trifecta.Parser (Vector.Vector (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS))
+polygon' :: Trifecta.Parser (Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS))
 polygon' = do
   _ <- Trifecta.spaces >> Trifecta.char '('
   x <- linearRing
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> linearRing)
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ Vector.cons x (Vector.fromList xs)
+  pure $ x Sequence.:<| Sequence.fromList xs
 
-multiPolygon' :: Trifecta.Parser (Vector.Vector (Vector.Vector (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)))
+multiPolygon' :: Trifecta.Parser (Sequence.Seq (Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)))
 multiPolygon' = do
   _ <- Trifecta.spaces >> Trifecta.char '('
   x <- polygon'
   xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> polygon')
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ Vector.cons x (Vector.fromList xs)
+  pure $ x Sequence.:<| Sequence.fromList xs
 
 linearRing :: Trifecta.Parser (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
 linearRing = do
@@ -54,10 +53,16 @@ linearRing = do
   third <- Line.commandPoint
   rest <- Trifecta.many Line.commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ LinearRing.makeLinearRing first second third (VectorStorable.init $ VectorStorable.fromList rest)
+  pure $ LinearRing.makeLinearRing first second third (sequenceHead $ Sequence.fromList rest)
 
 emptyPolygon :: Geospatial.GeoPolygon
-emptyPolygon = Geospatial.GeoPolygon Vector.empty
+emptyPolygon = Geospatial.GeoPolygon Sequence.empty
 
 emptyMultiPolygon :: Geospatial.GeoMultiPolygon
-emptyMultiPolygon = Geospatial.mergeGeoPolygons Vector.empty
+emptyMultiPolygon = Geospatial.mergeGeoPolygons Sequence.empty
+
+-- All but the last
+sequenceHead :: Sequence.Seq a -> Sequence.Seq a
+sequenceHead (headS Sequence.:|> _) = headS
+sequenceHead _                      = Sequence.empty
+

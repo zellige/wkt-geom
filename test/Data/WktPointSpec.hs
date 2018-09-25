@@ -5,7 +5,7 @@ module Data.WktPointSpec where
 import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial
 import qualified Data.Maybe      as Maybe
-import qualified Data.Vector     as Vector
+import qualified Data.Sequence   as Sequence
 import           Test.Hspec      (Spec, describe, expectationFailure, it,
                                   shouldBe, shouldSatisfy)
 import qualified Text.Trifecta   as Trifecta
@@ -57,4 +57,4 @@ examplePoint :: Geospatial.GeoPoint
 examplePoint = Geospatial.GeoPoint (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0))
 
 exampleMultiPoint :: Geospatial.GeoMultiPoint
-exampleMultiPoint = Geospatial.GeoMultiPoint (Vector.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0), Geospatial.GeoPointXY (Geospatial.PointXY 2.0 2.0)])
+exampleMultiPoint = Geospatial.GeoMultiPoint (Sequence.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0), Geospatial.GeoPointXY (Geospatial.PointXY 2.0 2.0)])

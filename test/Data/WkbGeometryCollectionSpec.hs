@@ -7,7 +7,7 @@ import qualified Data.ByteString.Builder as ByteStringBuilder
 import qualified Data.ByteString.Lazy    as LazyByteString
 import qualified Data.Geospatial         as Geospatial
 import           Data.Monoid             ((<>))
-import qualified Data.Vector             as Vector
+import qualified Data.Sequence           as Sequence
 import qualified Data.Wkb                as Wkb
 import           Test.Hspec              (Spec, describe, it, shouldBe)
 
@@ -22,7 +22,7 @@ testWkbGeometryCollectionParsing =
   describe "Test wkb geometry collection" $
     it "Parse valid wkb geometry collection" $
       Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right . Geospatial.Collection $
-        Vector.fromList
+        Sequence.fromList
           [ Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point1
           , Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point2
           , Geospatial.Line $ Geospatial.GeoLine SpecHelper.lineString3
