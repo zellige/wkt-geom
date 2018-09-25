@@ -22,7 +22,7 @@ testWkbGeometryCollectionParsing =
   describe "Test wkb geometry collection" $
     it "Parse valid wkb geometry collection" $
       Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right . Geospatial.Collection $
-        Vector.fromList
+        Sequence.fromList
           [ Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point1
           , Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point2
           , Geospatial.Line $ Geospatial.GeoLine SpecHelper.lineString3

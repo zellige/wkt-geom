@@ -22,7 +22,7 @@ testWkbPolygonParsing :: Spec
 testWkbPolygonParsing =
   describe "Test wkb polygon" $ do
     it "Parse valid wkb polygon" $
-      Wkb.parseByteString exampleWkbPolygon `shouldBe` (Right $ Geospatial.Polygon $ Geospatial.GeoPolygon (Vector.singleton SpecHelper.linearRing1))
+      Wkb.parseByteString exampleWkbPolygon `shouldBe` (Right $ Geospatial.Polygon $ Geospatial.GeoPolygon (Sequence.singleton SpecHelper.linearRing1))
     it "Not parse bad wkb polygon" $
       Wkb.parseByteString exampleBadWkbPolygon `shouldBe` Left "Could not parse wkb: First and last points of linear ring are different: first=GeoPointXY (PointXY {_xyX = 1.0, _xyY = 2.0}) last=GeoPointXY (PointXY {_xyX = 7.0, _xyY = 8.0})"
 
@@ -63,9 +63,9 @@ testWkbMultiPolygonParsing =
   describe "Test wkb multi polygon" $
     it "Parse valid wkb multi polygon" $
       Wkb.parseByteString exampleWkbMultiPolygon `shouldBe` (Right $ Geospatial.MultiPolygon $ Geospatial.GeoMultiPolygon
-        (Vector.fromList
-          [ Vector.singleton SpecHelper.linearRing1
-          , Vector.singleton SpecHelper.linearRing2
+        (Sequence.fromList
+          [ Sequence.singleton SpecHelper.linearRing1
+          , Sequence.singleton SpecHelper.linearRing2
         ]))
 
 exampleWkbMultiPolygon :: LazyByteString.ByteString

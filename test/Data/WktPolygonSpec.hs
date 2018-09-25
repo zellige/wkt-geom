@@ -2,15 +2,14 @@
 
 module Data.WktPolygonSpec where
 
-import           Control.Lens         ((^?!))
-import qualified Data.Geospatial      as Geospatial
-import qualified Data.LinearRing      as LinearRing
-import qualified Data.Sequence        as Sequence
-import qualified Data.Vector.Storable as VectorStorable
-import           Test.Hspec           (Spec, describe, it, shouldBe)
-import qualified Text.Trifecta        as Trifecta
+import           Control.Lens    ((^?!))
+import qualified Data.Geospatial as Geospatial
+import qualified Data.LinearRing as LinearRing
+import qualified Data.Sequence   as Sequence
+import           Test.Hspec      (Spec, describe, it, shouldBe)
+import qualified Text.Trifecta   as Trifecta
 
-import qualified Data.Wkt             as Wkt
+import qualified Data.Wkt        as Wkt
 
 spec :: Spec
 spec = do
@@ -43,22 +42,22 @@ testMultiPolygons =
 
 examplePolygon :: Geospatial.GeoPolygon
 examplePolygon =
-  Geospatial.GeoPolygon (Vector.singleton linearRingSingle)
+  Geospatial.GeoPolygon (Sequence.singleton linearRingSingle)
 
 examplePolygonWithHole :: Geospatial.GeoPolygon
 examplePolygonWithHole = Geospatial.GeoPolygon linearRingDouble
 
 linearRingSingle :: LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS
-linearRingSingle = LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 4.0 0.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 0.0 4.0)) (Geospatial.GeoPointXY (Geospatial.PointXY (-4.0) 0.0)) (VectorStorable.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 0.0 (-4.0))])
+linearRingSingle = LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 4.0 0.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 0.0 4.0)) (Geospatial.GeoPointXY (Geospatial.PointXY (-4.0) 0.0)) (Sequence.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 0.0 (-4.0))])
 
-linearRingDouble :: Vector.Vector (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
-linearRingDouble = Vector.fromList
+linearRingDouble :: Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
+linearRingDouble = Sequence.fromList
   [ linearRingSingle
-  , LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 2.0 0.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 0.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY (-2.0) 0.0)) (VectorStorable.fromList [ Geospatial.GeoPointXY (Geospatial.PointXY 0.0 (-2.0))])
+  , LinearRing.makeLinearRing (Geospatial.GeoPointXY (Geospatial.PointXY 2.0 0.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 0.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY (-2.0) 0.0)) (Sequence.fromList [ Geospatial.GeoPointXY (Geospatial.PointXY 0.0 (-2.0))])
   ]
 
 exampleMultiPolygon :: Geospatial.GeoMultiPolygon
-exampleMultiPolygon = Geospatial.GeoMultiPolygon (Vector.singleton (Vector.singleton linearRingSingle))
+exampleMultiPolygon = Geospatial.GeoMultiPolygon (Sequence.singleton (Sequence.singleton linearRingSingle))
 
 exampleMultiPolygonWithHole :: Geospatial.GeoMultiPolygon
-exampleMultiPolygonWithHole = Geospatial.GeoMultiPolygon (Vector.singleton linearRingDouble)
+exampleMultiPolygonWithHole = Geospatial.GeoMultiPolygon (Sequence.singleton linearRingDouble)

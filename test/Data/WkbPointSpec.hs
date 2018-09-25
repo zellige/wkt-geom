@@ -36,7 +36,7 @@ testWkbMultiPointParsing :: Spec
 testWkbMultiPointParsing =
   describe "Test wkb multi point" $
     it "Parse valid wkb multi point" $
-      Wkb.parseByteString exampleWkbMultiPoint `shouldBe` (Right $ Geospatial.MultiPoint (Geospatial.GeoMultiPoint (Vector.fromList [SpecHelper.point1, SpecHelper.point2])))
+      Wkb.parseByteString exampleWkbMultiPoint `shouldBe` (Right $ Geospatial.MultiPoint (Geospatial.GeoMultiPoint (Sequence.fromList [SpecHelper.point1, SpecHelper.point2])))
 
 exampleWkbMultiPoint :: LazyByteString.ByteString
 exampleWkbMultiPoint =

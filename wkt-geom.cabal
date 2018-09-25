@@ -69,6 +69,7 @@ test-suite wkt-geom-test
                      , binary          >= 0.8
                      , ansi-wl-pprint  >= 0.6
                      , bytestring      >= 0.10
+                     , containers
                      , geojson         >= 2.0.0
                      , hspec
                      , lens

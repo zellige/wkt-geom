@@ -57,4 +57,4 @@ examplePoint :: Geospatial.GeoPoint
 examplePoint = Geospatial.GeoPoint (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0))
 
 exampleMultiPoint :: Geospatial.GeoMultiPoint
-exampleMultiPoint = Geospatial.GeoMultiPoint (Vector.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0), Geospatial.GeoPointXY (Geospatial.PointXY 2.0 2.0)])
+exampleMultiPoint = Geospatial.GeoMultiPoint (Sequence.fromList [Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0), Geospatial.GeoPointXY (Geospatial.PointXY 2.0 2.0)])
