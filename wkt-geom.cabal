@@ -1,5 +1,5 @@
 name:                wkt-geom
-version:             0.0.2
+version:             0.0.3
 synopsis:            A parser of WKT, WKB and eWKB.
 description:         Well Known Text (WKT), Well Known Binary and the Postgresql extension Extended Well Know Binary (eWKB) are vector geometry representations.
                      .
@@ -39,8 +39,8 @@ library
   build-depends:       base < 5 &&      >= 4.8 
                      , binary           >= 0.8
                      , bytestring       >= 0.10
-                     , containers      >= 0.5.10.1
-                     , geojson          >= 3.0.1
+                     , containers       >= 0.5.10.1
+                     , geojson          >= 3.0.2
                      , scientific       >= 0.3.6
                      , trifecta         >= 1.7
                      , utf8-string      >= 1
@@ -70,7 +70,7 @@ test-suite wkt-geom-test
                      , ansi-wl-pprint  >= 0.6
                      , bytestring      >= 0.10
                      , containers      >= 0.5.10.1
-                     , geojson         >= 3.0.1
+                     , geojson         >= 3.0.2
                      , hspec
                      , lens
                      , QuickCheck
@@ -88,4 +88,4 @@ source-repository head
 source-repository this
   type:     git
   location: https://github.com/indicatrix/hs-geojson.git
-  tag:      0.0.2
+  tag:      0.0.3
