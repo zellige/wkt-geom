@@ -8,7 +8,6 @@ module Data.Internal.Wkb.Point
 import qualified Data.Binary.Get                      as BinaryGet
 import qualified Data.Geospatial                      as Geospatial
 import qualified Data.Sequence                        as Sequence
-import qualified Data.Vector.Storable                 as VectorStorable
 import qualified Data.Word                            as Word
 
 import qualified Data.Internal.Wkb.Endian             as Endian

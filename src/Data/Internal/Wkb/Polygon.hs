@@ -13,6 +13,7 @@ import qualified Data.Internal.Wkb.Endian             as Endian
 import qualified Data.Internal.Wkb.Geometry           as Geometry
 import qualified Data.Internal.Wkb.GeometryCollection as GeometryCollection
 import qualified Data.Internal.Wkb.Point              as Point
+import qualified Data.SeqHelper                       as SeqHelper
 
 polygon :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 polygon endianType coordType = do
@@ -44,7 +45,7 @@ getLinearRing endianType coordType = do
     p3 <- Point.coordPoint endianType coordType
     pts@(_ Sequence.:|> lastS) <- Point.coordPoints endianType coordType (numberOfPoints - 3)
     if lastS == p1 then
-      pure $ LinearRing.makeLinearRing p1 p2 p3 (sequenceHead pts)
+      pure $ LinearRing.makeLinearRing p1 p2 p3 (SeqHelper.sequenceHead pts)
     else
       Monad.fail $
         "First and last points of linear ring are different: first="
@@ -53,8 +54,3 @@ getLinearRing endianType coordType = do
     Monad.fail $
       "Must have at least four points for a linear ring: "
        ++ show numberOfPoints
-
--- All but the last
-sequenceHead :: Sequence.Seq a -> Sequence.Seq a
-sequenceHead (headS Sequence.:|> _) = headS
-sequenceHead _                      = Sequence.empty

@@ -14,6 +14,7 @@ import qualified Text.Trifecta            as Trifecta
 import qualified Data.Internal.Wkt.Common as Wkt
 import qualified Data.Internal.Wkt.Line   as Line
 import qualified Data.Internal.Wkt.Point  as Point
+import qualified Data.SeqHelper           as SeqHelper
 
 polygon :: Trifecta.Parser Geospatial.GeoPolygon
 polygon = do
@@ -53,16 +54,11 @@ linearRing = do
   third <- Line.commandPoint
   rest <- Trifecta.many Line.commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
-  pure $ LinearRing.makeLinearRing first second third (sequenceHead $ Sequence.fromList rest)
+  pure $ LinearRing.makeLinearRing first second third (SeqHelper.sequenceHead $ Sequence.fromList rest)
 
 emptyPolygon :: Geospatial.GeoPolygon
 emptyPolygon = Geospatial.GeoPolygon Sequence.empty
 
 emptyMultiPolygon :: Geospatial.GeoMultiPolygon
 emptyMultiPolygon = Geospatial.mergeGeoPolygons Sequence.empty
-
--- All but the last
-sequenceHead :: Sequence.Seq a -> Sequence.Seq a
-sequenceHead (headS Sequence.:|> _) = headS
-sequenceHead _                      = Sequence.empty
 
