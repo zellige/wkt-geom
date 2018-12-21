@@ -21,7 +21,7 @@ point endianType coordType = do
 
 multiPoint :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 multiPoint getWkbGeom endianType _ = do
-  numberOfPoints <- Endian.fourBytes endianType
+  numberOfPoints <- Endian.getFourBytes endianType
   geoPoints <- Sequence.replicateM (fromIntegral numberOfPoints) (GeometryCollection.enclosedFeature getWkbGeom Geometry.Point geoPoint)
   pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
@@ -38,22 +38,22 @@ coordPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geos
 coordPoint endianType coordType =
   case coordType of
     Geometry.TwoD -> do
-      x <- Endian.doubleBytes endianType
-      y <- Endian.doubleBytes endianType
+      x <- Endian.getDoubleBytes endianType
+      y <- Endian.getDoubleBytes endianType
       pure $ Geospatial.GeoPointXY (Geospatial.PointXY x y)
     Geometry.Z -> do
-      x <- Endian.doubleBytes endianType
-      y <- Endian.doubleBytes endianType
-      z <- Endian.doubleBytes endianType
+      x <- Endian.getDoubleBytes endianType
+      y <- Endian.getDoubleBytes endianType
+      z <- Endian.getDoubleBytes endianType
       pure $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)
     Geometry.M -> do
-      x <- Endian.doubleBytes endianType
-      y <- Endian.doubleBytes endianType
-      m <- Endian.doubleBytes endianType
+      x <- Endian.getDoubleBytes endianType
+      y <- Endian.getDoubleBytes endianType
+      m <- Endian.getDoubleBytes endianType
       pure $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y m)
     Geometry.ZM -> do
-      x <- Endian.doubleBytes endianType
-      y <- Endian.doubleBytes endianType
-      z <- Endian.doubleBytes endianType
-      m <- Endian.doubleBytes endianType
+      x <- Endian.getDoubleBytes endianType
+      y <- Endian.getDoubleBytes endianType
+      z <- Endian.getDoubleBytes endianType
+      m <- Endian.getDoubleBytes endianType
       pure $ Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m)

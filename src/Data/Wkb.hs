@@ -17,7 +17,7 @@ import qualified Data.Internal.Wkb.Geospatial as WkbGeospatial
 parseByteString :: LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry
 parseByteString byteString =
   case BinaryGet.runGetOrFail
-        (WkbGeospatial.geospatialGeometry Geometry.geometryTypeWithCoords)
+        (WkbGeospatial.geospatialGeometry Geometry.getGeometryTypeWithCoords)
         byteString of
     Left (_, _, err)                 -> Left $ "Could not parse wkb: " ++ err
     Right (_, _, geoSpatialGeometry) -> Right geoSpatialGeometry

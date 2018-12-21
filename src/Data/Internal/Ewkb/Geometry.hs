@@ -19,14 +19,14 @@ data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryType SridType deriving (Sho
 
 ewkbGeometryType :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
 ewkbGeometryType endianType = do
-  rawGeometryType <- Endian.fourBytes endianType
+  rawGeometryType <- Endian.getFourBytes endianType
   ewkbSrid <- getEwkbSrid endianType rawGeometryType
   geomType <- rawtoWkbGeometryType rawGeometryType
   pure $ EwkbGeom geomType ewkbSrid
 
 wkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType
 wkbGeometryType endianType = do
-  rawGeometryType <- Endian.fourBytes endianType
+  rawGeometryType <- Endian.getFourBytes endianType
   _ <- getEwkbSrid endianType rawGeometryType
   rawtoWkbGeometryType rawGeometryType
 
@@ -41,7 +41,7 @@ rawtoWkbGeometryType rawGeometryType = do
 getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get SridType
 getEwkbSrid endianType int =
   if int .&. 0x20000000 /= 0 then do
-    srid <- Endian.fourBytes endianType
+    srid <- Endian.getFourBytes endianType
     if srid == 4326 then
       pure $ Srid srid
     else

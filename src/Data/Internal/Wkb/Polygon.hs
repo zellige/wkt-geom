@@ -22,7 +22,7 @@ polygon endianType coordType = do
 
 multiPolygon :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 multiPolygon getWkbGeom endianType _ = do
-  numberOfPolygons <- Endian.fourBytes endianType
+  numberOfPolygons <- Endian.getFourBytes endianType
   geoPolygons <- Sequence.replicateM (fromIntegral numberOfPolygons) (GeometryCollection.enclosedFeature getWkbGeom Geometry.Polygon getGeoPolygon)
   pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
 
@@ -33,12 +33,12 @@ getGeoPolygon endianType coordType = do
 
 getLinearRings :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get (Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS))
 getLinearRings endianType coordType = do
-  numberOfRings <- Endian.fourBytes endianType
+  numberOfRings <- Endian.getFourBytes endianType
   Sequence.replicateM (fromIntegral numberOfRings) (getLinearRing endianType coordType)
 
 getLinearRing :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
 getLinearRing endianType coordType = do
-  numberOfPoints <- Endian.fourBytes endianType
+  numberOfPoints <- Endian.getFourBytes endianType
   if numberOfPoints >= 4 then do
     p1 <- Point.coordPoint endianType coordType
     p2 <- Point.coordPoint endianType coordType

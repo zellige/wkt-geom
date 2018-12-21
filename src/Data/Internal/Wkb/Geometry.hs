@@ -2,11 +2,13 @@ module Data.Internal.Wkb.Geometry
   ( GeometryType (..)
   , CoordinateType (..)
   , WkbGeometryType (..)
-  , geometryTypeWithCoords
+  , getGeometryTypeWithCoords
+  , geometryTypeToBuilder
   ) where
 
 import qualified Control.Monad            as Monad
 import qualified Data.Binary.Get          as BinaryGet
+import qualified Data.ByteString.Builder  as ByteStringBuilder
 import qualified Data.Word                as Word
 
 import qualified Data.Internal.Wkb.Endian as Endian
@@ -25,9 +27,9 @@ data CoordinateType = TwoD | Z | M | ZM  deriving (Show, Eq)
 
 data WkbGeometryType = WkbGeom GeometryType CoordinateType deriving (Show, Eq)
 
-geometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
-geometryTypeWithCoords endianType = do
-  fullGeometryType <- Endian.fourBytes endianType
+getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
+getGeometryTypeWithCoords endianType = do
+  fullGeometryType <- Endian.getFourBytes endianType
   let geomType = intToGeometryType $ fullGeometryType `rem` 1000
       coordType = intToCoordinateType $ fullGeometryType `div` 1000
   case (geomType, coordType) of
@@ -48,6 +50,18 @@ intToGeometryType int =
     7 -> Just GeometryCollection
     _ -> Nothing
 
+geometryTypeToInt :: GeometryType -> Word.Word32
+geometryTypeToInt geometryType =
+  case geometryType of
+    Geometry           -> 0
+    Point              -> 1
+    LineString         -> 2
+    Polygon            -> 3
+    MultiPoint         -> 4
+    MultiLineString    -> 5
+    MultiPolygon       -> 6
+    GeometryCollection -> 7
+
 intToCoordinateType :: Word.Word32 -> Maybe CoordinateType
 intToCoordinateType int =
   case int of
@@ -56,3 +70,20 @@ intToCoordinateType int =
     2 -> Just M
     3 -> Just ZM
     _ -> Nothing
+
+coordinateTypeToInt :: CoordinateType -> Word.Word32
+coordinateTypeToInt coordinateType =
+  case coordinateType of
+    TwoD -> 0
+    Z    -> 1
+    M    -> 2
+    ZM   -> 3
+
+geometryTypeToBuilder :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
+geometryTypeToBuilder endianType (WkbGeom geometryType coordinateType) = do
+  let int = (coordinateTypeToInt coordinateType) * 1000 + (geometryTypeToInt geometryType)
+  case endianType of
+    Endian.LittleEndian ->
+      ByteStringBuilder.word32LE int
+    Endian.BigEndian ->
+      ByteStringBuilder.word32BE int

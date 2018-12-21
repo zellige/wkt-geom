@@ -4,8 +4,6 @@ module Data.Internal.Wkb.EndianSpec where
 
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
-import qualified Data.ByteString.Lazy     as LazyByteString
-import qualified GHC.Word                 as Word
 import           Test.Hspec               (Spec, describe, it, shouldBe)
 
 import qualified Data.Internal.Wkb.Endian as Endian
@@ -18,12 +16,13 @@ testGetEndian :: Spec
 testGetEndian =
   describe "get endian" $ do
     it "Returns BigEndian for 0" $
-      BinaryGet.runGet Endian.endianType (getByteString 0) `shouldBe` Endian.BigEndian
+      roundTrip Endian.BigEndian `shouldBe` Endian.BigEndian
     it "Returns LittleEndian for 1" $
-      BinaryGet.runGet Endian.endianType (getByteString 1) `shouldBe` Endian.LittleEndian
+      roundTrip Endian.LittleEndian `shouldBe` Endian.LittleEndian
     it "Returns fail for other" $
-      BinaryGet.runGetOrFail Endian.endianType (getByteString 5) `shouldBe` Left ("", 1, "Invalid EndianType")
+      BinaryGet.runGetOrFail Endian.getEndianType (ByteStringBuilder.toLazyByteString $ ByteStringBuilder.word8 5) `shouldBe` Left ("", 1, "Invalid EndianType")
 
-getByteString :: Word.Word8 -> LazyByteString.ByteString
-getByteString int =
-  ByteStringBuilder.toLazyByteString $ ByteStringBuilder.word8 int
+roundTrip :: Endian.EndianType -> Endian.EndianType
+roundTrip endianType =
+  BinaryGet.runGet Endian.getEndianType encodedEndianType
+  where encodedEndianType = ByteStringBuilder.toLazyByteString $ Endian.endianTypeToBuilder endianType

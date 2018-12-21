@@ -16,7 +16,7 @@ geometryCollection :: BinaryGet.Get Geospatial.GeospatialGeometry
                           -> Geometry.CoordinateType
                           -> BinaryGet.Get Geospatial.GeospatialGeometry
 geometryCollection getGeospatialGeometry endianType _ = do
-  numberOfGeometries <- Endian.fourBytes endianType
+  numberOfGeometries <- Endian.getFourBytes endianType
   geoSpatialGeometries <- Sequence.replicateM (fromIntegral numberOfGeometries) getGeospatialGeometry
   pure $ Geospatial.Collection geoSpatialGeometries
 
@@ -25,7 +25,7 @@ enclosedFeature :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType)
                       -> (Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get feature)
                       -> BinaryGet.Get feature
 enclosedFeature getWkbGeom expectedGeometryType getFeature = do
-  endianType <- Endian.endianType
+  endianType <- Endian.getEndianType
   geometryTypeWithCoords <- getWkbGeom endianType
   let (Geometry.WkbGeom geoType coordType) = geometryTypeWithCoords
   if geoType == expectedGeometryType then

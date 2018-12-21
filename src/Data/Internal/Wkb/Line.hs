@@ -21,13 +21,13 @@ line endianType coordType = do
 
 multiLine :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 multiLine getWkbGeom endianType _ = do
-  numberOfLines <- Endian.fourBytes endianType
+  numberOfLines <- Endian.getFourBytes endianType
   geoLines <- Sequence.replicateM (fromIntegral numberOfLines) (GeometryCollection.enclosedFeature getWkbGeom Geometry.LineString geoLine)
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
 
 geoLine :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoLine
 geoLine endianType coordType = do
-  numberOfPoints <- Endian.fourBytes endianType
+  numberOfPoints <- Endian.getFourBytes endianType
   if numberOfPoints >= 2 then do
     p1 <- Point.coordPoint endianType coordType
     p2 <- Point.coordPoint endianType coordType

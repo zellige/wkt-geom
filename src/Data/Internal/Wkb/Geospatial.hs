@@ -15,7 +15,7 @@ import qualified Data.Internal.Wkb.Polygon            as Polygon
 geospatialGeometry :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType)
                       -> BinaryGet.Get Geospatial.GeospatialGeometry
 geospatialGeometry getWkbGeom = do
-  endianType <- Endian.endianType
+  endianType <- Endian.getEndianType
   geometryTypeWithCoords <- getWkbGeom endianType
   let (Geometry.WkbGeom geomType coordType) = geometryTypeWithCoords
   getFeature geomType getWkbGeom endianType coordType
