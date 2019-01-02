@@ -29,9 +29,9 @@ geoLine :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospat
 geoLine endianType coordType = do
   numberOfPoints <- Endian.getFourBytes endianType
   if numberOfPoints >= 2 then do
-    p1 <- Point.coordPoint endianType coordType
-    p2 <- Point.coordPoint endianType coordType
-    pts <- Point.coordPoints endianType coordType (numberOfPoints - 2)
+    p1 <- Point.getCoordPoint endianType coordType
+    p2 <- Point.getCoordPoint endianType coordType
+    pts <- Point.getCoordPoints endianType coordType (numberOfPoints - 2)
     pure $ Geospatial.GeoLine $ LineString.makeLineString p1 p2 pts
   else
     Monad.fail "Must have at least two points for a line"

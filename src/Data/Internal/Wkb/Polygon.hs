@@ -40,10 +40,10 @@ getLinearRing :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get (
 getLinearRing endianType coordType = do
   numberOfPoints <- Endian.getFourBytes endianType
   if numberOfPoints >= 4 then do
-    p1 <- Point.coordPoint endianType coordType
-    p2 <- Point.coordPoint endianType coordType
-    p3 <- Point.coordPoint endianType coordType
-    pts@(_ Sequence.:|> lastS) <- Point.coordPoints endianType coordType (numberOfPoints - 3)
+    p1 <- Point.getCoordPoint endianType coordType
+    p2 <- Point.getCoordPoint endianType coordType
+    p3 <- Point.getCoordPoint endianType coordType
+    pts@(_ Sequence.:|> lastS) <- Point.getCoordPoints endianType coordType (numberOfPoints - 3)
     if lastS == p1 then
       pure $ LinearRing.makeLinearRing p1 p2 p3 (SeqHelper.sequenceHead pts)
     else
