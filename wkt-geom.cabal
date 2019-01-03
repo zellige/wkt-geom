@@ -73,6 +73,7 @@ test-suite wkt-geom-test
                      , geojson         >= 3.0.3
                      , hedgehog
                      , hspec
+                     , hw-hspec-hedgehog
                      , lens
                      , QuickCheck
                      , scientific      >= 0.3.6

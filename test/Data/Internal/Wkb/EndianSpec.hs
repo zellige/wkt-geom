@@ -1,9 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Internal.Wkb.EndianSpec where
+module Data.Internal.Wkb.EndianSpec
+  ( genEndianType
+  , spec ) where
 
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
+import           Hedgehog
+import qualified Hedgehog.Gen             as Gen
 import           Test.Hspec               (Spec, describe, it, shouldBe)
 
 import qualified Data.Internal.Wkb.Endian as Endian
@@ -26,3 +30,9 @@ roundTrip :: Endian.EndianType -> Endian.EndianType
 roundTrip endianType =
   BinaryGet.runGet Endian.getEndianType encodedEndianType
   where encodedEndianType = ByteStringBuilder.toLazyByteString $ Endian.builderEndianType endianType
+
+genEndianType :: Gen Endian.EndianType
+genEndianType = Gen.choice
+  [ Gen.constant Endian.BigEndian
+  , Gen.constant Endian.LittleEndian
+  ]

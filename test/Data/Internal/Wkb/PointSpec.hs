@@ -3,47 +3,42 @@
 
 module Data.Internal.Wkb.PointSpec where
 
-import qualified Data.Binary.Get            as BinaryGet
-import qualified Data.ByteString.Builder    as ByteStringBuilder
-import qualified Data.ByteString.Lazy       as LazyByteString
-import qualified Data.Geospatial            as Geospatial
-import           Data.Monoid                ((<>))
-import qualified Data.Sequence              as Sequence
-import qualified Data.SpecHelper            as SpecHelper
+import qualified Data.Binary.Get              as BinaryGet
+import qualified Data.ByteString.Builder      as ByteStringBuilder
+import qualified Data.ByteString.Lazy         as LazyByteString
+import qualified Data.Geospatial              as Geospatial
+import           Data.Monoid                  ((<>))
+import qualified Data.Sequence                as Sequence
+import qualified Data.SpecHelper              as SpecHelper
+import qualified HaskellWorks.Hspec.Hedgehog  as HedgehogHspec
 import           Hedgehog
-import qualified Hedgehog.Gen               as Gen
-import qualified Hedgehog.Range             as Range
-import           Test.Hspec                 (Spec, describe, it, runIO,
-                                             shouldBe)
+import qualified Hedgehog.Gen                 as Gen
+import qualified Hedgehog.Range               as Range
+import           Test.Hspec                   (Spec, describe, it, shouldBe)
 
-import qualified Data.Internal.Wkb.Endian   as Endian
-import qualified Data.Internal.Wkb.Geometry as Geometry
-import qualified Data.Internal.Wkb.Point    as Point
-import qualified Data.Wkb                   as Wkb
+import qualified Data.Internal.Wkb.EndianSpec as EndianSpec
+import qualified Data.Internal.Wkb.Geometry   as Geometry
+import qualified Data.Internal.Wkb.Point      as Point
+import qualified Data.Wkb                     as Wkb
 
 spec :: Spec
 spec = do
+  testCoordPointParsing
   testWkbPointParsing
   testWkbMultiPointParsing
-  runIO $ checkParallel $$(discover) >>= \_ -> return ()
 
-prop_CoordPointParsing :: Property
-prop_CoordPointParsing =
-  property $ do
-    coordPoint <- forAll genGeoPointXY
-    endianType <- forAll genEndianType
-    roundTrip endianType coordPoint === coordPoint
+testCoordPointParsing :: Spec
+testCoordPointParsing =
+  describe "Test coord point" $
+    it "Round trips coord point" $ HedgehogHspec.require $ property $ do
+      coordPoint <- forAll genGeoPointXY
+      endianType <- forAll EndianSpec.genEndianType
+      roundTrip endianType coordPoint === coordPoint
   where
     roundTrip endianType coordPoint  =
       BinaryGet.runGet (Point.getCoordPoint endianType Geometry.TwoD) (encodedCoordPoint endianType coordPoint)
     encodedCoordPoint endianType coordPoint =
       ByteStringBuilder.toLazyByteString $ Point.builderCoordPoint endianType coordPoint
-
-genEndianType :: Gen Endian.EndianType
-genEndianType = Gen.choice
-  [ Gen.constant Endian.BigEndian
-  , Gen.constant Endian.LittleEndian
-  ]
 
 genGeoPointXY :: Gen Geospatial.GeoPositionWithoutCRS
 genGeoPointXY = do
