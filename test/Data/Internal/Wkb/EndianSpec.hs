@@ -25,4 +25,4 @@ testGetEndian =
 roundTrip :: Endian.EndianType -> Endian.EndianType
 roundTrip endianType =
   BinaryGet.runGet Endian.getEndianType encodedEndianType
-  where encodedEndianType = ByteStringBuilder.toLazyByteString $ Endian.endianTypeToBuilder endianType
+  where encodedEndianType = ByteStringBuilder.toLazyByteString $ Endian.builderEndianType endianType

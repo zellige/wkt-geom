@@ -3,9 +3,9 @@ module Data.Internal.Wkb.Endian
   , getEndianType
   , getFourBytes
   , getDouble
-  , endianTypeToBuilder
-  , fourBytesToBuilder
-  , doubleToBuilder
+  , builderEndianType
+  , builderFourBytes
+  , builderDouble
   ) where
 
 import qualified Control.Monad           as Monad
@@ -42,20 +42,20 @@ getDouble endianType =
     BigEndian ->
       BinaryGet.getDoublebe
 
-endianTypeToBuilder :: EndianType -> ByteStringBuilder.Builder
-endianTypeToBuilder BigEndian    = ByteStringBuilder.word8 0
-endianTypeToBuilder LittleEndian = ByteStringBuilder.word8 1
+builderEndianType :: EndianType -> ByteStringBuilder.Builder
+builderEndianType BigEndian    = ByteStringBuilder.word8 0
+builderEndianType LittleEndian = ByteStringBuilder.word8 1
 
-fourBytesToBuilder :: EndianType -> Word.Word32 -> ByteStringBuilder.Builder
-fourBytesToBuilder endianType =
+builderFourBytes :: EndianType -> Word.Word32 -> ByteStringBuilder.Builder
+builderFourBytes endianType =
   case endianType of
     LittleEndian ->
       ByteStringBuilder.word32LE
     BigEndian ->
       ByteStringBuilder.word32BE
 
-doubleToBuilder :: EndianType -> Double -> ByteStringBuilder.Builder
-doubleToBuilder endianType =
+builderDouble :: EndianType -> Double -> ByteStringBuilder.Builder
+builderDouble endianType =
   case endianType of
     LittleEndian ->
       ByteStringBuilder.doubleLE

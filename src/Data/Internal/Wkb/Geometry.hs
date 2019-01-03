@@ -3,7 +3,7 @@ module Data.Internal.Wkb.Geometry
   , CoordinateType (..)
   , WkbGeometryType (..)
   , getGeometryTypeWithCoords
-  , geometryTypeToBuilder
+  , builderGeometryType
   ) where
 
 import qualified Control.Monad            as Monad
@@ -79,7 +79,7 @@ coordinateTypeToInt coordinateType =
     M    -> 2
     ZM   -> 3
 
-geometryTypeToBuilder :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
-geometryTypeToBuilder endianType (WkbGeom geometryType coordinateType) = do
+builderGeometryType :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
+builderGeometryType endianType (WkbGeom geometryType coordinateType) = do
   let int = (coordinateTypeToInt coordinateType) * 1000 + (geometryTypeToInt geometryType)
-  Endian.fourBytesToBuilder endianType int
+  Endian.builderFourBytes endianType int

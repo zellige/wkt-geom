@@ -28,7 +28,7 @@ testGetGeometryTypeWithCoords geometryType =
 roundTrip :: Endian.EndianType -> Geometry.WkbGeometryType -> Geometry.WkbGeometryType
 roundTrip endianType geometryType =
   BinaryGet.runGet (Geometry.getGeometryTypeWithCoords endianType) encodedGeometryType
-  where encodedGeometryType = ByteStringBuilder.toLazyByteString $ Geometry.geometryTypeToBuilder endianType geometryType
+  where encodedGeometryType = ByteStringBuilder.toLazyByteString $ Geometry.builderGeometryType endianType geometryType
 
 geometryTypes :: [Geometry.WkbGeometryType]
 geometryTypes =
