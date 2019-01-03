@@ -1,8 +1,10 @@
 module Data.Internal.Wkb.Point
   ( getPoint
   , getMultiPoint
+  , getGeoPoint
   , getCoordPoint
   , getCoordPoints
+  , builderPoint
   , builderCoordPoint
   , builderCoordPoints
   ) where
@@ -11,6 +13,7 @@ import qualified Data.Binary.Get                      as BinaryGet
 import qualified Data.ByteString.Builder              as ByteStringBuilder
 import qualified Data.Foldable                        as Foldable
 import qualified Data.Geospatial                      as Geospatial
+import           Data.Monoid                          ((<>))
 import qualified Data.Monoid                          as Monoid
 import qualified Data.Sequence                        as Sequence
 import qualified Data.Word                            as Word
@@ -21,8 +24,8 @@ import qualified Data.Internal.Wkb.GeometryCollection as GeometryCollection
 
 getPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getPoint endianType coordType = do
-  gp <- getGeoPoint endianType coordType
-  pure $ Geospatial.Point gp
+  geoPoint <- getGeoPoint endianType coordType
+  pure $ Geospatial.Point geoPoint
 
 getMultiPoint :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiPoint getWkbGeom endianType _ = do
@@ -62,6 +65,16 @@ getCoordPoint endianType coordType =
 getCoordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 getCoordPoints endianType coordType numberOfPoints =
   Sequence.replicateM (fromIntegral numberOfPoints) (getCoordPoint endianType coordType)
+
+builderPoint :: Endian.EndianType -> Geospatial.GeoPoint -> ByteStringBuilder.Builder
+builderPoint endianType (Geospatial.GeoPoint coordPoint) =
+  case Geometry.geoPositionWithoutCRSToCoordinateType coordPoint of
+    Just coordinateType ->
+      Endian.builderEndianType endianType
+        <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.Point coordinateType)
+        <> builderCoordPoint endianType coordPoint
+    Nothing ->
+      Monoid.mempty
 
 builderCoordPoint :: Endian.EndianType -> Geospatial.GeoPositionWithoutCRS -> ByteStringBuilder.Builder
 builderCoordPoint endianType coordPoint =

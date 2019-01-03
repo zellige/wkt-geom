@@ -4,12 +4,13 @@ module Data.Internal.Wkb.Geometry
   , WkbGeometryType (..)
   , getGeometryTypeWithCoords
   , builderGeometryType
+  , geoPositionWithoutCRSToCoordinateType
   ) where
 
 import qualified Control.Monad            as Monad
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
-
+import qualified Data.Geospatial          as Geospatial
 import qualified Data.Word                as Word
 
 import qualified Data.Internal.Wkb.Endian as Endian
@@ -71,6 +72,14 @@ intToCoordinateType int =
     2 -> Just M
     3 -> Just ZM
     _ -> Nothing
+
+geoPositionWithoutCRSToCoordinateType :: Geospatial.GeoPositionWithoutCRS -> Maybe CoordinateType
+geoPositionWithoutCRSToCoordinateType geoPosition =
+  case geoPosition of
+    Geospatial.GeoEmpty       -> Nothing
+    Geospatial.GeoPointXY _   -> Just TwoD
+    Geospatial.GeoPointXYZ _  -> Just Z
+    Geospatial.GeoPointXYZM _ -> Just ZM
 
 coordinateTypeToInt :: CoordinateType -> Word.Word32
 coordinateTypeToInt coordinateType =

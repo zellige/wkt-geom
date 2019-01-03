@@ -29,17 +29,12 @@ spec = do
 
 testCoordPointParsing :: Spec
 testCoordPointParsing =
-  describe "get geometry type with coords type for valid data" $
-    mapM_ testCoordPointParsing'
-      [ (Geometry.TwoD, genGeoPointXY)
-      , (Geometry.Z, genGeoPointXYZ)
-      , (Geometry.M, genGeoPointXYZ)
-      , (Geometry.ZM, genGeoPointXYZM)
-      ]
+  describe "Test coord point parsing" $
+    mapM_ testCoordPointParsing' coordPointGenerators
 
 testCoordPointParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
 testCoordPointParsing' (coordType, genCoordPoint) =
-  it ("Round trips coord point: " ++ show coordType) $ HedgehogHspec.require $ property $ do
+  it ("round trips coord point: " ++ show coordType) $ HedgehogHspec.require $ property $ do
     coordPoint <- forAll genCoordPoint
     endianType <- forAll EndianSpec.genEndianType
     roundTrip endianType coordPoint === coordPoint
@@ -49,43 +44,20 @@ testCoordPointParsing' (coordType, genCoordPoint) =
     encodedCoordPoint endianType coordPoint =
       ByteStringBuilder.toLazyByteString $ Point.builderCoordPoint endianType coordPoint
 
-genGeoPointXY :: Gen Geospatial.GeoPositionWithoutCRS
-genGeoPointXY = do
-  x <- genDouble
-  y <- genDouble
-  return $ Geospatial.GeoPointXY (Geospatial.PointXY x y)
-
-genGeoPointXYZ :: Gen Geospatial.GeoPositionWithoutCRS
-genGeoPointXYZ = do
-  x <- genDouble
-  y <- genDouble
-  z <- genDouble
-  return $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)
-
-genGeoPointXYZM :: Gen Geospatial.GeoPositionWithoutCRS
-genGeoPointXYZM = do
-  x <- genDouble
-  y <- genDouble
-  z <- genDouble
-  m <- genDouble
-  return $ Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m)
-
-genDouble :: Gen Double
-genDouble = Gen.double $ Range.linearFrac (-10e12) 10e12
-
 testWkbPointParsing :: Spec
 testWkbPointParsing =
-  describe "Test wkb point" $
-    it "Parse valid wkb point" $
-      Wkb.parseByteString exampleWkbPoint `shouldBe` (Right . Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point1)
+  describe "Test wkb point parsing" $
+    mapM_ testWkbPointParsing' coordPointGenerators
 
-exampleWkbPoint :: LazyByteString.ByteString
-exampleWkbPoint =
-  ByteStringBuilder.toLazyByteString $
-    ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 1.0
-    <> ByteStringBuilder.doubleBE 2.0
+testWkbPointParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
+testWkbPointParsing' (coordType, genCoordPoint) =
+  it ("round trips wkb point: " ++ show coordType) $ HedgehogHspec.require $ property $ do
+    point <- forAll $ genCoordPoint >>= (return . Geospatial.GeoPoint)
+    endianType <- forAll EndianSpec.genEndianType
+    roundTrip endianType point === (Right $ Geospatial.Point point)
+  where
+    roundTrip endianType point  =
+      Wkb.parseByteString (ByteStringBuilder.toLazyByteString $ Point.builderPoint endianType point)
 
 testWkbMultiPointParsing :: Spec
 testWkbMultiPointParsing =
@@ -108,3 +80,34 @@ exampleWkbMultiPoint =
     <> ByteStringBuilder.doubleBE 3.0
     <> ByteStringBuilder.doubleBE 4.0
 
+coordPointGenerators :: [(Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS)]
+coordPointGenerators =
+  [ (Geometry.TwoD, genCoordPointXY)
+  , (Geometry.Z, genCoordPointXYZ)
+  , (Geometry.M, genCoordPointXYZ)
+  , (Geometry.ZM, genCoordPointXYZM)
+  ]
+
+genCoordPointXY :: Gen Geospatial.GeoPositionWithoutCRS
+genCoordPointXY = do
+  x <- genDouble
+  y <- genDouble
+  return $ Geospatial.GeoPointXY (Geospatial.PointXY x y)
+
+genCoordPointXYZ :: Gen Geospatial.GeoPositionWithoutCRS
+genCoordPointXYZ = do
+  x <- genDouble
+  y <- genDouble
+  z <- genDouble
+  return $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)
+
+genCoordPointXYZM :: Gen Geospatial.GeoPositionWithoutCRS
+genCoordPointXYZM = do
+  x <- genDouble
+  y <- genDouble
+  z <- genDouble
+  m <- genDouble
+  return $ Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m)
+
+genDouble :: Gen Double
+genDouble = Gen.double $ Range.linearFrac (-10e12) 10e12
