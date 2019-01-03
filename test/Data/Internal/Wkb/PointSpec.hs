@@ -29,14 +29,23 @@ spec = do
 
 testCoordPointParsing :: Spec
 testCoordPointParsing =
-  describe "Test coord point" $
-    it "Round trips coord point" $ HedgehogHspec.require $ property $ do
-      coordPoint <- forAll genGeoPointXY
-      endianType <- forAll EndianSpec.genEndianType
-      roundTrip endianType coordPoint === coordPoint
+  describe "get geometry type with coords type for valid data" $
+    mapM_ testCoordPointParsing'
+      [ (Geometry.TwoD, genGeoPointXY)
+      , (Geometry.Z, genGeoPointXYZ)
+      , (Geometry.M, genGeoPointXYZ)
+      , (Geometry.ZM, genGeoPointXYZM)
+      ]
+
+testCoordPointParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
+testCoordPointParsing' (coordType, genCoordPoint) =
+  it ("Round trips coord point: " ++ show coordType) $ HedgehogHspec.require $ property $ do
+    coordPoint <- forAll genCoordPoint
+    endianType <- forAll EndianSpec.genEndianType
+    roundTrip endianType coordPoint === coordPoint
   where
     roundTrip endianType coordPoint  =
-      BinaryGet.runGet (Point.getCoordPoint endianType Geometry.TwoD) (encodedCoordPoint endianType coordPoint)
+      BinaryGet.runGet (Point.getCoordPoint endianType coordType) (encodedCoordPoint endianType coordPoint)
     encodedCoordPoint endianType coordPoint =
       ByteStringBuilder.toLazyByteString $ Point.builderCoordPoint endianType coordPoint
 
@@ -45,7 +54,24 @@ genGeoPointXY = do
   x <- genDouble
   y <- genDouble
   return $ Geospatial.GeoPointXY (Geospatial.PointXY x y)
-  where genDouble = Gen.double $ Range.linearFrac (-10000.0) 10000.0
+
+genGeoPointXYZ :: Gen Geospatial.GeoPositionWithoutCRS
+genGeoPointXYZ = do
+  x <- genDouble
+  y <- genDouble
+  z <- genDouble
+  return $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)
+
+genGeoPointXYZM :: Gen Geospatial.GeoPositionWithoutCRS
+genGeoPointXYZM = do
+  x <- genDouble
+  y <- genDouble
+  z <- genDouble
+  m <- genDouble
+  return $ Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m)
+
+genDouble :: Gen Double
+genDouble = Gen.double $ Range.linearFrac (-10e12) 10e12
 
 testWkbPointParsing :: Spec
 testWkbPointParsing =
