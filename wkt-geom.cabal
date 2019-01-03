@@ -57,9 +57,9 @@ test-suite wkt-geom-test
   other-modules:       Data.Internal.Ewkb.GeometrySpec
                      , Data.Internal.Wkb.EndianSpec
                      , Data.Internal.Wkb.GeometrySpec
+                     , Data.Internal.Wkb.LineSpec
                      , Data.Internal.Wkb.PointSpec
                      , Data.WkbGeometryCollectionSpec
-                     , Data.WkbLineSpec
                      , Data.WkbPolygonSpec
                      , Data.WktGeometryCollectionSpec
                      , Data.WktLineSpec

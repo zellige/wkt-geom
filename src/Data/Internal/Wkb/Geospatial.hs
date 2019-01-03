@@ -29,10 +29,10 @@ getFeature geomType getWkbGeom =
   case geomType of
     Geometry.Geometry           -> getNoGeometry
     Geometry.Point              -> Point.getPoint
-    Geometry.LineString         -> Line.line
+    Geometry.LineString         -> Line.getLine
     Geometry.Polygon            -> Polygon.polygon
     Geometry.MultiPoint         -> Point.getMultiPoint getWkbGeom
-    Geometry.MultiLineString    -> Line.multiLine getWkbGeom
+    Geometry.MultiLineString    -> Line.getMultiLine getWkbGeom
     Geometry.MultiPolygon       -> Polygon.multiPolygon getWkbGeom
     Geometry.GeometryCollection -> GeometryCollection.geometryCollection (geospatialGeometry getWkbGeom)
 

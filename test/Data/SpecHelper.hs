@@ -1,9 +1,60 @@
 module Data.SpecHelper where
 
-import qualified Data.Geospatial as Geospatial
-import qualified Data.LinearRing as LinearRing
-import qualified Data.LineString as LineString
-import qualified Data.Sequence   as Sequence
+import qualified Data.Geospatial            as Geospatial
+import qualified Data.LinearRing            as LinearRing
+import qualified Data.LineString            as LineString
+import qualified Data.Sequence              as Sequence
+import           Hedgehog
+import qualified Hedgehog.Gen               as Gen
+import qualified Hedgehog.Range             as Range
+
+import qualified Data.Internal.Wkb.Endian   as Endian
+import qualified Data.Internal.Wkb.Geometry as Geometry
+
+-- Generators
+
+coordPointGenerators :: [(Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS)]
+coordPointGenerators =
+  [ (Geometry.TwoD, genCoordPointXY)
+  , (Geometry.Z, genCoordPointXYZ)
+  , (Geometry.M, genCoordPointXYZ)
+  , (Geometry.ZM, genCoordPointXYZM)
+  ]
+
+genLineString :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (LineString.LineString Geospatial.GeoPositionWithoutCRS)
+genLineString genCoordPoint =
+  LineString.makeLineString <$> genCoordPoint <*> genCoordPoint <*> genCoordPoints genCoordPoint
+
+genCoordPoints :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
+genCoordPoints =
+  Gen.seq (Range.linear 0 100)
+
+genCoordPointXY :: Gen Geospatial.GeoPositionWithoutCRS
+genCoordPointXY = do
+  point <- Geospatial.PointXY <$> genDouble <*> genDouble
+  return $ Geospatial.GeoPointXY point
+
+genCoordPointXYZ :: Gen Geospatial.GeoPositionWithoutCRS
+genCoordPointXYZ = do
+  point <- Geospatial.PointXYZ <$> genDouble <*> genDouble <*> genDouble
+  return $ Geospatial.GeoPointXYZ point
+
+genCoordPointXYZM :: Gen Geospatial.GeoPositionWithoutCRS
+genCoordPointXYZM = do
+  point <- Geospatial.PointXYZM <$> genDouble <*> genDouble <*> genDouble <*> genDouble
+  return $ Geospatial.GeoPointXYZM point
+
+genDouble :: Gen Double
+genDouble = Gen.double $ Range.linearFrac (-10e6) 10e6
+
+genEndianType :: Gen Endian.EndianType
+genEndianType = Gen.choice
+  [ Gen.constant Endian.BigEndian
+  , Gen.constant Endian.LittleEndian
+  ]
+
+
+-- Example
 
 point1 :: Geospatial.GeoPositionWithoutCRS
 point1 = Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)

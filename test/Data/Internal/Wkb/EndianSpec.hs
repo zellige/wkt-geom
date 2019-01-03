@@ -1,8 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Internal.Wkb.EndianSpec
-  ( genEndianType
-  , spec ) where
+module Data.Internal.Wkb.EndianSpec where
 
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
@@ -30,9 +28,3 @@ roundTrip :: Endian.EndianType -> Endian.EndianType
 roundTrip endianType =
   BinaryGet.runGet Endian.getEndianType encodedEndianType
   where encodedEndianType = ByteStringBuilder.toLazyByteString $ Endian.builderEndianType endianType
-
-genEndianType :: Gen Endian.EndianType
-genEndianType = Gen.choice
-  [ Gen.constant Endian.BigEndian
-  , Gen.constant Endian.LittleEndian
-  ]

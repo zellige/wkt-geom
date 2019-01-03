@@ -23,6 +23,8 @@ import qualified Data.Internal.Wkb.Endian             as Endian
 import qualified Data.Internal.Wkb.Geometry           as Geometry
 import qualified Data.Internal.Wkb.GeometryCollection as GeometryCollection
 
+-- Binary parsers
+
 getPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getPoint endianType coordType = do
   geoPoint <- getGeoPoint endianType coordType
@@ -59,6 +61,9 @@ getCoordPoint endianType coordType =
 getCoordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 getCoordPoints endianType coordType numberOfPoints =
   Sequence.replicateM (fromIntegral numberOfPoints) (getCoordPoint endianType coordType)
+
+
+-- Binary builders
 
 builderPoint :: Endian.EndianType -> Geospatial.GeoPoint -> ByteStringBuilder.Builder
 builderPoint endianType (Geospatial.GeoPoint coordPoint) =
