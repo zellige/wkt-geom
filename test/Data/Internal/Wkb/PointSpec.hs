@@ -4,16 +4,13 @@ module Data.Internal.Wkb.PointSpec where
 
 import qualified Data.Binary.Get              as BinaryGet
 import qualified Data.ByteString.Builder      as ByteStringBuilder
-import qualified Data.ByteString.Lazy         as LazyByteString
 import qualified Data.Geospatial              as Geospatial
-import           Data.Monoid                  ((<>))
 import qualified Data.Sequence                as Sequence
-import qualified Data.SpecHelper              as SpecHelper
 import qualified HaskellWorks.Hspec.Hedgehog  as HedgehogHspec
 import           Hedgehog
 import qualified Hedgehog.Gen                 as Gen
 import qualified Hedgehog.Range               as Range
-import           Test.Hspec                   (Spec, describe, it, shouldBe)
+import           Test.Hspec                   (Spec, describe, it)
 
 import qualified Data.Internal.Wkb.EndianSpec as EndianSpec
 import qualified Data.Internal.Wkb.Geometry   as Geometry
@@ -25,6 +22,9 @@ spec = do
   testCoordPointParsing
   testWkbPointParsing
   testWkbMultiPointParsing
+
+
+-- Test Coord Point Parsing
 
 testCoordPointParsing :: Spec
 testCoordPointParsing =
@@ -43,6 +43,9 @@ testCoordPointParsing' (coordType, genCoordPoint) =
     encodedCoordPoint endianType coordPoint =
       ByteStringBuilder.toLazyByteString $ Point.builderCoordPoint endianType coordPoint
 
+
+-- Test Wkb Point Parsing
+
 testWkbPointParsing :: Spec
 testWkbPointParsing =
   describe "Test wkb point parsing" $
@@ -54,30 +57,28 @@ testWkbPointParsing' (coordType, genCoordPoint) =
     point <- forAll $ Geospatial.GeoPoint <$> genCoordPoint
     endianType <- forAll EndianSpec.genEndianType
     roundTrip endianType point === (Right $ Geospatial.Point point)
-  where
-    roundTrip endianType point  =
-      Wkb.parseByteString (ByteStringBuilder.toLazyByteString $ Point.builderPoint endianType point)
+  where roundTrip endianType =
+          Wkb.parseByteString . ByteStringBuilder.toLazyByteString . Point.builderPoint endianType
+
+
+-- Test Wkb MultiPoint Parsing
 
 testWkbMultiPointParsing :: Spec
 testWkbMultiPointParsing =
-  describe "Test wkb multi point" $
-    it "Parse valid wkb multi point" $
-      Wkb.parseByteString exampleWkbMultiPoint `shouldBe` (Right $ Geospatial.MultiPoint (Geospatial.GeoMultiPoint (Sequence.fromList [SpecHelper.point1, SpecHelper.point2])))
+  describe "Test wkb multipoint parsing" $
+    mapM_ testWkbMultiPointParsing' coordPointGenerators
 
-exampleWkbMultiPoint :: LazyByteString.ByteString
-exampleWkbMultiPoint =
-  ByteStringBuilder.toLazyByteString $
-    ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 4
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 1.0
-    <> ByteStringBuilder.doubleBE 2.0
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 3.0
-    <> ByteStringBuilder.doubleBE 4.0
+testWkbMultiPointParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
+testWkbMultiPointParsing' (coordType, genCoordPoint) =
+  it ("round trips wkb multipoint: " ++ show coordType) $ HedgehogHspec.require $ property $ do
+    points <- forAll $ Geospatial.GeoMultiPoint <$> genCoordPoints genCoordPoint
+    endianType <- forAll EndianSpec.genEndianType
+    roundTrip endianType points === (Right $ Geospatial.MultiPoint points)
+  where roundTrip endianType =
+          Wkb.parseByteString . ByteStringBuilder.toLazyByteString . Point.builderMultiPoint endianType
+
+
+-- Helpers
 
 coordPointGenerators :: [(Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS)]
 coordPointGenerators =
@@ -86,6 +87,10 @@ coordPointGenerators =
   , (Geometry.M, genCoordPointXYZ)
   , (Geometry.ZM, genCoordPointXYZM)
   ]
+
+genCoordPoints :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
+genCoordPoints =
+  Gen.seq (Range.linear 0 1000)
 
 genCoordPointXY :: Gen Geospatial.GeoPositionWithoutCRS
 genCoordPointXY = do

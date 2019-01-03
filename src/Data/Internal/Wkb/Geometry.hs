@@ -5,12 +5,15 @@ module Data.Internal.Wkb.Geometry
   , getGeometryTypeWithCoords
   , builderGeometryType
   , geoPositionWithoutCRSToCoordinateType
+  , coordTypeOfSequence
   ) where
 
 import qualified Control.Monad            as Monad
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
 import qualified Data.Geospatial          as Geospatial
+import qualified Data.Maybe               as Maybe
+import qualified Data.Sequence            as Sequence
 import qualified Data.Word                as Word
 
 import qualified Data.Internal.Wkb.Endian as Endian
@@ -38,6 +41,24 @@ getGeometryTypeWithCoords endianType = do
     (Just g, Just c) -> pure $ WkbGeom g c
     _                ->
       Monad.fail $ "Invalid WkbGeometryType: " ++ show fullGeometryType
+
+builderGeometryType :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
+builderGeometryType endianType (WkbGeom geometryType coordinateType) = do
+  let int = coordinateTypeToInt coordinateType * 1000 + geometryTypeToInt geometryType
+  Endian.builderFourBytes endianType int
+
+geoPositionWithoutCRSToCoordinateType :: Geospatial.GeoPositionWithoutCRS -> Maybe CoordinateType
+geoPositionWithoutCRSToCoordinateType geoPosition =
+  case geoPosition of
+    Geospatial.GeoEmpty       -> Nothing
+    Geospatial.GeoPointXY _   -> Just TwoD
+    Geospatial.GeoPointXYZ _  -> Just Z
+    Geospatial.GeoPointXYZM _ -> Just ZM
+
+coordTypeOfSequence :: Sequence.Seq Geospatial.GeoPositionWithoutCRS -> CoordinateType
+coordTypeOfSequence (first Sequence.:<| _) =
+  Maybe.fromMaybe TwoD (geoPositionWithoutCRSToCoordinateType first)
+coordTypeOfSequence _ = TwoD
 
 intToGeometryType :: Word.Word32 -> Maybe GeometryType
 intToGeometryType int =
@@ -73,14 +94,6 @@ intToCoordinateType int =
     3 -> Just ZM
     _ -> Nothing
 
-geoPositionWithoutCRSToCoordinateType :: Geospatial.GeoPositionWithoutCRS -> Maybe CoordinateType
-geoPositionWithoutCRSToCoordinateType geoPosition =
-  case geoPosition of
-    Geospatial.GeoEmpty       -> Nothing
-    Geospatial.GeoPointXY _   -> Just TwoD
-    Geospatial.GeoPointXYZ _  -> Just Z
-    Geospatial.GeoPointXYZM _ -> Just ZM
-
 coordinateTypeToInt :: CoordinateType -> Word.Word32
 coordinateTypeToInt coordinateType =
   case coordinateType of
@@ -88,8 +101,3 @@ coordinateTypeToInt coordinateType =
     Z    -> 1
     M    -> 2
     ZM   -> 3
-
-builderGeometryType :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
-builderGeometryType endianType (WkbGeom geometryType coordinateType) = do
-  let int = coordinateTypeToInt coordinateType * 1000 + geometryTypeToInt geometryType
-  Endian.builderFourBytes endianType int
