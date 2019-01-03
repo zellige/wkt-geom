@@ -9,6 +9,7 @@ module Data.Internal.Wkb.Geometry
 import qualified Control.Monad            as Monad
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
+
 import qualified Data.Word                as Word
 
 import qualified Data.Internal.Wkb.Endian as Endian

@@ -55,9 +55,9 @@ test-suite wkt-geom-test
   other-modules:       Data.Internal.Ewkb.GeometrySpec
                      , Data.Internal.Wkb.EndianSpec
                      , Data.Internal.Wkb.GeometrySpec
+                     , Data.Internal.Wkb.PointSpec
                      , Data.WkbGeometryCollectionSpec
                      , Data.WkbLineSpec
-                     , Data.WkbPointSpec
                      , Data.WkbPolygonSpec
                      , Data.WktGeometryCollectionSpec
                      , Data.WktLineSpec
@@ -71,6 +71,7 @@ test-suite wkt-geom-test
                      , bytestring      >= 0.10
                      , containers      >= 0.5.10.1
                      , geojson         >= 3.0.3
+                     , hedgehog
                      , hspec
                      , lens
                      , QuickCheck
