@@ -1,20 +1,21 @@
-name:                wkt-geom
-version:             0.0.5
-synopsis:            A parser of WKT, WKB and eWKB.
-description:         Well Known Text (WKT), Well Known Binary and the Postgresql extension Extended Well Know Binary (eWKB) are vector geometry representations.
+name:                  wkt-geom
+version:               0.0.5
+synopsis:              A parser of WKT, WKB and eWKB.
+description:           Well Known Text (WKT), Well Known Binary and the Postgresql extension Extended Well Know Binary (eWKB) are vector geometry representations.
                      .
-                     The text or binary representations are parsed and turned into their GeoJSON representations.  The binary representations use vectors throughout
-                     whereas the text representation still uses a list and then is converted to a vector representation.
-homepage:            https://github.com/indicatrix/wkt-geom#readme
-license:             Apache-2.0
-license-file:        LICENSE
-author:              Andrew Newmnan, Dominic Endrei
-maintainer:          andrewfnewman@gmail.com
-copyright:           2017-2019 Wkt-Geom Project
-category:            Data
-build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
+                       The text or binary representations are parsed and turned into their GeoJSON representations.  The   binary representations use vectors throughout
+                       whereas the text representation still uses a list and then is converted to a vector representation.
+homepage:              https://github.com/indicatrix/wkt-geom#readme
+license:               Apache-2.0
+license-file:          LICENSE
+author:                Andrew Newmnan, Dominic Endrei
+maintainer:            andrewfnewman@gmail.com
+copyright:             2017-2019 Wkt-Geom Project
+category:              Data
+build-type:            Simple
+extra-source-files:    README.md
+                     , CHANGELOG.md
+cabal-version:         >=1.10
 
 library
   hs-source-dirs:      src
