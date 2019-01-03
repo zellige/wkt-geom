@@ -9,13 +9,13 @@ module Data.Ewkb
   ) where
 
 import qualified Data.Binary.Get              as BinaryGet
-import qualified Data.ByteString              as ByteString
 import qualified Data.ByteString.Lazy         as LazyByteString
 import qualified Data.Geospatial              as Geospatial
 
 import qualified Data.Internal.Ewkb.Geometry  as EwkbGeometry
-import qualified Data.Internal.Hex            as Hex
 import qualified Data.Internal.Wkb.Geospatial as WkbGeospatial
+
+import qualified Data.Hex                     as Hex
 
 -- |
 -- Representation of EWKB as Binary
@@ -29,5 +29,5 @@ parseByteString byteString =
 
 -- |
 -- Representation of EWKB as a String in Base16/Hex form i.e. "0101000000000000000000f03f0000000000000040" is POINT 1.0 2.0
-parseHexByteString :: ByteString.ByteString -> Either String Geospatial.GeospatialGeometry
+parseHexByteString :: Hex.Hex -> Either String Geospatial.GeospatialGeometry
 parseHexByteString = Hex.safeConvert parseByteString

@@ -1,5 +1,6 @@
-module Data.Internal.Hex
+module Data.Hex
   ( safeConvert
+  , Hex(..)
   ) where
 
 import qualified Data.ByteString        as ByteString
@@ -9,8 +10,10 @@ import qualified Data.ByteString.Lazy   as LazyByteString
 import qualified Data.Geospatial        as Geospatial
 import           Data.Monoid            ((<>))
 
-safeConvert :: (LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry) -> ByteString.ByteString -> Either String Geospatial.GeospatialGeometry
-safeConvert f byteString =
+newtype Hex = Hex ByteString.ByteString
+
+safeConvert :: (LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry) -> Hex -> Either String Geospatial.GeospatialGeometry
+safeConvert f (Hex byteString) =
   let
     (decoded, rest) = ByteStringBase16.decode byteString
   in
