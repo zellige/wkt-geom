@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
 
 module Data.Internal.Wkb.PointSpec where
 
@@ -52,7 +51,7 @@ testWkbPointParsing =
 testWkbPointParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
 testWkbPointParsing' (coordType, genCoordPoint) =
   it ("round trips wkb point: " ++ show coordType) $ HedgehogHspec.require $ property $ do
-    point <- forAll $ genCoordPoint >>= (return . Geospatial.GeoPoint)
+    point <- forAll $ Geospatial.GeoPoint <$> genCoordPoint
     endianType <- forAll EndianSpec.genEndianType
     roundTrip endianType point === (Right $ Geospatial.Point point)
   where
@@ -90,24 +89,18 @@ coordPointGenerators =
 
 genCoordPointXY :: Gen Geospatial.GeoPositionWithoutCRS
 genCoordPointXY = do
-  x <- genDouble
-  y <- genDouble
-  return $ Geospatial.GeoPointXY (Geospatial.PointXY x y)
+  point <- Geospatial.PointXY <$> genDouble <*> genDouble
+  return $ Geospatial.GeoPointXY point
 
 genCoordPointXYZ :: Gen Geospatial.GeoPositionWithoutCRS
 genCoordPointXYZ = do
-  x <- genDouble
-  y <- genDouble
-  z <- genDouble
-  return $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)
+  point <- Geospatial.PointXYZ <$> genDouble <*> genDouble <*> genDouble
+  return $ Geospatial.GeoPointXYZ point
 
 genCoordPointXYZM :: Gen Geospatial.GeoPositionWithoutCRS
 genCoordPointXYZM = do
-  x <- genDouble
-  y <- genDouble
-  z <- genDouble
-  m <- genDouble
-  return $ Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m)
+  point <- Geospatial.PointXYZM <$> genDouble <*> genDouble <*> genDouble <*> genDouble
+  return $ Geospatial.GeoPointXYZM point
 
 genDouble :: Gen Double
 genDouble = Gen.double $ Range.linearFrac (-10e12) 10e12

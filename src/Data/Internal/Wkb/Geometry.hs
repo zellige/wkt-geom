@@ -91,5 +91,5 @@ coordinateTypeToInt coordinateType =
 
 builderGeometryType :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
 builderGeometryType endianType (WkbGeom geometryType coordinateType) = do
-  let int = (coordinateTypeToInt coordinateType) * 1000 + (geometryTypeToInt geometryType)
+  let int = coordinateTypeToInt coordinateType * 1000 + geometryTypeToInt geometryType
   Endian.builderFourBytes endianType int

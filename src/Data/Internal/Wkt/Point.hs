@@ -13,6 +13,8 @@ import qualified Data.Scientific          as Scientific
 import qualified Data.Sequence            as Sequence
 import qualified Text.Trifecta            as Trifecta
 
+{-# ANN module "HLint: ignore Use <$>" #-}
+
 point :: Trifecta.Parser Geospatial.GeoPoint
 point = do
   _ <- Trifecta.string "point"

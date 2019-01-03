@@ -42,25 +42,18 @@ getCoordPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get G
 getCoordPoint endianType coordType =
   case coordType of
     Geometry.TwoD -> do
-      x <- Endian.getDouble endianType
-      y <- Endian.getDouble endianType
-      pure $ Geospatial.GeoPointXY (Geospatial.PointXY x y)
+      point <- Geospatial.PointXY <$> getDouble <*> getDouble
+      return $ Geospatial.GeoPointXY point
     Geometry.Z -> do
-      x <- Endian.getDouble endianType
-      y <- Endian.getDouble endianType
-      z <- Endian.getDouble endianType
-      pure $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)
+      point <- Geospatial.PointXYZ <$> getDouble <*> getDouble <*> getDouble
+      return $ Geospatial.GeoPointXYZ point
     Geometry.M -> do
-      x <- Endian.getDouble endianType
-      y <- Endian.getDouble endianType
-      m <- Endian.getDouble endianType
-      pure $ Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y m)
+      point <- Geospatial.PointXYZ <$> getDouble <*> getDouble <*> getDouble
+      return $ Geospatial.GeoPointXYZ point
     Geometry.ZM -> do
-      x <- Endian.getDouble endianType
-      y <- Endian.getDouble endianType
-      z <- Endian.getDouble endianType
-      m <- Endian.getDouble endianType
-      pure $ Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m)
+      point <- Geospatial.PointXYZM <$> getDouble <*> getDouble <*> getDouble <*> getDouble
+      return $ Geospatial.GeoPointXYZM point
+  where getDouble = Endian.getDouble endianType
 
 getCoordPoints :: Endian.EndianType -> Geometry.CoordinateType -> Word.Word32 -> BinaryGet.Get (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 getCoordPoints endianType coordType numberOfPoints =
@@ -90,5 +83,5 @@ builderCoordPoint endianType coordPoint =
   where builderDouble = Endian.builderDouble endianType
 
 builderCoordPoints :: Endian.EndianType -> Sequence.Seq Geospatial.GeoPositionWithoutCRS -> ByteStringBuilder.Builder
-builderCoordPoints endianType coordPoints =
-  Foldable.foldMap (builderCoordPoint endianType) coordPoints
+builderCoordPoints endianType =
+  Foldable.foldMap (builderCoordPoint endianType)

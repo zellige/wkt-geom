@@ -83,6 +83,18 @@ test-suite wkt-geom-test
   ghc-options:         -Wall
   default-language:    Haskell2010
 
+test-suite              wkt-geom-hlint
+    hs-source-dirs:     hlint
+    main-is:            Main.hs
+    type:               exitcode-stdio-1.0
+    build-depends:      base
+                    ,   hlint
+    default-language:   Haskell2010
+    ghc-options:        -Wall
+                        -Werror
+                        -threaded
+                        -O2
+
 source-repository head
   type:     git
   location: https://github.com/indicatrix/wkt-geom
