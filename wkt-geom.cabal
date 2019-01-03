@@ -34,9 +34,11 @@ library
                      , Data.Internal.Wkt.Point
                      , Data.Internal.Wkt.Polygon
                      , Data.Internal.Wkt.GeometryCollection
+                     , Data.Internal.Hex
                      
 
   build-depends:       base < 5 &&      >= 4.8 
+                     , base16-bytestring 
                      , binary           >= 0.8
                      , bytestring       >= 0.10
                      , containers       >= 0.5.10.1
