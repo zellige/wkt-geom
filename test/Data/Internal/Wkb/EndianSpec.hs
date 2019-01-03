@@ -4,8 +4,6 @@ module Data.Internal.Wkb.EndianSpec where
 
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
-import           Hedgehog
-import qualified Hedgehog.Gen             as Gen
 import           Test.Hspec               (Spec, describe, it, shouldBe)
 
 import qualified Data.Internal.Wkb.Endian as Endian
