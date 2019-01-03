@@ -13,8 +13,6 @@ import qualified Data.Scientific          as Scientific
 import qualified Data.Sequence            as Sequence
 import qualified Text.Trifecta            as Trifecta
 
-{-# ANN module "HLint: ignore Use <$>" #-}
-
 point :: Trifecta.Parser Geospatial.GeoPoint
 point = do
   _ <- Trifecta.string "point"
@@ -59,7 +57,8 @@ justPoints = do
   x <- Wkt.number
   _ <- Trifecta.spaces
   y <- Wkt.number
-  pure $ Geospatial.GeoPointXY (Geospatial.PointXY (Scientific.toRealFloat x) (Scientific.toRealFloat y))
+  let xy = Geospatial.PointXY (Scientific.toRealFloat x) (Scientific.toRealFloat y)
+  pure $ Geospatial.GeoPointXY xy
 
 emptyPoint :: Geospatial.GeoPoint
 emptyPoint = Geospatial.GeoPoint Geospatial.GeoEmpty
