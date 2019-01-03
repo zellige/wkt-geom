@@ -66,6 +66,7 @@ test-suite wkt-geom-test
                      , Data.SpecHelper  
   main-is:             Spec.hs
   build-depends:       base
+                     , base16-bytestring 
                      , binary          >= 0.8
                      , ansi-wl-pprint  >= 0.6
                      , bytestring      >= 0.10
