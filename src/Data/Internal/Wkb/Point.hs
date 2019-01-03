@@ -5,6 +5,7 @@ module Data.Internal.Wkb.Point
   , getCoordPoint
   , getCoordPoints
   , builderPoint
+  , builderMultiPoint
   , builderCoordPoint
   , builderCoordPoints
   ) where
@@ -68,6 +69,14 @@ builderPoint endianType (Geospatial.GeoPoint coordPoint) =
         <> builderCoordPoint endianType coordPoint
     Nothing ->
       Monoid.mempty
+
+builderMultiPoint :: Endian.EndianType -> Geospatial.GeoMultiPoint -> ByteStringBuilder.Builder
+builderMultiPoint endianType (Geospatial.GeoMultiPoint coordPoints) =
+  Endian.builderEndianType endianType
+    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.MultiPoint coordType)
+    <> Endian.builderFourBytes endianType (fromIntegral $ length coordPoints)
+    <> Foldable.foldMap (builderPoint endianType . Geospatial.GeoPoint) coordPoints
+  where coordType = Geometry.coordTypeOfSequence coordPoints
 
 builderCoordPoint :: Endian.EndianType -> Geospatial.GeoPositionWithoutCRS -> ByteStringBuilder.Builder
 builderCoordPoint endianType coordPoint =
