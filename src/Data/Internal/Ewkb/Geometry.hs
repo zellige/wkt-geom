@@ -49,7 +49,7 @@ builderEwkbGeometryType endianType (EwkbGeom wkbGeometryType (Srid srid)) = do
     <> Endian.builderFourBytes endianType srid
 
 builderWkbGeometryType :: Endian.EndianType -> Geometry.WkbGeometryType -> ByteStringBuilder.Builder
-builderWkbGeometryType endianType wkbGeometryType = do
+builderWkbGeometryType endianType wkbGeometryType =
   Endian.builderFourBytes endianType $ wkbGeometryTypeToInt wkbGeometryType
 
 
