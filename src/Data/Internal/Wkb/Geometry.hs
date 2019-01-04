@@ -21,6 +21,8 @@ import qualified Data.Word                as Word
 
 import qualified Data.Internal.Wkb.Endian as Endian
 
+-- Types
+
 data GeometryType
   = Geometry
   | Point

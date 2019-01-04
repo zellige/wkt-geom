@@ -17,6 +17,8 @@ import qualified Data.Word                  as Word
 import qualified Data.Internal.Wkb.Endian   as Endian
 import qualified Data.Internal.Wkb.Geometry as Geometry
 
+-- Types
+
 data SridType = Srid Word.Word32 | NoSrid deriving (Show, Eq)
 
 data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryType SridType deriving (Show, Eq)
@@ -47,6 +49,7 @@ getEwkbSrid endianType int =
       Monad.fail $ "Invalid SRID only " <> show supportedSrid <> " supported: " ++ show srid
   else
     pure NoSrid
+
 
 -- Binary builders
 
