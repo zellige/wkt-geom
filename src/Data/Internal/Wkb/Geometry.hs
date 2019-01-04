@@ -34,6 +34,9 @@ data CoordinateType = TwoD | Z | M | ZM  deriving (Show, Eq)
 
 data WkbGeometryType = WkbGeom GeometryType CoordinateType deriving (Show, Eq)
 
+
+-- Binary parsers
+
 getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
 getGeometryTypeWithCoords endianType = do
   fullGeometryType <- Endian.getFourBytes endianType
@@ -44,10 +47,16 @@ getGeometryTypeWithCoords endianType = do
     _                ->
       Monad.fail $ "Invalid WkbGeometryType: " ++ show fullGeometryType
 
+
+-- Binary builders
+
 builderGeometryType :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
 builderGeometryType endianType (WkbGeom geometryType coordinateType) = do
   let int = coordinateTypeToInt coordinateType * 1000 + geometryTypeToInt geometryType
   Endian.builderFourBytes endianType int
+
+
+-- Helpers
 
 geoPositionWithoutCRSToCoordinateType :: Geospatial.GeoPositionWithoutCRS -> Maybe CoordinateType
 geoPositionWithoutCRSToCoordinateType geoPosition =

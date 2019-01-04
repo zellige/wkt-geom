@@ -1,13 +1,17 @@
 module Data.Internal.Ewkb.Geometry
   ( EwkbGeometryType (..)
   , SridType (..)
-  , ewkbGeometryType
-  , wkbGeometryType
+  , getEwkbGeometryType
+  , getWkbGeometryType
+  , builderWkbGeometryType
+  , builderEwkbGeometryType
   ) where
 
 import qualified Control.Monad              as Monad
 import qualified Data.Binary.Get            as BinaryGet
-import           Data.Bits                  ((.&.))
+import           Data.Bits                  ((.&.), (.|.))
+import qualified Data.ByteString.Builder    as ByteStringBuilder
+import           Data.Monoid                ((<>))
 import qualified Data.Word                  as Word
 
 import qualified Data.Internal.Wkb.Endian   as Endian
@@ -17,18 +21,43 @@ data SridType = Srid Word.Word32 | NoSrid deriving (Show, Eq)
 
 data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryType SridType deriving (Show, Eq)
 
-ewkbGeometryType :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
-ewkbGeometryType endianType = do
+
+-- Binary parsers
+
+getEwkbGeometryType :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
+getEwkbGeometryType endianType = do
   rawGeometryType <- Endian.getFourBytes endianType
   ewkbSrid <- getEwkbSrid endianType rawGeometryType
   geomType <- rawtoWkbGeometryType rawGeometryType
   pure $ EwkbGeom geomType ewkbSrid
 
-wkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType
-wkbGeometryType endianType = do
+getWkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType
+getWkbGeometryType endianType = do
   rawGeometryType <- Endian.getFourBytes endianType
   _ <- getEwkbSrid endianType rawGeometryType
   rawtoWkbGeometryType rawGeometryType
+
+
+-- Binary builders
+
+builderEwkbGeometryType :: Endian.EndianType -> EwkbGeometryType -> ByteStringBuilder.Builder
+builderEwkbGeometryType endianType (EwkbGeom wkbGeometryType NoSrid) =
+  builderWkbGeometryType endianType wkbGeometryType
+builderEwkbGeometryType endianType (EwkbGeom wkbGeometryType (Srid srid)) = do
+  let int = wkbGeometryTypeToInt wkbGeometryType .|. sridMask
+  Endian.builderFourBytes endianType int
+    <> Endian.builderFourBytes endianType srid
+
+builderWkbGeometryType :: Endian.EndianType -> Geometry.WkbGeometryType -> ByteStringBuilder.Builder
+builderWkbGeometryType endianType wkbGeometryType = do
+  Endian.builderFourBytes endianType $ wkbGeometryTypeToInt wkbGeometryType
+
+
+-- Helpers
+
+wkbGeometryTypeToInt :: Geometry.WkbGeometryType -> Word.Word32
+wkbGeometryTypeToInt (Geometry.WkbGeom geometryType coordinateType) =
+  coordinateTypeToInt coordinateType .|. geometryTypeToInt geometryType
 
 rawtoWkbGeometryType :: Word.Word32 -> BinaryGet.Get Geometry.WkbGeometryType
 rawtoWkbGeometryType rawGeometryType = do
@@ -40,18 +69,18 @@ rawtoWkbGeometryType rawGeometryType = do
 
 getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get SridType
 getEwkbSrid endianType int =
-  if int .&. 0x20000000 /= 0 then do
+  if int .&. sridMask /= 0 then do
     srid <- Endian.getFourBytes endianType
-    if srid == 4326 then
+    if srid == supportedSrid then
       pure $ Srid srid
     else
-      Monad.fail $ "Invalid SRID only 4326 supported: " ++ show srid
+      Monad.fail $ "Invalid SRID only " <> show supportedSrid <> " supported: " ++ show srid
   else
     pure NoSrid
 
 intToGeometryType :: Word.Word32 -> Maybe Geometry.GeometryType
 intToGeometryType int =
-  case int .&. 0x0fffffff of
+  case int .&. geometryMask of
     0 -> Just Geometry.Geometry
     1 -> Just Geometry.Point
     2 -> Just Geometry.LineString
@@ -62,6 +91,18 @@ intToGeometryType int =
     7 -> Just Geometry.GeometryCollection
     _ -> Nothing
 
+geometryTypeToInt :: Geometry.GeometryType -> Word.Word32
+geometryTypeToInt geometryType =
+  case geometryType of
+    Geometry.Geometry           -> 0
+    Geometry.Point              -> 1
+    Geometry.LineString         -> 2
+    Geometry.Polygon            -> 3
+    Geometry.MultiPoint         -> 4
+    Geometry.MultiLineString    -> 5
+    Geometry.MultiPolygon       -> 6
+    Geometry.GeometryCollection -> 7
+
 intToCoordinateType :: Word.Word32 -> Geometry.CoordinateType
 intToCoordinateType int =
   case (hasZ int, hasM int) of
@@ -70,11 +111,36 @@ intToCoordinateType int =
     (True, False)  -> Geometry.Z
     (True, True)   -> Geometry.ZM
 
+coordinateTypeToInt :: Geometry.CoordinateType -> Word.Word32
+coordinateTypeToInt coordinateType =
+  case coordinateType of
+    Geometry.TwoD -> 0
+    Geometry.Z    -> zMask
+    Geometry.M    -> mMask
+    Geometry.ZM   -> zMask .|. mMask
+
 hasZ :: Word.Word32 -> Bool
 hasZ int =
-  int .&. 0x80000000 /= 0
+  int .&. zMask /= 0
 
 hasM :: Word.Word32 -> Bool
 hasM int =
   int .&. 0x40000000 /= 0
 
+
+-- Constants
+
+zMask :: Word.Word32
+zMask = 0x80000000
+
+mMask :: Word.Word32
+mMask = 0x40000000
+
+sridMask :: Word.Word32
+sridMask = 0x20000000
+
+geometryMask :: Word.Word32
+geometryMask = 0x0fffffff
+
+supportedSrid :: Word.Word32
+supportedSrid = 4326
