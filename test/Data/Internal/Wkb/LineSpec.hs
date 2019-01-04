@@ -3,13 +3,10 @@
 module Data.Internal.Wkb.LineSpec where
 
 import qualified Data.ByteString.Builder     as ByteStringBuilder
-import qualified Data.ByteString.Lazy        as LazyByteString
 import qualified Data.Geospatial             as Geospatial
-import           Data.Monoid                 ((<>))
-import qualified Data.Sequence               as Sequence
 import qualified HaskellWorks.Hspec.Hedgehog as HedgehogHspec
 import           Hedgehog
-import           Test.Hspec                  (Spec, describe, it, shouldBe)
+import           Test.Hspec                  (Spec, describe, it)
 
 import qualified Data.Internal.Wkb.Geometry  as Geometry
 import qualified Data.Internal.Wkb.Line      as Line
@@ -44,26 +41,13 @@ testWkbLineParsing' (coordType, genCoordPoint) =
 testWkbMultiLineParsing :: Spec
 testWkbMultiLineParsing =
   describe "Test wkb multiline parsing" $
-    it "Parse valid wkb multi line" $
-      Wkb.parseByteString exampleWkbMultiLine `shouldBe` (Right $ Geospatial.MultiLine $ Geospatial.GeoMultiLine (Sequence.fromList [SpecHelper.lineString1, SpecHelper.lineString2]))
+    mapM_ testWkbMultiLineParsing' SpecHelper.coordPointGenerators
 
-exampleWkbMultiLine :: LazyByteString.ByteString
-exampleWkbMultiLine =
-  ByteStringBuilder.toLazyByteString $
-    ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 5
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.doubleBE 1.0
-    <> ByteStringBuilder.doubleBE 2.0
-    <> ByteStringBuilder.doubleBE 3.0
-    <> ByteStringBuilder.doubleBE 4.0
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.doubleBE 1.5
-    <> ByteStringBuilder.doubleBE 2.5
-    <> ByteStringBuilder.doubleBE 3.5
-    <> ByteStringBuilder.doubleBE 4.5
+testWkbMultiLineParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
+testWkbMultiLineParsing' (coordType, genCoordPoint) =
+  it ("round trips wkb multiline: " ++ show coordType) $ HedgehogHspec.require $ property $ do
+    multiLine <- forAll $ Geospatial.GeoMultiLine <$> SpecHelper.genLineStrings genCoordPoint
+    endianType <- forAll SpecHelper.genEndianType
+    roundTrip endianType multiLine === (Right $ Geospatial.MultiLine multiLine)
+  where roundTrip endianType =
+          Wkb.parseByteString . ByteStringBuilder.toLazyByteString . Line.builderMultiLine endianType

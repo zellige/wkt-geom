@@ -2,6 +2,7 @@ module Data.Internal.Wkb.Line
   ( Data.Internal.Wkb.Line.getLine
   , getMultiLine
   , builderLine
+  , builderMultiLine
   ) where
 
 import qualified Control.Monad                        as Monad
@@ -54,3 +55,10 @@ builderLine endianType (Geospatial.GeoLine lineString) = do
     <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.LineString coordType)
     <> Endian.builderFourBytes endianType (fromIntegral $ length coordPoints)
     <> Foldable.foldMap (Point.builderCoordPoint endianType) coordPoints
+
+builderMultiLine :: Endian.EndianType -> Geospatial.GeoMultiLine -> ByteStringBuilder.Builder
+builderMultiLine endianType (Geospatial.GeoMultiLine lineStrings) =
+  Endian.builderEndianType endianType
+    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.MultiLineString Geometry.TwoD)
+    <> Endian.builderFourBytes endianType (fromIntegral $ length lineStrings)
+    <> Foldable.foldMap (builderLine endianType . Geospatial.GeoLine) lineStrings

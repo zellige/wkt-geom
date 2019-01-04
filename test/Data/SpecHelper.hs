@@ -21,6 +21,10 @@ coordPointGenerators =
   , (Geometry.ZM, genCoordPointXYZM)
   ]
 
+genLineStrings :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq (LineString.LineString Geospatial.GeoPositionWithoutCRS))
+genLineStrings genCoordPoint =
+  Gen.seq (Range.linear 0 100) (genLineString genCoordPoint)
+
 genLineString :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (LineString.LineString Geospatial.GeoPositionWithoutCRS)
 genLineString genCoordPoint =
   LineString.makeLineString <$> genCoordPoint <*> genCoordPoint <*> genCoordPoints genCoordPoint
