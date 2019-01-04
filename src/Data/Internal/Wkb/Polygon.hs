@@ -11,6 +11,7 @@ import qualified Data.ByteString.Builder              as ByteStringBuilder
 import qualified Data.Foldable                        as Foldable
 import qualified Data.Geospatial                      as Geospatial
 import qualified Data.LinearRing                      as LinearRing
+import           Data.Monoid                          ((<>))
 import qualified Data.Sequence                        as Sequence
 
 import qualified Data.Internal.Wkb.Endian             as Endian
