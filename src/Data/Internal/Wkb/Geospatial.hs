@@ -30,10 +30,10 @@ getFeature geomType getWkbGeom =
     Geometry.Geometry           -> getNoGeometry
     Geometry.Point              -> Point.getPoint
     Geometry.LineString         -> Line.getLine
-    Geometry.Polygon            -> Polygon.polygon
+    Geometry.Polygon            -> Polygon.getPolygon
     Geometry.MultiPoint         -> Point.getMultiPoint getWkbGeom
     Geometry.MultiLineString    -> Line.getMultiLine getWkbGeom
-    Geometry.MultiPolygon       -> Polygon.multiPolygon getWkbGeom
+    Geometry.MultiPolygon       -> Polygon.getMultiPolygon getWkbGeom
     Geometry.GeometryCollection -> GeometryCollection.geometryCollection (geospatialGeometry getWkbGeom)
 
 getNoGeometry :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry

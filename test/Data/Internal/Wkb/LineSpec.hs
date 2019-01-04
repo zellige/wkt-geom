@@ -46,7 +46,7 @@ testWkbMultiLineParsing =
 testWkbMultiLineParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
 testWkbMultiLineParsing' (coordType, genCoordPoint) =
   it ("round trips wkb multiline: " ++ show coordType) $ HedgehogHspec.require $ property $ do
-    multiLine <- forAll $ Geospatial.GeoMultiLine <$> SpecHelper.genLineStrings genCoordPoint
+    multiLine <- forAll $ SpecHelper.genMultiLine genCoordPoint
     endianType <- forAll SpecHelper.genEndianType
     roundTrip endianType multiLine === (Right $ Geospatial.MultiLine multiLine)
   where roundTrip endianType =

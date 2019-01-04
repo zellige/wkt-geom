@@ -13,6 +13,12 @@ import qualified Data.Internal.Wkb.Geometry as Geometry
 
 -- Generators
 
+upperBoundOfMultiGeometries :: Int
+upperBoundOfMultiGeometries = 10
+
+upperBoundOfPoints :: Int
+upperBoundOfPoints = 100
+
 coordPointGenerators :: [(Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS)]
 coordPointGenerators =
   [ (Geometry.TwoD, genCoordPointXY)
@@ -21,9 +27,21 @@ coordPointGenerators =
   , (Geometry.ZM, genCoordPointXYZM)
   ]
 
-genLineStrings :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq (LineString.LineString Geospatial.GeoPositionWithoutCRS))
-genLineStrings genCoordPoint =
-  Gen.seq (Range.linear 0 100) (genLineString genCoordPoint)
+genMultiPolygon :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeoMultiPolygon
+genMultiPolygon genCoordPoint =
+  Geospatial.GeoMultiPolygon <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLinearRings genCoordPoint)
+
+genLinearRings :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS))
+genLinearRings genCoordPoint =
+  Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLinearRing genCoordPoint)
+
+genLinearRing :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
+genLinearRing genCoordPoint =
+  LinearRing.makeLinearRing <$> genCoordPoint <*> genCoordPoint <*> genCoordPoint <*> genCoordPoints genCoordPoint
+
+genMultiLine :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeoMultiLine
+genMultiLine genCoordPoint =
+  Geospatial.GeoMultiLine <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLineString genCoordPoint)
 
 genLineString :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (LineString.LineString Geospatial.GeoPositionWithoutCRS)
 genLineString genCoordPoint =
@@ -31,7 +49,7 @@ genLineString genCoordPoint =
 
 genCoordPoints :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq Geospatial.GeoPositionWithoutCRS)
 genCoordPoints =
-  Gen.seq (Range.linear 0 100)
+  Gen.seq (Range.linear 0 upperBoundOfPoints)
 
 genCoordPointXY :: Gen Geospatial.GeoPositionWithoutCRS
 genCoordPointXY = do

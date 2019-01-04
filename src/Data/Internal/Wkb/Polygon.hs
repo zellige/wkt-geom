@@ -1,10 +1,14 @@
 module Data.Internal.Wkb.Polygon
-  ( polygon
-  , multiPolygon
+  ( getPolygon
+  , getMultiPolygon
+  , builderPolygon
+  , builderMultiPolygon
   ) where
 
 import qualified Control.Monad                        as Monad
 import qualified Data.Binary.Get                      as BinaryGet
+import qualified Data.ByteString.Builder              as ByteStringBuilder
+import qualified Data.Foldable                        as Foldable
 import qualified Data.Geospatial                      as Geospatial
 import qualified Data.LinearRing                      as LinearRing
 import qualified Data.Sequence                        as Sequence
@@ -15,13 +19,15 @@ import qualified Data.Internal.Wkb.GeometryCollection as GeometryCollection
 import qualified Data.Internal.Wkb.Point              as Point
 import qualified Data.SeqHelper                       as SeqHelper
 
-polygon :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-polygon endianType coordType = do
+-- Binary parsers
+
+getPolygon :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
+getPolygon endianType coordType = do
   geoPolygon <- getGeoPolygon endianType coordType
   pure $ Geospatial.Polygon geoPolygon
 
-multiPolygon :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
-multiPolygon getWkbGeom endianType _ = do
+getMultiPolygon :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
+getMultiPolygon getWkbGeom endianType _ = do
   numberOfPolygons <- Endian.getFourBytes endianType
   geoPolygons <- Sequence.replicateM (fromIntegral numberOfPolygons) (GeometryCollection.enclosedFeature getWkbGeom Geometry.Polygon getGeoPolygon)
   pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
@@ -54,3 +60,30 @@ getLinearRing endianType coordType = do
     Monad.fail $
       "Must have at least four points for a linear ring: "
        ++ show numberOfPoints
+
+
+-- Binary builders
+
+builderPolygon :: Endian.EndianType -> Geospatial.GeoPolygon -> ByteStringBuilder.Builder
+builderPolygon endianType (Geospatial.GeoPolygon linearRings) = do
+  let coordType = Geometry.coordTypeOfLinearRings linearRings
+  Endian.builderEndianType endianType
+    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.Polygon coordType)
+    <> Endian.builderFourBytes endianType (fromIntegral $ length linearRings)
+    <> Foldable.foldMap (builderLinearRing endianType) linearRings
+
+builderMultiPolygon :: Endian.EndianType -> Geospatial.GeoMultiPolygon -> ByteStringBuilder.Builder
+builderMultiPolygon endianType (Geospatial.GeoMultiPolygon polygons) =
+  Endian.builderEndianType endianType
+    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.MultiPolygon Geometry.TwoD)
+    <> Endian.builderFourBytes endianType (fromIntegral $ length polygons)
+    <> Foldable.foldMap (builderPolygon endianType . Geospatial.GeoPolygon) polygons
+
+builderLinearRing :: Endian.EndianType -> LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS -> ByteStringBuilder.Builder
+builderLinearRing endianType linearRing = do
+  let coordPoints = LinearRing.toSeq linearRing
+      lastCoordPoint = LinearRing.ringHead linearRing
+      lengthOfRing = fromIntegral $ length coordPoints + 1
+  Endian.builderFourBytes endianType lengthOfRing
+    <> Foldable.foldMap (Point.builderCoordPoint endianType) coordPoints
+    <> Point.builderCoordPoint endianType lastCoordPoint

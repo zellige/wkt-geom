@@ -60,9 +60,9 @@ test-suite wkt-geom-test
                      , Data.Internal.Wkb.GeometrySpec
                      , Data.Internal.Wkb.LineSpec
                      , Data.Internal.Wkb.PointSpec
+                     , Data.Internal.Wkb.PolygonSpec
                      , Data.WkbGeometryCollectionSpec
                      , Data.WkbHexParsingSpec
-                     , Data.WkbPolygonSpec
                      , Data.WktGeometryCollectionSpec
                      , Data.WktLineSpec
                      , Data.WktPointSpec

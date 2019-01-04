@@ -6,12 +6,14 @@ module Data.Internal.Wkb.Geometry
   , builderGeometryType
   , geoPositionWithoutCRSToCoordinateType
   , coordTypeOfSequence
+  , coordTypeOfLinearRings
   ) where
 
 import qualified Control.Monad            as Monad
 import qualified Data.Binary.Get          as BinaryGet
 import qualified Data.ByteString.Builder  as ByteStringBuilder
 import qualified Data.Geospatial          as Geospatial
+import qualified Data.LinearRing          as LinearRing
 import qualified Data.Maybe               as Maybe
 import qualified Data.Sequence            as Sequence
 import qualified Data.Word                as Word
@@ -59,6 +61,10 @@ coordTypeOfSequence :: Sequence.Seq Geospatial.GeoPositionWithoutCRS -> Coordina
 coordTypeOfSequence (first Sequence.:<| _) =
   Maybe.fromMaybe TwoD (geoPositionWithoutCRSToCoordinateType first)
 coordTypeOfSequence _ = TwoD
+
+coordTypeOfLinearRings :: Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS) -> CoordinateType
+coordTypeOfLinearRings (first Sequence.:<| _) = coordTypeOfSequence $ LinearRing.toSeq first
+coordTypeOfLinearRings _ = TwoD
 
 intToGeometryType :: Word.Word32 -> Maybe GeometryType
 intToGeometryType int =
