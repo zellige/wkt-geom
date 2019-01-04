@@ -2,6 +2,7 @@ module Data.Internal.Wkb.Geometry
   ( GeometryType (..)
   , CoordinateType (..)
   , WkbGeometryType (..)
+  , BuilderWkbGeometryType
   , getWkbGeom
   , builderWkbGeom
   , geoPositionWithoutCRSToCoordinateType
@@ -49,6 +50,8 @@ getWkbGeom endianType = do
 
 
 -- Binary builders
+
+type BuilderWkbGeometryType = Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
 
 builderWkbGeom :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
 builderWkbGeom endianType (WkbGeom geometryType coordinateType) = do

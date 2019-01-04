@@ -47,18 +47,18 @@ getGeoLine endianType coordType = do
 
 -- Binary builders
 
-builderLine :: Endian.EndianType -> Geospatial.GeoLine -> ByteStringBuilder.Builder
-builderLine endianType (Geospatial.GeoLine lineString) = do
+builderLine :: Geometry.BuilderWkbGeometryType -> Endian.EndianType -> Geospatial.GeoLine -> ByteStringBuilder.Builder
+builderLine builderWkbGeom endianType (Geospatial.GeoLine lineString) = do
   let coordPoints = LineString.toSeq lineString
       coordType = Geometry.coordTypeOfSequence coordPoints
   Endian.builderEndianType endianType
-    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.LineString coordType)
+    <> builderWkbGeom endianType (Geometry.WkbGeom Geometry.LineString coordType)
     <> Endian.builderFourBytes endianType (fromIntegral $ length coordPoints)
     <> Foldable.foldMap (Point.builderCoordPoint endianType) coordPoints
 
-builderMultiLine :: Endian.EndianType -> Geospatial.GeoMultiLine -> ByteStringBuilder.Builder
-builderMultiLine endianType (Geospatial.GeoMultiLine lineStrings) =
+builderMultiLine :: Geometry.BuilderWkbGeometryType -> Endian.EndianType -> Geospatial.GeoMultiLine -> ByteStringBuilder.Builder
+builderMultiLine builderWkbGeom endianType (Geospatial.GeoMultiLine lineStrings) =
   Endian.builderEndianType endianType
-    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.MultiLineString Geometry.TwoD)
+    <> builderWkbGeom endianType (Geometry.WkbGeom Geometry.MultiLineString Geometry.TwoD)
     <> Endian.builderFourBytes endianType (fromIntegral $ length lineStrings)
-    <> Foldable.foldMap (builderLine endianType . Geospatial.GeoLine) lineStrings
+    <> Foldable.foldMap (builderLine builderWkbGeom endianType . Geospatial.GeoLine) lineStrings

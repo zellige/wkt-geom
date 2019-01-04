@@ -49,19 +49,20 @@ getNoGeometry _ _ =
 
 -- Binary builders
 
-builderGeospatialGeometry :: (Endian.EndianType -> Geometry.WkbGeometryType -> ByteStringBuilder.Builder)
+builderGeospatialGeometry :: Geometry.BuilderWkbGeometryType
                           -> Endian.EndianType
                           -> Geospatial.GeospatialGeometry
                           -> ByteStringBuilder.Builder
 builderGeospatialGeometry builderWkbGeom endianType geospatialGeometry =
   case geospatialGeometry of
     Geospatial.NoGeometry                   -> Monoid.mempty
-    Geospatial.Point geoPoint               -> Point.builderPoint endianType geoPoint
-    Geospatial.Line geoLine                 -> Line.builderLine endianType geoLine
-    Geospatial.Polygon geoPolygon           -> Polygon.builderPolygon endianType geoPolygon
-    Geospatial.MultiPoint geoMultiPoint     -> Point.builderMultiPoint endianType geoMultiPoint
-    Geospatial.MultiLine geoMultiLine       -> Line.builderMultiLine endianType geoMultiLine
-    Geospatial.MultiPolygon geoMultiPolygon -> Polygon.builderMultiPolygon endianType geoMultiPolygon
+    Geospatial.Point geoPoint               -> build Point.builderPoint geoPoint
+    Geospatial.Line geoLine                 -> build Line.builderLine geoLine
+    Geospatial.Polygon geoPolygon           -> build Polygon.builderPolygon geoPolygon
+    Geospatial.MultiPoint geoMultiPoint     -> build Point.builderMultiPoint geoMultiPoint
+    Geospatial.MultiLine geoMultiLine       -> build Line.builderMultiLine geoMultiLine
+    Geospatial.MultiPolygon geoMultiPolygon -> build Polygon.builderMultiPolygon geoMultiPolygon
     Geospatial.Collection geoCollection     -> builderGeometryCollection endianType geoCollection
   where builderGeometryCollection =
-          GeometryCollection.builderGeometryCollection (builderGeospatialGeometry builderWkbGeom)
+          GeometryCollection.builderGeometryCollection builderGeospatialGeometry builderWkbGeom
+        build builder = builder builderWkbGeom endianType

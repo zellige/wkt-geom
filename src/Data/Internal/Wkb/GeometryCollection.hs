@@ -43,12 +43,15 @@ getEnclosedFeature getWkbGeom expectedGeometryType getFeature = do
 
 -- Binary builders
 
-builderGeometryCollection :: (Endian.EndianType -> Geospatial.GeospatialGeometry -> ByteStringBuilder.Builder)
-                             -> Endian.EndianType
-                             -> Sequence.Seq Geospatial.GeospatialGeometry
-                             -> ByteStringBuilder.Builder
-builderGeometryCollection builderGeospatialFeature endianType geometryCollection =
+type BuilderGeospatialFeature = Geometry.BuilderWkbGeometryType -> Endian.EndianType ->  Geospatial.GeospatialGeometry -> ByteStringBuilder.Builder
+
+builderGeometryCollection :: BuilderGeospatialFeature
+                              -> Geometry.BuilderWkbGeometryType
+                              -> Endian.EndianType
+                              -> Sequence.Seq Geospatial.GeospatialGeometry
+                              -> ByteStringBuilder.Builder
+builderGeometryCollection builderGeospatialFeature builderWkbGeom endianType geometryCollection =
   Endian.builderEndianType endianType
-    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.GeometryCollection Geometry.TwoD)
+    <> builderWkbGeom endianType (Geometry.WkbGeom Geometry.GeometryCollection Geometry.TwoD)
     <> Endian.builderFourBytes endianType (fromIntegral $ length geometryCollection)
-    <> Foldable.foldMap (builderGeospatialFeature endianType) geometryCollection
+    <> Foldable.foldMap (builderGeospatialFeature builderWkbGeom endianType) geometryCollection

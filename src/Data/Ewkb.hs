@@ -6,6 +6,7 @@
 module Data.Ewkb
   ( parseByteString
   , parseHexByteString
+  , toByteString
   ) where
 
 import qualified Data.Binary.Get              as BinaryGet
@@ -32,3 +33,8 @@ parseByteString byteString =
 -- Representation of EWKB as a String in Base16/Hex form i.e. "0101000000000000000000f03f0000000000000040" is POINT 1.0 2.0
 parseHexByteString :: Hex.Hex -> Either String Geospatial.GeospatialGeometry
 parseHexByteString = Hex.safeConvert parseByteString
+
+toByteString :: Endian.EndianType -> Geospatial.GeospatialGeometry -> LazyByteString.ByteString
+toByteString endianType =
+  ByteStringBuilder.toLazyByteString . WkbGeospatial.builderGeospatialGeometry
+    EwkbGeometry.builderWkbGeom endianType

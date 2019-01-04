@@ -37,6 +37,16 @@ getWkbGeom endianType = do
   _ <- getEwkbSrid endianType rawGeometryType
   rawtoWkbGeometryType rawGeometryType
 
+getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get SridType
+getEwkbSrid endianType int =
+  if int .&. sridMask /= 0 then do
+    srid <- Endian.getFourBytes endianType
+    if srid == supportedSrid then
+      pure $ Srid srid
+    else
+      Monad.fail $ "Invalid SRID only " <> show supportedSrid <> " supported: " ++ show srid
+  else
+    pure NoSrid
 
 -- Binary builders
 
@@ -67,16 +77,6 @@ rawtoWkbGeometryType rawGeometryType = do
     Just g -> pure $ Geometry.WkbGeom g coordType
     _      -> Monad.fail $ "Invalid EwkbGeometry: " ++ show rawGeometryType
 
-getEwkbSrid :: Endian.EndianType -> Word.Word32 -> BinaryGet.Get SridType
-getEwkbSrid endianType int =
-  if int .&. sridMask /= 0 then do
-    srid <- Endian.getFourBytes endianType
-    if srid == supportedSrid then
-      pure $ Srid srid
-    else
-      Monad.fail $ "Invalid SRID only " <> show supportedSrid <> " supported: " ++ show srid
-  else
-    pure NoSrid
 
 intToGeometryType :: Word.Word32 -> Maybe Geometry.GeometryType
 intToGeometryType int =

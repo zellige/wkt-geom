@@ -65,22 +65,22 @@ getCoordPoints endianType coordType numberOfPoints =
 
 -- Binary builders
 
-builderPoint :: Endian.EndianType -> Geospatial.GeoPoint -> ByteStringBuilder.Builder
-builderPoint endianType (Geospatial.GeoPoint coordPoint) =
+builderPoint :: Geometry.BuilderWkbGeometryType -> Endian.EndianType -> Geospatial.GeoPoint -> ByteStringBuilder.Builder
+builderPoint builderWkbGeom endianType (Geospatial.GeoPoint coordPoint) =
   case Geometry.geoPositionWithoutCRSToCoordinateType coordPoint of
     Just coordinateType ->
       Endian.builderEndianType endianType
-        <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.Point coordinateType)
+        <> builderWkbGeom endianType (Geometry.WkbGeom Geometry.Point coordinateType)
         <> builderCoordPoint endianType coordPoint
     Nothing ->
       Monoid.mempty
 
-builderMultiPoint :: Endian.EndianType -> Geospatial.GeoMultiPoint -> ByteStringBuilder.Builder
-builderMultiPoint endianType (Geospatial.GeoMultiPoint coordPoints) =
+builderMultiPoint :: Geometry.BuilderWkbGeometryType -> Endian.EndianType -> Geospatial.GeoMultiPoint -> ByteStringBuilder.Builder
+builderMultiPoint builderWkbGeom endianType (Geospatial.GeoMultiPoint coordPoints) =
   Endian.builderEndianType endianType
-    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.MultiPoint coordType)
+    <> builderWkbGeom endianType (Geometry.WkbGeom Geometry.MultiPoint coordType)
     <> Endian.builderFourBytes endianType (fromIntegral $ length coordPoints)
-    <> Foldable.foldMap (builderPoint endianType . Geospatial.GeoPoint) coordPoints
+    <> Foldable.foldMap (builderPoint builderWkbGeom endianType . Geospatial.GeoPoint) coordPoints
   where coordType = Geometry.coordTypeOfSequence coordPoints
 
 builderCoordPoint :: Endian.EndianType -> Geospatial.GeoPositionWithoutCRS -> ByteStringBuilder.Builder
