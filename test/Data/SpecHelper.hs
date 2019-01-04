@@ -34,6 +34,22 @@ coordPointGenerators =
   , (Geometry.ZM, genCoordPointXYZM)
   ]
 
+genGeometryCollection :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genGeometryCollection genCoordPoint = do
+  geoCollection <- Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genGeospatialGeometry genCoordPoint)
+  return $ Geospatial.Collection geoCollection
+
+genGeospatialGeometry :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genGeospatialGeometry genCoordPoint = Gen.choice
+  [ genPoint genCoordPoint
+  , genLine genCoordPoint
+  , genPolygon genCoordPoint
+  , genMultiPoint genCoordPoint
+  , genMultiLine genCoordPoint
+  , genMultiPolygon genCoordPoint
+  , genGeometryCollection genCoordPoint
+  ]
+
 genMultiPolygon :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
 genMultiPolygon genCoordPoint = do
   geoMultiPolygon <- Geospatial.GeoMultiPolygon <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLinearRings genCoordPoint)

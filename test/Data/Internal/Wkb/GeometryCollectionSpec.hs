@@ -3,52 +3,29 @@
 
 module Data.Internal.Wkb.GeometryCollectionSpec where
 
-import qualified Data.ByteString.Builder as ByteStringBuilder
-import qualified Data.ByteString.Lazy    as LazyByteString
-import qualified Data.Geospatial         as Geospatial
-import           Data.Monoid             ((<>))
-import qualified Data.Sequence           as Sequence
-import qualified Data.Wkb                as Wkb
-import           Test.Hspec              (Spec, describe, it, shouldBe)
+import qualified Data.Geospatial             as Geospatial
+import qualified HaskellWorks.Hspec.Hedgehog as HedgehogHspec
+import           Hedgehog
+import           Test.Hspec                  (Spec, describe, it)
 
-import qualified Data.SpecHelper         as SpecHelper
+import qualified Data.Internal.Wkb.Geometry  as Geometry
+import qualified Data.SpecHelper             as SpecHelper
 
 spec :: Spec
 spec =
   testWkbGeometryCollectionParsing
 
+
+-- Test Wkb GeometryCollection Parsing
+
 testWkbGeometryCollectionParsing :: Spec
 testWkbGeometryCollectionParsing =
-  describe "Test wkb geometry collection" $
-    it "Parse valid wkb geometry collection" $
-      Wkb.parseByteString exampleWkbGeometryCollection `shouldBe` (Right . Geospatial.Collection $
-        Sequence.fromList
-          [ Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point1
-          , Geospatial.Point $ Geospatial.GeoPoint SpecHelper.point2
-          , Geospatial.Line $ Geospatial.GeoLine SpecHelper.lineString3
-          ]
-        )
+  describe "Test wkb geometery collection parsing" $
+    mapM_ testWkbGeometryCollectionParsing' SpecHelper.coordPointGenerators
 
-exampleWkbGeometryCollection :: LazyByteString.ByteString
-exampleWkbGeometryCollection =
-  ByteStringBuilder.toLazyByteString $
-    ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 7
-    <> ByteStringBuilder.int32BE 3
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 1
-    <> ByteStringBuilder.doubleBE 2
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 1
-    <> ByteStringBuilder.doubleBE 3
-    <> ByteStringBuilder.doubleBE 4
-    <> ByteStringBuilder.word8 0
-    <> ByteStringBuilder.int32BE 2
-    <> ByteStringBuilder.int32BE 3
-    <> ByteStringBuilder.doubleBE 15
-    <> ByteStringBuilder.doubleBE 15
-    <> ByteStringBuilder.doubleBE 20
-    <> ByteStringBuilder.doubleBE 20
-    <> ByteStringBuilder.doubleBE 20
-    <> ByteStringBuilder.doubleBE 20
+testWkbGeometryCollectionParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
+testWkbGeometryCollectionParsing' (coordType, genCoordPoint) =
+  it ("round trips wkb multipolygon: " ++ show coordType) $ HedgehogHspec.require $ property $ do
+    collection <- forAll $ SpecHelper.genGeometryCollection genCoordPoint
+    endianType <- forAll SpecHelper.genEndianType
+    SpecHelper.roundTripWkb endianType collection === Right collection

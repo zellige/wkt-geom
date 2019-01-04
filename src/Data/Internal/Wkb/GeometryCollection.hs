@@ -48,5 +48,7 @@ builderGeometryCollection :: (Endian.EndianType -> Geospatial.GeospatialGeometry
                              -> Sequence.Seq Geospatial.GeospatialGeometry
                              -> ByteStringBuilder.Builder
 builderGeometryCollection builderGeospatialFeature endianType geometryCollection =
-  Endian.builderFourBytes endianType (fromIntegral $ length geometryCollection)
+  Endian.builderEndianType endianType
+    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.GeometryCollection Geometry.TwoD)
+    <> Endian.builderFourBytes endianType (fromIntegral $ length geometryCollection)
     <> Foldable.foldMap (builderGeospatialFeature endianType) geometryCollection
