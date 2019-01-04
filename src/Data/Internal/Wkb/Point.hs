@@ -70,7 +70,7 @@ builderPoint endianType (Geospatial.GeoPoint coordPoint) =
   case Geometry.geoPositionWithoutCRSToCoordinateType coordPoint of
     Just coordinateType ->
       Endian.builderEndianType endianType
-        <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.Point coordinateType)
+        <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.Point coordinateType)
         <> builderCoordPoint endianType coordPoint
     Nothing ->
       Monoid.mempty
@@ -78,7 +78,7 @@ builderPoint endianType (Geospatial.GeoPoint coordPoint) =
 builderMultiPoint :: Endian.EndianType -> Geospatial.GeoMultiPoint -> ByteStringBuilder.Builder
 builderMultiPoint endianType (Geospatial.GeoMultiPoint coordPoints) =
   Endian.builderEndianType endianType
-    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.MultiPoint coordType)
+    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.MultiPoint coordType)
     <> Endian.builderFourBytes endianType (fromIntegral $ length coordPoints)
     <> Foldable.foldMap (builderPoint endianType . Geospatial.GeoPoint) coordPoints
   where coordType = Geometry.coordTypeOfSequence coordPoints

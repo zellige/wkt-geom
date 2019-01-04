@@ -13,19 +13,18 @@ import qualified Data.Binary.Get              as BinaryGet
 import qualified Data.ByteString.Builder      as ByteStringBuilder
 import qualified Data.ByteString.Lazy         as LazyByteString
 import qualified Data.Geospatial              as Geospatial
+import qualified Data.Hex                     as Hex
 
 import qualified Data.Internal.Wkb.Endian     as Endian
 import qualified Data.Internal.Wkb.Geometry   as Geometry
 import qualified Data.Internal.Wkb.Geospatial as WkbGeospatial
-
-import qualified Data.Hex                     as Hex
 
 -- |
 -- Representation of WKB as Binary
 parseByteString :: LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry
 parseByteString byteString =
   case BinaryGet.runGetOrFail
-        (WkbGeospatial.getGeospatialGeometry Geometry.getGeometryTypeWithCoords)
+        (WkbGeospatial.getGeospatialGeometry Geometry.getWkbGeom)
         byteString of
     Left (_, _, err)                 -> Left $ "Could not parse wkb: " ++ err
     Right (_, _, geoSpatialGeometry) -> Right geoSpatialGeometry
@@ -37,4 +36,4 @@ parseHexByteString = Hex.safeConvert parseByteString
 
 toByteString :: Endian.EndianType -> Geospatial.GeospatialGeometry -> LazyByteString.ByteString
 toByteString endianType =
-  ByteStringBuilder.toLazyByteString . WkbGeospatial.builderGeospatialGeometry endianType
+  ByteStringBuilder.toLazyByteString . WkbGeospatial.builderGeospatialGeometry Geometry.builderWkbGeom endianType

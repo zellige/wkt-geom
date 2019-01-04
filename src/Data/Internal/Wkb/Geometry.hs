@@ -2,8 +2,8 @@ module Data.Internal.Wkb.Geometry
   ( GeometryType (..)
   , CoordinateType (..)
   , WkbGeometryType (..)
-  , getGeometryTypeWithCoords
-  , builderGeometryType
+  , getWkbGeom
+  , builderWkbGeom
   , geoPositionWithoutCRSToCoordinateType
   , coordTypeOfSequence
   , coordTypeOfLinearRings
@@ -37,8 +37,8 @@ data WkbGeometryType = WkbGeom GeometryType CoordinateType deriving (Show, Eq)
 
 -- Binary parsers
 
-getGeometryTypeWithCoords :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
-getGeometryTypeWithCoords endianType = do
+getWkbGeom :: Endian.EndianType -> BinaryGet.Get WkbGeometryType
+getWkbGeom endianType = do
   fullGeometryType <- Endian.getFourBytes endianType
   let geomType = intToGeometryType $ fullGeometryType `rem` 1000
       coordType = intToCoordinateType $ fullGeometryType `div` 1000
@@ -50,8 +50,8 @@ getGeometryTypeWithCoords endianType = do
 
 -- Binary builders
 
-builderGeometryType :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
-builderGeometryType endianType (WkbGeom geometryType coordinateType) = do
+builderWkbGeom :: Endian.EndianType -> WkbGeometryType -> ByteStringBuilder.Builder
+builderWkbGeom endianType (WkbGeom geometryType coordinateType) = do
   let int = coordinateTypeToInt coordinateType * 1000 + geometryTypeToInt geometryType
   Endian.builderFourBytes endianType int
 

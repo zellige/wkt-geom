@@ -1,10 +1,10 @@
 module Data.Internal.Ewkb.Geometry
   ( EwkbGeometryType (..)
   , SridType (..)
-  , getEwkbGeometryType
-  , getWkbGeometryType
-  , builderWkbGeometryType
-  , builderEwkbGeometryType
+  , getEwkbGeom
+  , getWkbGeom
+  , builderWkbGeom
+  , builderEwkbGeom
   ) where
 
 import qualified Control.Monad              as Monad
@@ -24,15 +24,15 @@ data EwkbGeometryType = EwkbGeom Geometry.WkbGeometryType SridType deriving (Sho
 
 -- Binary parsers
 
-getEwkbGeometryType :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
-getEwkbGeometryType endianType = do
+getEwkbGeom :: Endian.EndianType -> BinaryGet.Get EwkbGeometryType
+getEwkbGeom endianType = do
   rawGeometryType <- Endian.getFourBytes endianType
   ewkbSrid <- getEwkbSrid endianType rawGeometryType
   geomType <- rawtoWkbGeometryType rawGeometryType
   pure $ EwkbGeom geomType ewkbSrid
 
-getWkbGeometryType :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType
-getWkbGeometryType endianType = do
+getWkbGeom :: Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType
+getWkbGeom endianType = do
   rawGeometryType <- Endian.getFourBytes endianType
   _ <- getEwkbSrid endianType rawGeometryType
   rawtoWkbGeometryType rawGeometryType
@@ -40,16 +40,16 @@ getWkbGeometryType endianType = do
 
 -- Binary builders
 
-builderEwkbGeometryType :: Endian.EndianType -> EwkbGeometryType -> ByteStringBuilder.Builder
-builderEwkbGeometryType endianType (EwkbGeom wkbGeometryType NoSrid) =
-  builderWkbGeometryType endianType wkbGeometryType
-builderEwkbGeometryType endianType (EwkbGeom wkbGeometryType (Srid srid)) = do
+builderEwkbGeom :: Endian.EndianType -> EwkbGeometryType -> ByteStringBuilder.Builder
+builderEwkbGeom endianType (EwkbGeom wkbGeometryType NoSrid) =
+  builderWkbGeom endianType wkbGeometryType
+builderEwkbGeom endianType (EwkbGeom wkbGeometryType (Srid srid)) = do
   let int = wkbGeometryTypeToInt wkbGeometryType .|. sridMask
   Endian.builderFourBytes endianType int
     <> Endian.builderFourBytes endianType srid
 
-builderWkbGeometryType :: Endian.EndianType -> Geometry.WkbGeometryType -> ByteStringBuilder.Builder
-builderWkbGeometryType endianType wkbGeometryType =
+builderWkbGeom :: Endian.EndianType -> Geometry.WkbGeometryType -> ByteStringBuilder.Builder
+builderWkbGeom endianType wkbGeometryType =
   Endian.builderFourBytes endianType $ wkbGeometryTypeToInt wkbGeometryType
 
 

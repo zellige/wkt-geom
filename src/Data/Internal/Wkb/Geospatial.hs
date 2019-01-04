@@ -49,8 +49,11 @@ getNoGeometry _ _ =
 
 -- Binary builders
 
-builderGeospatialGeometry :: Endian.EndianType -> Geospatial.GeospatialGeometry -> ByteStringBuilder.Builder
-builderGeospatialGeometry endianType geospatialGeometry =
+builderGeospatialGeometry :: (Endian.EndianType -> Geometry.WkbGeometryType -> ByteStringBuilder.Builder)
+                          -> Endian.EndianType
+                          -> Geospatial.GeospatialGeometry
+                          -> ByteStringBuilder.Builder
+builderGeospatialGeometry builderWkbGeom endianType geospatialGeometry =
   case geospatialGeometry of
     Geospatial.NoGeometry                   -> Monoid.mempty
     Geospatial.Point geoPoint               -> Point.builderPoint endianType geoPoint
@@ -61,4 +64,4 @@ builderGeospatialGeometry endianType geospatialGeometry =
     Geospatial.MultiPolygon geoMultiPolygon -> Polygon.builderMultiPolygon endianType geoMultiPolygon
     Geospatial.Collection geoCollection     -> builderGeometryCollection endianType geoCollection
   where builderGeometryCollection =
-          GeometryCollection.builderGeometryCollection builderGeospatialGeometry
+          GeometryCollection.builderGeometryCollection (builderGeospatialGeometry builderWkbGeom)

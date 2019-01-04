@@ -28,8 +28,8 @@ testGetEwkbGeometryType geometryType =
 
 roundTrip :: Endian.EndianType -> Ewkb.EwkbGeometryType -> Ewkb.EwkbGeometryType
 roundTrip endianType geometryType =
-  BinaryGet.runGet (Ewkb.getEwkbGeometryType endianType) encodedGeometryType
-  where encodedGeometryType = ByteStringBuilder.toLazyByteString $ Ewkb.builderEwkbGeometryType endianType geometryType
+  BinaryGet.runGet (Ewkb.getEwkbGeom endianType) encodedGeometryType
+  where encodedGeometryType = ByteStringBuilder.toLazyByteString $ Ewkb.builderEwkbGeom endianType geometryType
 
 testValues :: [Ewkb.EwkbGeometryType]
 testValues =

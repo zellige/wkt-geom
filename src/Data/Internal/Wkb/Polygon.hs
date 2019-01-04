@@ -69,14 +69,14 @@ builderPolygon :: Endian.EndianType -> Geospatial.GeoPolygon -> ByteStringBuilde
 builderPolygon endianType (Geospatial.GeoPolygon linearRings) = do
   let coordType = Geometry.coordTypeOfLinearRings linearRings
   Endian.builderEndianType endianType
-    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.Polygon coordType)
+    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.Polygon coordType)
     <> Endian.builderFourBytes endianType (fromIntegral $ length linearRings)
     <> Foldable.foldMap (builderLinearRing endianType) linearRings
 
 builderMultiPolygon :: Endian.EndianType -> Geospatial.GeoMultiPolygon -> ByteStringBuilder.Builder
 builderMultiPolygon endianType (Geospatial.GeoMultiPolygon polygons) =
   Endian.builderEndianType endianType
-    <> Geometry.builderGeometryType endianType (Geometry.WkbGeom Geometry.MultiPolygon Geometry.TwoD)
+    <> Geometry.builderWkbGeom endianType (Geometry.WkbGeom Geometry.MultiPolygon Geometry.TwoD)
     <> Endian.builderFourBytes endianType (fromIntegral $ length polygons)
     <> Foldable.foldMap (builderPolygon endianType . Geospatial.GeoPolygon) polygons
 
