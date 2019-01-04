@@ -9,6 +9,7 @@ import qualified Data.Binary.Get            as BinaryGet
 import qualified Data.ByteString.Builder    as ByteStringBuilder
 import qualified Data.Foldable              as Foldable
 import qualified Data.Geospatial            as Geospatial
+import           Data.Monoid                ((<>))
 import qualified Data.Sequence              as Sequence
 
 import qualified Data.Internal.Wkb.Endian   as Endian
