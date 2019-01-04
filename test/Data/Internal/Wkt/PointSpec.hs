@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.WktPointSpec where
+module Data.Internal.Wkt.PointSpec where
 
 import           Control.Lens    ((^?), (^?!))
 import qualified Data.Geospatial as Geospatial

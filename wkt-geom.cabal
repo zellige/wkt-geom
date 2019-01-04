@@ -59,14 +59,14 @@ test-suite wkt-geom-test
                      , Data.Internal.Wkb.EndianSpec
                      , Data.Internal.Wkb.GeometryCollectionSpec
                      , Data.Internal.Wkb.GeometrySpec
+                     , Data.Internal.Wkb.HexParsingSpec
                      , Data.Internal.Wkb.LineSpec
                      , Data.Internal.Wkb.PointSpec
                      , Data.Internal.Wkb.PolygonSpec
-                     , Data.WkbHexParsingSpec
-                     , Data.WktGeometryCollectionSpec
-                     , Data.WktLineSpec
-                     , Data.WktPointSpec
-                     , Data.WktPolygonSpec          
+                     , Data.Internal.Wkt.GeometryCollectionSpec
+                     , Data.Internal.Wkt.LineSpec
+                     , Data.Internal.Wkt.PointSpec
+                     , Data.Internal.Wkt.PolygonSpec          
                      , Data.SpecHelper  
   main-is:             Spec.hs
   build-depends:       base

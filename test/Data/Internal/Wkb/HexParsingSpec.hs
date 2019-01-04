@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.WkbHexParsingSpec where
+module Data.Internal.Wkb.HexParsingSpec where
 
 import qualified Data.Geospatial as Geospatial
 import           Test.Hspec      (Spec, describe, it, shouldBe)
