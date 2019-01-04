@@ -10,7 +10,6 @@ import           Hedgehog
 import           Test.Hspec                  (Spec, describe, it, shouldBe)
 
 import qualified Data.Internal.Wkb.Geometry  as Geometry
-import qualified Data.Internal.Wkb.Polygon   as Polygon
 import qualified Data.SpecHelper             as SpecHelper
 import qualified Data.Wkb                    as Wkb
 
@@ -35,11 +34,9 @@ testValidWkbPolyonParsing =
 testValidWkbPolyonParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
 testValidWkbPolyonParsing' (coordType, genCoordPoint) =
   it ("round trips valid wkb polygon: " ++ show coordType) $ HedgehogHspec.require $ property $ do
-    polygon <- forAll $ Geospatial.GeoPolygon <$> SpecHelper.genLinearRings genCoordPoint
+    polygon <- forAll $ SpecHelper.genPolygon genCoordPoint
     endianType <- forAll SpecHelper.genEndianType
-    roundTrip endianType polygon === (Right $ Geospatial.Polygon polygon)
-  where roundTrip endianType =
-          Wkb.parseByteString . ByteStringBuilder.toLazyByteString . Polygon.builderPolygon endianType
+    SpecHelper.roundTripWkb endianType polygon === Right polygon
 
 testInvalidWkbPolyonParsing :: Spec
 testInvalidWkbPolyonParsing =
@@ -73,6 +70,4 @@ testWkbMultiPolygonParsing' (coordType, genCoordPoint) =
   it ("round trips wkb multipolygon: " ++ show coordType) $ HedgehogHspec.require $ property $ do
     multiPolygon <- forAll $ SpecHelper.genMultiPolygon genCoordPoint
     endianType <- forAll SpecHelper.genEndianType
-    roundTrip endianType multiPolygon === (Right $ Geospatial.MultiPolygon multiPolygon)
-  where roundTrip endianType =
-          Wkb.parseByteString . ByteStringBuilder.toLazyByteString . Polygon.builderMultiPolygon endianType
+    SpecHelper.roundTripWkb endianType multiPolygon === Right multiPolygon

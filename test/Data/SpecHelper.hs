@@ -10,6 +10,13 @@ import qualified Hedgehog.Range             as Range
 
 import qualified Data.Internal.Wkb.Endian   as Endian
 import qualified Data.Internal.Wkb.Geometry as Geometry
+import qualified Data.Wkb                   as Wkb
+
+-- Helpers
+
+roundTripWkb :: Endian.EndianType -> Geospatial.GeospatialGeometry -> Either String Geospatial.GeospatialGeometry
+roundTripWkb endianType = Wkb.parseByteString . Wkb.toByteString endianType
+
 
 -- Generators
 
@@ -27,9 +34,35 @@ coordPointGenerators =
   , (Geometry.ZM, genCoordPointXYZM)
   ]
 
-genMultiPolygon :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeoMultiPolygon
-genMultiPolygon genCoordPoint =
-  Geospatial.GeoMultiPolygon <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLinearRings genCoordPoint)
+genMultiPolygon :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genMultiPolygon genCoordPoint = do
+  geoMultiPolygon <- Geospatial.GeoMultiPolygon <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLinearRings genCoordPoint)
+  return $ Geospatial.MultiPolygon geoMultiPolygon
+
+genPolygon :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genPolygon genCoordPoint = do
+  geoPolygon <- Geospatial.GeoPolygon <$> genLinearRings genCoordPoint
+  return $ Geospatial.Polygon geoPolygon
+
+genMultiLine :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genMultiLine genCoordPoint = do
+  geoMultiLine <- Geospatial.GeoMultiLine <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLineString genCoordPoint)
+  return $ Geospatial.MultiLine geoMultiLine
+
+genLine :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genLine genCoordPoint = do
+  geoLine <- Geospatial.GeoLine <$> genLineString genCoordPoint
+  return $ Geospatial.Line geoLine
+
+genMultiPoint :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genMultiPoint genCoordPoint = do
+  geoMultiPoint <- Geospatial.GeoMultiPoint <$> genCoordPoints genCoordPoint
+  return $ Geospatial.MultiPoint geoMultiPoint
+
+genPoint :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+genPoint genCoordPoint = do
+  geoPoint <- Geospatial.GeoPoint <$> genCoordPoint
+  return $ Geospatial.Point geoPoint
 
 genLinearRings :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (Sequence.Seq (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS))
 genLinearRings genCoordPoint =
@@ -38,10 +71,6 @@ genLinearRings genCoordPoint =
 genLinearRing :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
 genLinearRing genCoordPoint =
   LinearRing.makeLinearRing <$> genCoordPoint <*> genCoordPoint <*> genCoordPoint <*> genCoordPoints genCoordPoint
-
-genMultiLine :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeoMultiLine
-genMultiLine genCoordPoint =
-  Geospatial.GeoMultiLine <$> Gen.seq (Range.linear 0 upperBoundOfMultiGeometries) (genLineString genCoordPoint)
 
 genLineString :: Gen Geospatial.GeoPositionWithoutCRS -> Gen (LineString.LineString Geospatial.GeoPositionWithoutCRS)
 genLineString genCoordPoint =

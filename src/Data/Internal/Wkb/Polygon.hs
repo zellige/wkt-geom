@@ -30,7 +30,7 @@ getPolygon endianType coordType = do
 getMultiPolygon :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiPolygon getWkbGeom endianType _ = do
   numberOfPolygons <- Endian.getFourBytes endianType
-  geoPolygons <- Sequence.replicateM (fromIntegral numberOfPolygons) (GeometryCollection.enclosedFeature getWkbGeom Geometry.Polygon getGeoPolygon)
+  geoPolygons <- Sequence.replicateM (fromIntegral numberOfPolygons) (GeometryCollection.getEnclosedFeature getWkbGeom Geometry.Polygon getGeoPolygon)
   pure $ Geospatial.MultiPolygon $ Geospatial.mergeGeoPolygons geoPolygons
 
 getGeoPolygon :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoPolygon

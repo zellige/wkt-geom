@@ -33,7 +33,7 @@ getPoint endianType coordType = do
 getMultiPoint :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiPoint getWkbGeom endianType _ = do
   numberOfPoints <- Endian.getFourBytes endianType
-  geoPoints <- Sequence.replicateM (fromIntegral numberOfPoints) (GeometryCollection.enclosedFeature getWkbGeom Geometry.Point getGeoPoint)
+  geoPoints <- Sequence.replicateM (fromIntegral numberOfPoints) (GeometryCollection.getEnclosedFeature getWkbGeom Geometry.Point getGeoPoint)
   pure $ Geospatial.MultiPoint $ Geospatial.mergeGeoPoints geoPoints
 
 getGeoPoint :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoPoint
@@ -86,11 +86,10 @@ builderMultiPoint endianType (Geospatial.GeoMultiPoint coordPoints) =
 builderCoordPoint :: Endian.EndianType -> Geospatial.GeoPositionWithoutCRS -> ByteStringBuilder.Builder
 builderCoordPoint endianType coordPoint =
   case coordPoint of
-    Geospatial.GeoEmpty ->
-      Monoid.mempty
-    Geospatial.GeoPointXY (Geospatial.PointXY x y)         ->
+    Geospatial.GeoEmpty -> Monoid.mempty
+    Geospatial.GeoPointXY (Geospatial.PointXY x y) ->
       Foldable.foldMap builderDouble [x, y]
-    Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z)     ->
+    Geospatial.GeoPointXYZ (Geospatial.PointXYZ x y z) ->
       Foldable.foldMap builderDouble [x, y, z]
     Geospatial.GeoPointXYZM (Geospatial.PointXYZM x y z m) ->
       Foldable.foldMap builderDouble [x, y, z, m]

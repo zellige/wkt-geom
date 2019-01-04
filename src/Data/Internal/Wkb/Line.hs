@@ -30,7 +30,7 @@ getLine endianType coordType = do
 getMultiLine :: (Endian.EndianType -> BinaryGet.Get Geometry.WkbGeometryType) -> Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeospatialGeometry
 getMultiLine getWkbGeom endianType _ = do
   numberOfLines <- Endian.getFourBytes endianType
-  geoLines <- Sequence.replicateM (fromIntegral numberOfLines) (GeometryCollection.enclosedFeature getWkbGeom Geometry.LineString getGeoLine)
+  geoLines <- Sequence.replicateM (fromIntegral numberOfLines) (GeometryCollection.getEnclosedFeature getWkbGeom Geometry.LineString getGeoLine)
   pure $ Geospatial.MultiLine $ Geospatial.mergeGeoLines geoLines
 
 getGeoLine :: Endian.EndianType -> Geometry.CoordinateType -> BinaryGet.Get Geospatial.GeoLine

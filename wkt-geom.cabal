@@ -57,11 +57,11 @@ test-suite wkt-geom-test
   hs-source-dirs:      test
   other-modules:       Data.Internal.Ewkb.GeometrySpec
                      , Data.Internal.Wkb.EndianSpec
+                     , Data.Internal.Wkb.GeometryCollectionSpec
                      , Data.Internal.Wkb.GeometrySpec
                      , Data.Internal.Wkb.LineSpec
                      , Data.Internal.Wkb.PointSpec
                      , Data.Internal.Wkb.PolygonSpec
-                     , Data.WkbGeometryCollectionSpec
                      , Data.WkbHexParsingSpec
                      , Data.WktGeometryCollectionSpec
                      , Data.WktLineSpec

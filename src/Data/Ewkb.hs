@@ -22,7 +22,7 @@ import qualified Data.Hex                     as Hex
 parseByteString :: LazyByteString.ByteString -> Either String Geospatial.GeospatialGeometry
 parseByteString byteString =
   case BinaryGet.runGetOrFail
-        (WkbGeospatial.geospatialGeometry EwkbGeometry.wkbGeometryType)
+        (WkbGeospatial.getGeospatialGeometry EwkbGeometry.wkbGeometryType)
         byteString of
     Left (_, _, err)                 -> Left $ "Could not parse ewkb: " ++ err
     Right (_, _, geoSpatialGeometry) -> Right geoSpatialGeometry
