@@ -30,7 +30,8 @@ coordPointGenerators :: [(Geometry.CoordinateType, Gen Geospatial.GeoPositionWit
 coordPointGenerators =
   [ (Geometry.TwoD, genCoordPointXY)
   , (Geometry.Z, genCoordPointXYZ)
-  , (Geometry.M, genCoordPointXYZ)
+-- We can't roundtrip or express M in the current geometry (hs-geojson)
+--  , (Geometry.M, genCoordPointXYZ)
   , (Geometry.ZM, genCoordPointXYZM)
   ]
 
