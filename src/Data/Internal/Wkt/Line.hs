@@ -40,7 +40,7 @@ manyLines = do
 line :: Trifecta.Parser (LineString.LineString Geospatial.GeoPositionWithoutCRS)
 line = do
   _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
-  first <- Point.justPoints
+  first <- Point.justPointsXY
   second <- commandPoint
   rest <- Trifecta.many commandPoint
   _ <- Trifecta.char ')' >> Trifecta.spaces
@@ -50,7 +50,7 @@ commandPoint :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS
 commandPoint = do
   _ <- Trifecta.char ','
   _ <- Trifecta.spaces
-  Point.justPoints
+  Point.justPointsXY
 
 emptyLine :: Geospatial.GeoLine
 emptyLine = Geospatial.GeoLine $ LineString.makeLineString Geospatial.GeoEmpty Geospatial.GeoEmpty Sequence.empty

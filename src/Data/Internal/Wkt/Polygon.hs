@@ -49,7 +49,7 @@ multiPolygon' = do
 linearRing :: Trifecta.Parser (LinearRing.LinearRing Geospatial.GeoPositionWithoutCRS)
 linearRing = do
   _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
-  first <- Point.justPoints
+  first <- Point.justPointsXY
   second <- Line.commandPoint
   third <- Line.commandPoint
   rest <- Trifecta.many Line.commandPoint
