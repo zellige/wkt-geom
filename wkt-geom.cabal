@@ -17,6 +17,11 @@ extra-source-files:    README.md
                      , CHANGELOG.md
 cabal-version:         >=1.10
 
+flag error-check
+  manual: True
+  default: False
+  description: Compile with error-checking
+
 library
   hs-source-dirs:      src
   exposed-modules:     Data.Ewkb
@@ -97,6 +102,8 @@ test-suite              wkt-geom-hlint
     default-language:   Haskell2010
     ghc-options:        -Wall
                         -threaded
+  if flag(error-check)
+    ghc-options:        -Werror                          
 
 source-repository head
   type:     git

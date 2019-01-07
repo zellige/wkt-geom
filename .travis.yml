@@ -35,11 +35,11 @@ before_install:
 
 install:
 # Build dependencies
-- stack --resolver $RESOLVER --no-terminal --install-ghc test --only-dependencies
+- stack --resolver $RESOLVER --no-terminal --install-ghc test --only-dependencies --flag wkt-geom:error-check
 
 script:
 # Build the package, its tests, and its docs and run the tests
-- stack --resolver $RESOLVER --no-terminal --install-ghc test --haddock --no-haddock-deps
+- stack --resolver $RESOLVER --no-terminal --install-ghc test --haddock --no-haddock-deps --flag wkt-geom:error-check
 # List components explicitly; ignoring failure
 - stack --resolver $RESOLVER exec ghc-pkg list || true
 
