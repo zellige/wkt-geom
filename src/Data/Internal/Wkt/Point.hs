@@ -2,6 +2,8 @@ module Data.Internal.Wkt.Point
   ( point
   , multiPoint
   , justPointsXY
+  , justPointsXYZ
+  , justPointsXYZM
   , emptyPoint
   , emptyMultiPoint
   ) where

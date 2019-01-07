@@ -50,9 +50,9 @@ linearRing :: Trifecta.Parser (LinearRing.LinearRing Geospatial.GeoPositionWitho
 linearRing = do
   _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
   first <- Point.justPointsXY
-  second <- Line.commandPoint
-  third <- Line.commandPoint
-  rest <- Trifecta.many Line.commandPoint
+  second <- Line.commandPoint Point.justPointsXY
+  third <- Line.commandPoint Point.justPointsXY
+  rest <- Trifecta.many (Line.commandPoint Point.justPointsXY)
   _ <- Trifecta.char ')' >> Trifecta.spaces
   pure $ LinearRing.makeLinearRing first second third (SeqHelper.sequenceHead $ Sequence.fromList rest)
 

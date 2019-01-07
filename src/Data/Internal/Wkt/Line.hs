@@ -20,37 +20,49 @@ lineString :: Trifecta.Parser Geospatial.GeoLine
 lineString = do
   _ <- Trifecta.string "linestring"
   _ <- Trifecta.spaces
-  (Trifecta.string "empty" >> pure emptyLine) <|> Geospatial.GeoLine <$> line
+  (Trifecta.string "empty" >> pure emptyLine) <|> nonEmptyLines
+
+nonEmptyLines :: Trifecta.Parser Geospatial.GeoLine
+nonEmptyLines =
+  (Trifecta.string "zm" >> Geospatial.GeoLine <$> line Point.justPointsXYZM)
+  <|> (Trifecta.string "z" >> Geospatial.GeoLine <$> line Point.justPointsXYZ)
+  <|> Geospatial.GeoLine <$> line Point.justPointsXY
 
 multiLineString :: Trifecta.Parser Geospatial.GeoMultiLine
 multiLineString = do
   _ <- Trifecta.string "multilinestring"
   _ <- Trifecta.spaces
-  x <- Wkt.emptySet <|> manyLines
+  x <- Wkt.emptySet <|> nonEmptyMultiLines
   pure $ Geospatial.GeoMultiLine x
 
-manyLines :: Trifecta.Parser (Sequence.Seq (LineString.LineString Geospatial.GeoPositionWithoutCRS))
-manyLines = do
+nonEmptyMultiLines :: Trifecta.Parser (Sequence.Seq (LineString.LineString Geospatial.GeoPositionWithoutCRS))
+nonEmptyMultiLines =
+  (Trifecta.string "zm" >> manyLines Point.justPointsXYZM)
+  <|> (Trifecta.string "z" >> manyLines Point.justPointsXYZ)
+  <|> manyLines Point.justPointsXY
+
+manyLines :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS ->  Trifecta.Parser (Sequence.Seq (LineString.LineString Geospatial.GeoPositionWithoutCRS))
+manyLines pointParser = do
   _ <- Trifecta.spaces >> Trifecta.char '('
-  x <- line
-  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> line)
+  x <- line pointParser
+  xs <- Trifecta.many (Trifecta.char ',' >> Trifecta.spaces >> line pointParser)
   _ <-  Trifecta.char ')' >> Trifecta.spaces
   pure $ x Sequence.:<| Sequence.fromList xs
 
-line :: Trifecta.Parser (LineString.LineString Geospatial.GeoPositionWithoutCRS)
-line = do
+line :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS -> Trifecta.Parser (LineString.LineString Geospatial.GeoPositionWithoutCRS)
+line pointParser = do
   _ <- Trifecta.spaces >> Trifecta.char '(' >> Trifecta.spaces
-  first <- Point.justPointsXY
-  second <- commandPoint
-  rest <- Trifecta.many commandPoint
+  first <- pointParser
+  second <- commandPoint pointParser
+  rest <- Trifecta.many (commandPoint pointParser)
   _ <- Trifecta.char ')' >> Trifecta.spaces
   pure $ LineString.makeLineString first second (Sequence.fromList rest)
 
-commandPoint :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS
-commandPoint = do
+commandPoint :: Trifecta.Parser Geospatial.GeoPositionWithoutCRS -> Trifecta.Parser Geospatial.GeoPositionWithoutCRS
+commandPoint pointParser = do
   _ <- Trifecta.char ','
   _ <- Trifecta.spaces
-  Point.justPointsXY
+  pointParser
 
 emptyLine :: Geospatial.GeoLine
 emptyLine = Geospatial.GeoLine $ LineString.makeLineString Geospatial.GeoEmpty Geospatial.GeoEmpty Sequence.empty

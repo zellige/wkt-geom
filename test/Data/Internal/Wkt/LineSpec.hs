@@ -30,6 +30,11 @@ testLines =
       Wkt.parseString Wkt.lineString "linestring (1.0 2.0, 1.0 2.5, 1.0 3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
     it "Parse spaces" $
       Wkt.parseString Wkt.lineString "linestring ( 1.0 2.0,1.0 2.5, 1.0  3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
+    it "Parse z lines" $
+      Wkt.parseString Wkt.lineString "linestring z (1.0 2.0 3.0,1.0 2.5 4.0,1.0 3.0 5.0)" ^?! Trifecta._Success `shouldBe` example3DLine
+    it "Parse zm lines" $
+      Wkt.parseString Wkt.lineString "linestring zm (1.0 2.0 3.0 4.0,1.0 2.5 4.0 5.5, 1.0 3.0 5.0 7.0)" ^?! Trifecta._Success `shouldBe` example4DLine
+
 
 testMultiLines :: Spec
 testMultiLines =
@@ -48,8 +53,20 @@ testMultiLines =
 exampleLine :: Geospatial.GeoLine
 exampleLine = Geospatial.GeoLine exampleLineString
 
+example3DLine :: Geospatial.GeoLine
+example3DLine = Geospatial.GeoLine exampleLine3DString
+
+example4DLine :: Geospatial.GeoLine
+example4DLine = Geospatial.GeoLine exampleLine4DString
+
 exampleMultiLine :: Geospatial.GeoMultiLine
 exampleMultiLine =  Geospatial.GeoMultiLine (Sequence.singleton exampleLineString)
 
 exampleLineString :: LineString.LineString Geospatial.GeoPositionWithoutCRS
 exampleLineString = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.5)) (Sequence.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 3.0)))
+
+exampleLine3DString :: LineString.LineString Geospatial.GeoPositionWithoutCRS
+exampleLine3DString = LineString.makeLineString (Geospatial.GeoPointXYZ (Geospatial.PointXYZ 1.0 2.0 3.0)) (Geospatial.GeoPointXYZ (Geospatial.PointXYZ 1.0 2.5 4.0)) (Sequence.singleton (Geospatial.GeoPointXYZ (Geospatial.PointXYZ 1.0 3.0 5.0)))
+
+exampleLine4DString :: LineString.LineString Geospatial.GeoPositionWithoutCRS
+exampleLine4DString = LineString.makeLineString (Geospatial.GeoPointXYZM (Geospatial.PointXYZM 1.0 2.0 3.0 4.0)) (Geospatial.GeoPointXYZM (Geospatial.PointXYZM 1.0 2.5 4.0 5.5)) (Sequence.singleton (Geospatial.GeoPointXYZM (Geospatial.PointXYZM 1.0 3.0 5.0 7.0)))
