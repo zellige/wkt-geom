@@ -32,6 +32,10 @@ testLines =
       Wkt.parseString Wkt.lineString "linestring ( 1.0 2.0,1.0 2.5, 1.0  3.0)" ^?! Trifecta._Success `shouldBe` exampleLine
     it "Parse z lines" $
       Wkt.parseString Wkt.lineString "linestring z (1.0 2.0 3.0,1.0 2.5 4.0,1.0 3.0 5.0)" ^?! Trifecta._Success `shouldBe` example3DLine
+    it "Parse z lines" $
+      Wkt.parseString Wkt.lineString "linestring z(1.0 2.0 3.0,1.0 2.5 4.0,1.0 3.0 5.0)" ^?! Trifecta._Success `shouldBe` example3DLine
+    it "Parse z lines" $
+      Wkt.parseString Wkt.lineString "linestringz(1.0 2.0 3.0,1.0 2.5 4.0,1.0 3.0 5.0)" ^?! Trifecta._Success `shouldBe` example3DLine
     it "Parse zm lines" $
       Wkt.parseString Wkt.lineString "linestring zm (1.0 2.0 3.0 4.0,1.0 2.5 4.0 5.5, 1.0 3.0 5.0 7.0)" ^?! Trifecta._Success `shouldBe` example4DLine
 
