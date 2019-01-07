@@ -57,15 +57,15 @@ genGeometryCollection genCoordPoint = do
   return $ Geospatial.Collection geoCollection
 
 genGeospatialGeometry :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
-genGeospatialGeometry genCoordPoint = Gen.choice
+genGeospatialGeometry genCoordPoint = Gen.recursive Gen.choice
   [ genPoint genCoordPoint
   , genLine genCoordPoint
   , genPolygon genCoordPoint
   , genMultiPoint genCoordPoint
   , genMultiLine genCoordPoint
   , genMultiPolygon genCoordPoint
-  , genGeometryCollection genCoordPoint
   ]
+  [ genGeometryCollection genCoordPoint ]
 
 genMultiPolygon :: Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
 genMultiPolygon genCoordPoint = do
