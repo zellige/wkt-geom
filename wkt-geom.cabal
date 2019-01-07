@@ -98,7 +98,6 @@ test-suite              wkt-geom-hlint
     ghc-options:        -Wall
                         -Werror
                         -threaded
-                        -O2
 
 source-repository head
   type:     git
