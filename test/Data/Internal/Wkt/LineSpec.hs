@@ -49,6 +49,10 @@ testMultiLines =
       Wkt.parseString Wkt.multiLineString "multilinestring ((1.0 2.0, 1.0 2.5, 1.0 3.0))" ^?! Trifecta._Success `shouldBe` exampleMultiLine
     it "Parse spaces" $
       Wkt.parseString Wkt.multiLineString "multilinestring ( ( 1.0 2.0,1.0 2.5, 1.0  3.0) )" ^?! Trifecta._Success `shouldBe` exampleMultiLine
+    it "Parse z lines" $
+      Wkt.parseString Wkt.multiLineString "multilinestring z ((1.0 2.0 3.0,1.0 2.5 4.0,1.0 3.0 5.0))" ^?! Trifecta._Success `shouldBe` example3DMultiLine
+    it "Parse zm lines" $
+      Wkt.parseString Wkt.multiLineString "multilinestring zm ((1.0 2.0 3.0 4.0,1.0 2.5 4.0 5.5, 1.0 3.0 5.0 7.0))" ^?! Trifecta._Success `shouldBe` example4DMultiLine
 
 exampleLine :: Geospatial.GeoLine
 exampleLine = Geospatial.GeoLine exampleLineString
@@ -61,6 +65,12 @@ example4DLine = Geospatial.GeoLine exampleLine4DString
 
 exampleMultiLine :: Geospatial.GeoMultiLine
 exampleMultiLine =  Geospatial.GeoMultiLine (Sequence.singleton exampleLineString)
+
+example3DMultiLine :: Geospatial.GeoMultiLine
+example3DMultiLine =  Geospatial.GeoMultiLine (Sequence.singleton exampleLine3DString)
+
+example4DMultiLine :: Geospatial.GeoMultiLine
+example4DMultiLine =  Geospatial.GeoMultiLine (Sequence.singleton exampleLine4DString)
 
 exampleLineString :: LineString.LineString Geospatial.GeoPositionWithoutCRS
 exampleLineString = LineString.makeLineString (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.0)) (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 2.5)) (Sequence.singleton (Geospatial.GeoPointXY (Geospatial.PointXY 1.0 3.0)))
