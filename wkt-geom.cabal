@@ -96,7 +96,6 @@ test-suite              wkt-geom-hlint
                     ,   hlint
     default-language:   Haskell2010
     ghc-options:        -Wall
-                        -Werror
                         -threaded
 
 source-repository head
