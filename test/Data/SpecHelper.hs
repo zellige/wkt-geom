@@ -1,21 +1,37 @@
 module Data.SpecHelper where
 
-import qualified Data.Geospatial            as Geospatial
-import qualified Data.LinearRing            as LinearRing
-import qualified Data.LineString            as LineString
-import qualified Data.Sequence              as Sequence
+import qualified Data.Geospatial             as Geospatial
+import qualified Data.LinearRing             as LinearRing
+import qualified Data.LineString             as LineString
+import qualified Data.Sequence               as Sequence
+import qualified HaskellWorks.Hspec.Hedgehog as HedgehogHspec
 import           Hedgehog
-import qualified Hedgehog.Gen               as Gen
-import qualified Hedgehog.Range             as Range
+import qualified Hedgehog.Gen                as Gen
+import qualified Hedgehog.Range              as Range
+import           Test.Hspec                  (Spec, it)
 
-import qualified Data.Internal.Wkb.Endian   as Endian
-import qualified Data.Internal.Wkb.Geometry as Geometry
-import qualified Data.Wkb                   as Wkb
+import qualified Data.Internal.Wkb.Endian    as Endian
+import qualified Data.Internal.Wkb.Geometry  as Geometry
+import qualified Data.Wkb                    as Wkb
 
 -- Helpers
 
+type GeometryGenerator = Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
+
 roundTripWkb :: Endian.EndianType -> Geospatial.GeospatialGeometry -> Either String Geospatial.GeospatialGeometry
 roundTripWkb endianType = Wkb.parseByteString . Wkb.toByteString endianType
+
+testRoundTripWkbGeometryParsing :: String -> GeometryGenerator -> Spec
+testRoundTripWkbGeometryParsing name generator =
+  mapM_ (testRoundTripWkbGeometryParsing' name generator) coordPointGenerators
+
+testRoundTripWkbGeometryParsing' :: String -> GeometryGenerator -> (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
+testRoundTripWkbGeometryParsing' name generator (coordType, genCoordPoint) =
+  it ("round trips wkb " ++ name ++ ": " ++ show coordType) $
+    HedgehogHspec.require $ property $ do
+      geometry <- forAll $ generator genCoordPoint
+      endianType <- forAll genEndianType
+      roundTripWkb endianType geometry === Right geometry
 
 
 -- Generators
