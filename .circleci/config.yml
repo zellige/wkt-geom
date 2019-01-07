@@ -39,7 +39,7 @@ jobs:
           name: test
           no_output_timeout: 60m
           command: |
-            stack test --stack-yaml stack.yaml --no-terminal -j2
+            stack test --stack-yaml stack.yaml --no-terminal -j2 --flag wkt-geom:error-check
       - save-cache:
           key: stack{{checksum "stack.yaml"}}
           paths:
