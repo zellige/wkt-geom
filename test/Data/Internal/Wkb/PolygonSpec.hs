@@ -2,16 +2,12 @@
 
 module Data.Internal.Wkb.PolygonSpec where
 
-import qualified Data.ByteString.Builder     as ByteStringBuilder
-import qualified Data.Geospatial             as Geospatial
-import           Data.Monoid                 ((<>))
-import qualified HaskellWorks.Hspec.Hedgehog as HedgehogHspec
-import           Hedgehog
-import           Test.Hspec                  (Spec, describe, it, shouldBe)
+import qualified Data.ByteString.Builder as ByteStringBuilder
+import           Data.Monoid             ((<>))
+import           Test.Hspec              (Spec, describe, it, shouldBe)
 
-import qualified Data.Internal.Wkb.Geometry  as Geometry
-import qualified Data.SpecHelper             as SpecHelper
-import qualified Data.Wkb                    as Wkb
+import qualified Data.SpecHelper         as SpecHelper
+import qualified Data.Wkb                as Wkb
 
 spec :: Spec
 spec = do
@@ -29,14 +25,7 @@ testWkbPolygonParsing =
 
 testValidWkbPolyonParsing :: Spec
 testValidWkbPolyonParsing =
-  mapM_ testValidWkbPolyonParsing' SpecHelper.coordPointGenerators
-
-testValidWkbPolyonParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
-testValidWkbPolyonParsing' (coordType, genCoordPoint) =
-  it ("round trips valid wkb polygon: " ++ show coordType) $ HedgehogHspec.require $ property $ do
-    polygon <- forAll $ SpecHelper.genPolygon genCoordPoint
-    endianType <- forAll SpecHelper.genEndianType
-    SpecHelper.roundTripWkb endianType polygon === Right polygon
+  SpecHelper.testRoundTripWkbGeometryParsing "polygon" SpecHelper.genPolygon
 
 testInvalidWkbPolyonParsing :: Spec
 testInvalidWkbPolyonParsing =
@@ -63,11 +52,4 @@ testInvalidWkbPolyonParsing =
 testWkbMultiPolygonParsing :: Spec
 testWkbMultiPolygonParsing =
   describe "Test wkb multipolygon parsing" $
-    mapM_ testWkbMultiPolygonParsing' SpecHelper.coordPointGenerators
-
-testWkbMultiPolygonParsing' :: (Geometry.CoordinateType, Gen Geospatial.GeoPositionWithoutCRS) -> Spec
-testWkbMultiPolygonParsing' (coordType, genCoordPoint) =
-  it ("round trips wkb multipolygon: " ++ show coordType) $ HedgehogHspec.require $ property $ do
-    multiPolygon <- forAll $ SpecHelper.genMultiPolygon genCoordPoint
-    endianType <- forAll SpecHelper.genEndianType
-    SpecHelper.roundTripWkb endianType multiPolygon === Right multiPolygon
+    SpecHelper.testRoundTripWkbGeometryParsing "multipolygon" SpecHelper.genMultiPolygon
