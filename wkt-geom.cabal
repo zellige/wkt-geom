@@ -8,7 +8,7 @@ description:           Well Known Text (WKT), Well Known Binary (WKB) and the Po
 homepage:              https://github.com/indicatrix/wkt-geom#readme
 license:               Apache-2.0
 license-file:          LICENSE
-author:                Andrew Newmnan, Dominic Endrei
+author:                Andrew Newman, Dominic Endrei
 maintainer:            andrewfnewman@gmail.com
 copyright:             2017-2019 Wkt-Geom Project
 category:              Data
