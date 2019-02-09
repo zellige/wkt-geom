@@ -34,7 +34,8 @@ parseByteString byteString =
 parseHexByteString :: Hex.Hex -> Either String Geospatial.GeospatialGeometry
 parseHexByteString = Hex.safeConvert parseByteString
 
-toByteString :: Endian.EndianType -> Geospatial.GeospatialGeometry -> LazyByteString.ByteString
-toByteString endianType =
+toByteString :: Endian.EndianType -> EwkbGeometry.SridType -> Geospatial.GeospatialGeometry -> LazyByteString.ByteString
+toByteString endianType sridType =
   ByteStringBuilder.toLazyByteString . WkbGeospatial.builderGeospatialGeometry
-    EwkbGeometry.builderWkbGeom endianType
+    mkBuilder endianType
+  where mkBuilder eType gType = EwkbGeometry.builderEwkbGeom eType (EwkbGeometry.EwkbGeom gType sridType)
