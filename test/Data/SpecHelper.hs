@@ -18,9 +18,6 @@ import qualified Data.Wkb                    as Wkb
 
 type GeometryGenerator = Gen Geospatial.GeoPositionWithoutCRS -> Gen Geospatial.GeospatialGeometry
 
-roundTripWkb :: Endian.EndianType -> Geospatial.GeospatialGeometry -> Either String Geospatial.GeospatialGeometry
-roundTripWkb endianType = Wkb.parseByteString . Wkb.toByteString endianType
-
 testRoundTripWkbGeometryParsing :: String -> GeometryGenerator -> Spec
 testRoundTripWkbGeometryParsing name generator =
   mapM_ (testRoundTripWkbGeometryParsing' name generator) coordPointGenerators
@@ -33,6 +30,8 @@ testRoundTripWkbGeometryParsing' name generator (coordType, genCoordPoint) =
       endianType <- forAll genEndianType
       roundTripWkb endianType geometry === Right geometry
 
+roundTripWkb :: Endian.EndianType -> Geospatial.GeospatialGeometry -> Either String Geospatial.GeospatialGeometry
+roundTripWkb endianType = Wkb.parseByteString . Wkb.toByteString endianType
 
 -- Generators
 
