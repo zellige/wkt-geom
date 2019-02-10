@@ -34,7 +34,10 @@ parseByteString byteString =
 parseHexByteString :: Hex.Hex -> Either String Geospatial.GeospatialGeometry
 parseHexByteString = Hex.safeConvert parseByteString
 
-toByteString :: Endian.EndianType -> Geospatial.GeospatialGeometry -> LazyByteString.ByteString
-toByteString endianType =
+-- |
+-- Parse the binary representation of EWKB given its EndianType (Little or Big - Intel is Little) and SRID (4326 for example).
+toByteString :: Endian.EndianType -> EwkbGeometry.SridType -> Geospatial.GeospatialGeometry -> LazyByteString.ByteString
+toByteString endianType sridType =
   ByteStringBuilder.toLazyByteString . WkbGeospatial.builderGeospatialGeometry
-    EwkbGeometry.builderWkbGeom endianType
+    mkBuilder endianType
+  where mkBuilder eType gType = EwkbGeometry.builderEwkbGeom eType (EwkbGeometry.EwkbGeom gType sridType)
