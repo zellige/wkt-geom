@@ -8,21 +8,21 @@ import qualified Data.SpecHelper as SpecHelper
 
 spec :: Spec
 spec = do
-  testWkbLineParsing
-  testWkbMultiLineParsing
+  testEwkbLineParsing
+  testEwkbMultiLineParsing
 
 
 -- Test Wkb Line Parsing
 
-testWkbLineParsing :: Spec
-testWkbLineParsing =
-  describe "Test wkb line parsing" $
+testEwkbLineParsing :: Spec
+testEwkbLineParsing =
+  describe "Test ewkb line parsing" $
     SpecHelper.testRoundTripEwkbGeometryParsing "line" SpecHelper.genLine
 
 
 -- Test Wkb MultiLine Parsing
 
-testWkbMultiLineParsing :: Spec
-testWkbMultiLineParsing =
-  describe "Test wkb multiline parsing" $
+testEwkbMultiLineParsing :: Spec
+testEwkbMultiLineParsing =
+  describe "Test ewkb multiline parsing" $
     SpecHelper.testRoundTripEwkbGeometryParsing "multiLine" SpecHelper.genMultiLine
