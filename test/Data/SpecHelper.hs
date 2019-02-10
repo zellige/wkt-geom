@@ -47,7 +47,7 @@ roundTripWkb endianType geometry =
 roundTripEwkb :: MonadTest m => Endian.EndianType -> Geospatial.GeospatialGeometry -> m ()
 roundTripEwkb endianType geometry =
   let
-    p = Wkb.parseByteString . Ewkb.toByteString endianType (EwkbGeometry.Srid (4326 :: Word.Word32))
+    p = Ewkb.parseByteString . Ewkb.toByteString endianType (EwkbGeometry.Srid (4326 :: Word.Word32))
   in
     p geometry === Right geometry
 
