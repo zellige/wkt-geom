@@ -114,4 +114,4 @@ source-repository head
 source-repository this
   type:     git
   location: https://github.com/indicatrix/wkt-geom.git
-  tag:      0.0.4
+  tag:      0.0.8
