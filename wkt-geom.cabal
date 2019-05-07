@@ -37,6 +37,7 @@ library
                      , Data.Internal.Wkb.Point
                      , Data.Internal.Wkb.Polygon
                      , Data.Internal.Wkt.Common
+                     , Data.Internal.Wkt.Box
                      , Data.Internal.Wkt.Line
                      , Data.Internal.Wkt.Point
                      , Data.Internal.Wkt.Polygon
@@ -70,6 +71,7 @@ test-suite wkt-geom-test
                      , Data.Internal.Wkb.LineSpec
                      , Data.Internal.Wkb.PointSpec
                      , Data.Internal.Wkb.PolygonSpec
+                     , Data.Internal.Wkt.BoxSpec
                      , Data.Internal.Wkt.GeometryCollectionSpec
                      , Data.Internal.Wkt.LineSpec
                      , Data.Internal.Wkt.PointSpec

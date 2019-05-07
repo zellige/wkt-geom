@@ -8,6 +8,7 @@ module Data.Wkt
   , parseString
   , WktGeometryCollection.geometryCollection
   , WktGeometryCollection.emptyGeometryCollection
+  , WktBox.box
   , WktLine.emptyLine
   , WktLine.emptyMultiLine
   , WktLine.lineString
@@ -28,6 +29,7 @@ import qualified Data.Char                            as Char
 import qualified Text.Trifecta                        as Trifecta
 import qualified Text.Trifecta.Delta                  as TrifectaDelta
 
+import qualified Data.Internal.Wkt.Box                as WktBox
 import qualified Data.Internal.Wkt.GeometryCollection as WktGeometryCollection
 import qualified Data.Internal.Wkt.Line               as WktLine
 import qualified Data.Internal.Wkt.Point              as WktPoint
