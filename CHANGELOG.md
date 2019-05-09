@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.0.10] - 2019-05-09
+### Added
+- WKT parsing of BOX.
+
 ## [0.0.8] - 2019-02-19
 ### Fixed
 - Stack dependencies.
