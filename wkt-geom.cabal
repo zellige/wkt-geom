@@ -1,16 +1,17 @@
 name:                  wkt-geom
-version:               0.0.10
+version:               0.0.11
 synopsis:              A parser of WKT, WKB and eWKB.
 description:           Well Known Text (WKT), Well Known Binary (WKB) and the PostgreSQL extension Extended Well Know Binary (eWKB) are vector geometry representations.
                      .
                        The text or binary representations are parsed and turned into their GeoJSON representations.  The binary representations use vectors throughout
                        whereas the text representation still uses a list and then is converted to a vector representation.
-homepage:              https://github.com/indicatrix/wkt-geom#readme
+homepage:              https://github.com/zellige/wkt-geom#readme
+bug-reports:           https://github.com/zellige/wkt-geom/issues
 license:               Apache-2.0
 license-file:          LICENSE
 author:                Andrew Newman, Dominic Endrei
 maintainer:            andrewfnewman@gmail.com
-copyright:             2017-2019 Wkt-Geom Project
+copyright:             2017-2020 Wkt-Geom Project
 category:              Data
 build-type:            Simple
 extra-source-files:    README.md
@@ -111,9 +112,9 @@ test-suite              wkt-geom-hlint
 
 source-repository head
   type:     git
-  location: https://github.com/indicatrix/wkt-geom
+  location: https://github.com/zellige/wkt-geom
 
 source-repository this
   type:     git
-  location: https://github.com/indicatrix/wkt-geom.git
-  tag:      0.0.10
+  location: https://github.com/zellige/wkt-geom.git
+  tag:      0.0.11
