@@ -1,4 +1,4 @@
-# wkt-geom [![Build Status](https://travis-ci.org/indicatrix/wkt-geom.png?branch=master)](https://travis-ci.org/indicatrix/wkt-geom) [Hackage](https://hackage.haskell.org/package/wkt-geom)
+# wkt-geom ![Haskell CI](https://github.com/zellige/wkt-geom/workflows/Haskell%20CI/badge.svg) [Hackage](https://hackage.haskell.org/package/wkt-geom)
 
 A parser for Well Known Text (WKT), Well Known Binary (WKB) and the PostgreSQL extension Extended Well Know Binary (eWKB).
 
