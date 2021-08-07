@@ -11,7 +11,6 @@ import qualified Control.Monad              as Monad
 import qualified Data.Binary.Get            as BinaryGet
 import           Data.Bits                  ((.&.), (.|.))
 import qualified Data.ByteString.Builder    as ByteStringBuilder
-import           Data.Monoid                ((<>))
 import qualified Data.Word                  as Word
 
 import qualified Data.Internal.Wkb.Endian   as Endian
