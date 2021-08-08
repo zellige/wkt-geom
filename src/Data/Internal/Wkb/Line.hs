@@ -11,7 +11,6 @@ import qualified Data.ByteString.Builder              as ByteStringBuilder
 import qualified Data.Foldable                        as Foldable
 import qualified Data.Geospatial                      as Geospatial
 import qualified Data.LineString                      as LineString
-import           Data.Monoid                          ((<>))
 import qualified Data.Sequence                        as Sequence
 
 
