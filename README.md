@@ -3,8 +3,8 @@
 A parser for Well Known Text (WKT), Well Known Binary (WKB) and the PostgreSQL extension Extended Well Know Binary (eWKB).
 
 See:
-- http://www.opengeospatial.org/standards/sfa (Section 7)
-- http://edndoc.esri.com/arcsde/9.0/general_topics/wkt_representation.htm
+- [http://www.opengeospatial.org/standards/sfa](Simple Feature Access) - WKT - Section 7, WKB - Section 8
+- [PostGIS EWKB, EWKT and Canonical Forms](https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT)
 
 ### Other Projects
 - [Terroformer Wkt Parser](http://terraformer.io/wkt-parser/)
